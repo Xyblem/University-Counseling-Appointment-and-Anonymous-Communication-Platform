@@ -10,27 +10,32 @@ import {Captcha, CaptchaRef} from '../../components/ui/combined/Captcha'
 import {RadioGroup, RadioGroupRef} from "../../components/ui/widget/Radio";
 import {Select, SelectRef} from "../../components/ui/widget/Select";
 //输入验证规则
-import {accountValidationRules, emailValidationRules, passwordValidationRules} from "../../utils/validation/input_validation";
+import {
+    usernameValidationRules,
+    emailValidationRules,
+    passwordValidationRules,
+    phoneNumberValidationRules
+} from "../../utils/validation/input_validation";
 //输入选项
-import {userRoleOptions,genderOptions,provinceOptions,jobRoleOptions} from "../../utils/option/input-option";
+import {userRoleOptions,genderOptions,provinceOptions,userPositionOptions} from "../../utils/option/input-option";
 
 //登录请求类型
 interface SignupRequest{
     name?: string;
     gender?: string;
-    province?: string;
+    schoolProvince?: string;
     school?: string;
-    subunit?: string;
+    secondaryUnit?: string;
     major?: string;
     role?: string;
-    jobRole?: string;
+    position?: string;
     email?: string;
-    phone?: string;
+    phoneNumber?: string;
     qq?: string;
     wechat?: string;
     username?: string;
     password?: string;
-    comfirmedPassword?:string;
+    confirmedPassword?:string;
     captcha?: string;
 }
 
@@ -48,30 +53,52 @@ export const SignUpForm: React.FC = () => {
     const [errors, setErrors] = useState<Record<string, string>>({});
     //引用
     const nameInputRef=useRef<InputRef>(null);
-    const genderRef = useRef<RadioGroupRef>(null);
-    const provinceSelectRef = useRef<SelectRef>(null);
+    const genderRadioRef = useRef<RadioGroupRef>(null);
+    const schoolProvinceSelectRef = useRef<SelectRef>(null);
     const schoolInputRef=useRef<InputRef>(null);
-    const subunitInputRef=useRef<InputRef>(null);
+    const SecondaryInputRef=useRef<InputRef>(null);
     const majorInputRef=useRef<InputRef>(null);
-    const roleRef = useRef<RadioGroupRef>(null);
-    const jobRoleSelectRef=useRef<SelectRef>(null);
+    const roleRadioRef = useRef<RadioGroupRef>(null);
+    const positionSelectRef=useRef<SelectRef>(null);
     const emailInputRef=useRef<InputRef>(null);
-    const phoneInputRef=useRef<InputRef>(null);
+    const phoneNumberInputRef=useRef<InputRef>(null);
     const qqInputRef=useRef<InputRef>(null);
     const wechatInputRef=useRef<InputRef>(null);
-    const accountInputRef = useRef<InputRef>(null);
+    const usernameInputRef = useRef<InputRef>(null);
     const passwordInputRef = useRef<InputRef>(null);
     const confirmedPasswordInputRef=useRef<InputRef>(null);
-
     const captchaRef = useRef<CaptchaRef>(null);
-
+    const [formData, setFormData] = useState<SignupRequest>({
+        name:'',
+        gender:'',
+        schoolProvince:'',
+        school:'',
+        secondaryUnit:'',
+        major:'',
+        role:'',
+        position:'',
+        email:'',
+        phoneNumber:'',
+        qq:'',
+        wechat:'',
+        username:'',
+        password:'',
+        confirmedPassword:'',
+        captcha:'',
+    });
     //路由
     const navigate = useNavigate();
 
+
+    //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-用户注册";
     }, []);
 
+    //处理输入变化
+    const handleInputChange = (field: string) => (value: string | string[]) => {
+        setFormData(prev => ({...prev, [field]: value}));
+    };
 
     return (<div className="auth-container">
         <div className="auth-form" style={{maxWidth:"900px"}}>
@@ -85,12 +112,14 @@ export const SignUpForm: React.FC = () => {
                             type="text"
                             label="姓名"
                             placeholder="请输入姓名"
+                            onChange={handleInputChange("name")}
                             required
                         />
                         <RadioGroup
-                            ref={genderRef}
+                            ref={genderRadioRef}
                             name="gender"
                             label="性别"
+                            onChange={handleInputChange("gender")}
                             size="large"
                             options={genderOptions}
                             // value={formData.gender}
@@ -99,53 +128,54 @@ export const SignUpForm: React.FC = () => {
                             error={errors.gender}
                         />
                         <Select
-                            ref={provinceSelectRef}
+                            ref={schoolProvinceSelectRef}
                             label="学校所在省份"
                             options={provinceOptions}
-                            //value={formData.province}
+                            onChange={handleInputChange("schoolProvince")}
                             placeholder="请选择入学校所在省份"
                             required
                             showSelectAll
                             maxTagCount={2}
                             error={errors.province}
-                            //onChange={handleMultiChange}
                         />
                         <InputField
                             ref={schoolInputRef}
                             type="text"
                             label="所属学校"
                             placeholder="所属学校"
+                            onChange={handleInputChange("school")}
                             required
                         />
                         <InputField
-                            ref={subunitInputRef}
+                            ref={SecondaryInputRef}
                             type="text"
                             label="二级单位"
                             placeholder="二级单位"
+                            onChange={handleInputChange("secondaryUnit")}
                             required
                         />
                         <InputField
                             ref={majorInputRef}
                             type="text"
                             label="专业"
+                            onChange={handleInputChange("major")}
                             placeholder="专业"
                         />
                         <RadioGroup
-                            ref={roleRef}
-                            name="role"
+                            ref={roleRadioRef}
                             label="用户类型"
                             size="large"
                             options={userRoleOptions}
-                            // value={formData.role}
+                            onChange={handleInputChange("role")}
                             required
                             layout="horizontal"
                             error={errors.role}
                         />
                         <Select
-                            ref={jobRoleSelectRef}
+                            ref={positionSelectRef}
                             label="职务"
-                            options={jobRoleOptions}
-                            //value={formData.jobRole}
+                            options={userPositionOptions}
+                            onChange={handleInputChange("position")}
                             placeholder="请选择职务"
                             required
                             showSelectAll
@@ -156,11 +186,12 @@ export const SignUpForm: React.FC = () => {
                     </div>
                     <div style={{width:"400px"}}>
                         <InputField
-                            ref={accountInputRef}
+                            ref={usernameInputRef}
                             type="text"
                             label="用户名"
                             placeholder="请输入用户名"
-                            validationRules={accountValidationRules}
+                            onChange={handleInputChange("username")}
+                            validationRules={usernameValidationRules}
                             required
                         />
                         <InputField
@@ -168,15 +199,18 @@ export const SignUpForm: React.FC = () => {
                             type="email"
                             label="Email"
                             placeholder="Email"
+                            onChange={handleInputChange("email")}
                             validationRules={emailValidationRules}
                             prefix={<span>@</span>}
                             required
                         />
                         <InputField
-                            ref={phoneInputRef}
+                            ref={phoneNumberInputRef}
                             type="text"
                             label="电话号码"
                             placeholder="电话号码"
+                            onChange={handleInputChange("phoneNumber")}
+                            validationRules={phoneNumberValidationRules}
                             required
                         />
                         <InputField
@@ -184,18 +218,21 @@ export const SignUpForm: React.FC = () => {
                             type="text"
                             label="QQ"
                             placeholder="QQ"
+                            onChange={handleInputChange("qq")}
                         />
                         <InputField
                             ref={wechatInputRef}
                             type="text"
                             label="微信"
                             placeholder="微信"
+                            onChange={handleInputChange("wechat")}
                         />
                         <InputField
                             ref={passwordInputRef}
                             type="password"
                             label="密码"
                             placeholder="请输入密码"
+                            onChange={handleInputChange("password")}
                             validationRules={passwordValidationRules}
                             required
                         />
@@ -204,12 +241,13 @@ export const SignUpForm: React.FC = () => {
                             type="password"
                             label="确认密码"
                             placeholder="请确认密码"
+                            onChange={handleInputChange("confirmedPassword")}
                             validationRules={passwordValidationRules}
                             required
                         />
                         <Captcha
                             ref={captchaRef}
-                            //onCaptchaChange={handleCaptchaChange}
+                            onChange={handleInputChange("captcha")}
                             placeholder="请输入图片中的验证码"
                             autoRefresh={true}
                             api_getCaptcha="api/captcha"

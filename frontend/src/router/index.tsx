@@ -1,4 +1,7 @@
+//React框架
 import {createBrowserRouter} from "react-router-dom";
+import {Navigate} from 'react-router-dom';
+//页面
 import {Preview} from "../pages/Preview";
 import {LoginForm} from "../pages/auth/LoginForm";
 import {SignUpForm} from "../pages/auth/SignUpForm";

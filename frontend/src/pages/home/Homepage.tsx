@@ -2,6 +2,7 @@
 import React from "react";
 import {Outlet} from "react-router";
 import {NavLink} from "react-router-dom";
+import { Navigate } from 'react-router-dom';
 //样式
 import './Home.css'
 //自定义组件
@@ -13,6 +14,7 @@ import {Button} from "../../components/ui/widget/Button";
 export const Homepage: React.FC = () => {
 
     return (<div className="home-container">
+            <Navigate to="/home/main" />
             <div className="home-box">
                 {/* 导航栏 */}
                 <header className="home-header">

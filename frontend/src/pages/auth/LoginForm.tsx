@@ -12,7 +12,7 @@ import {Loading} from "../../components/ui/widget/Loading";
 //API
 import api from "../../utils/api/api_config";
 //输入验证规则
-import {accountValidationRules,passwordValidationRules} from "../../utils/validation/input_validation";
+import {usernameValidationRules,passwordValidationRules} from "../../utils/validation/input_validation";
 //输入选项
 import {userRoleOptions} from "../../utils/option/input-option";
 
@@ -22,6 +22,7 @@ interface LoginRequest{
     password?: string;
     role?: string;
     captcha?: string;
+    captchaKey?:string;
 }
 
 // 登录响应类型
@@ -43,10 +44,11 @@ export const LoginForm: React.FC = () => {
         username: '',
         password: '',
         role: '',
-        captcha: ''
+        captcha: '',
+        captchaKey:''
     });
     //引用
-    const accountInputRef = useRef<InputRef>(null);
+    const usernameInputRef = useRef<InputRef>(null);
     const passwordInputRef = useRef<InputRef>(null);
     const roleRef = useRef<RadioGroupRef>(null);
     const captchaRef = useRef<CaptchaRef>(null);
@@ -64,15 +66,22 @@ export const LoginForm: React.FC = () => {
         setFormData(prev => ({...prev, [field]: value}));
     };
 
+    const handleCaptchaInputChange = (field: string) => (value: string | string[]) => {
+        const kd = captchaRef.current == null ? null : captchaRef.current.getCaptchaData();
+        const key=kd==null ? '' : kd.key;
+        setFormData(prev => ({...prev, [field]: value,captchaKey:key}));
+    };
+
     //处理表单提交
     const handleSubmit = (event: { preventDefault: () => void; }) => {
         // 手动验证所有字段
-        const isAccountValid = accountInputRef.current?.validate();
+        const isAccountValid = usernameInputRef.current?.validate();
         const isPasswordValid = passwordInputRef.current?.validate();
         const isRoleValid = roleRef.current?.validate();
         // 阻止默认提交
         event.preventDefault();
         if (isAccountValid && isPasswordValid && isRoleValid) {
+            //console.log("暂停测试：",formData);alert("暂停测试");
             summitLogin();
         } else {
             alert('请检查表单错误!');
@@ -86,21 +95,21 @@ export const LoginForm: React.FC = () => {
         setErrorDetail(null);
         try {
             await api.get<LoginResponse>("api/user/login", {params: formData}).then(response => {
-                alert("暂停测试");
+                //console.log("暂停测试：",response);alert("暂停测试");
                 // @ts-ignore
-                if (response.code === 0 && response.data) {
+                if (response.code === 200) {
                     navigate('/home');
                 } else {
                     setError('登录失败');
                     // @ts-ignore
                     setErrorDetail('详情：' + response.msg);
                     // @ts-ignore
-                    throw new Error(response.msg);
+                    throw new Error(response.message);
                 }
             });
-        } catch (err) {
+        } catch (err:any) {
             setError('登录失败');
-            setErrorDetail('错误详情：' + err);
+            setErrorDetail('详情：' + err.message);
         } finally {
             setLoading(false);
         }
@@ -135,12 +144,12 @@ export const LoginForm: React.FC = () => {
                     <h2>用户登录</h2>
                     <form onSubmit={handleSubmit}>
                         <InputField
-                            ref={accountInputRef}
+                            ref={usernameInputRef}
                             type="text"
                             label="用户名"
                             placeholder="请输入用户名"
                             prefix={<span>A</span>}
-                            validationRules={accountValidationRules}
+                            validationRules={usernameValidationRules}
                             onChange={handleInputChange("username")}
                             required
                         />
@@ -166,7 +175,7 @@ export const LoginForm: React.FC = () => {
                         />
                         <Captcha
                             ref={captchaRef}
-                            onChange={handleInputChange("captcha")}
+                            onChange={handleCaptchaInputChange("captcha")}
                             placeholder="请输入图片中的验证码"
                             autoRefresh={true}
                             api_getCaptcha="api/captcha"

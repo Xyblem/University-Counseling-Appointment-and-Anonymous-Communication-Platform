@@ -1,6 +1,6 @@
 package com.ucaacp.backend.controller;
 
-import com.ucaacp.backend.utils.ReturnObject;
+import com.ucaacp.backend.utils.return_object.ReturnObject;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +23,7 @@ public class HelloController {
 
     @GetMapping("/test_return_failed")
     public ReturnObject test_return_failed() {
-        return ReturnObject.failed("Test Failed!");
+        return ReturnObject.fail("Test Failed!");
     }
 
 }

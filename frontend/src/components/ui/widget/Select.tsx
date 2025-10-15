@@ -310,7 +310,7 @@ export const Select = forwardRef<SelectRef, SelectProps>((props, ref) => {
     const handleFocus = () => {
         setIsFocused(true);
         if (!disabled) {
-            setIsOpen(true);
+            //setIsOpen(true);
         }
         if (onFocus) onFocus();
         if (onDropdownVisibleChange) onDropdownVisibleChange(true);

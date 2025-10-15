@@ -12,6 +12,7 @@ interface CaptchaResponse {
         base64Image: string;
     };
     status: string;
+    timestamp: number;
 }
 
 // 组件props类型
@@ -47,8 +48,8 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
                                                           buttonClassName = '',
                                                           api_getCaptcha='',
                                                           label='验证码',
-                                                                 onChange,
-                                                            name
+                                                          onChange,
+                                                          name
                                                       }, ref) => {
     const [captchaInfo, setCaptchaInfo] = useState<{ key: string; image: string } | null>(null);
     const [inputValue, setInputValue] = useState('');
@@ -80,7 +81,7 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
             await api.get<CaptchaResponse>(api_getCaptcha).then(response=>{
                 //console.log('获取验证码response:', response);
                 // @ts-ignore
-                if (response.code === 0 && response.data) {
+                if (response.code === 200 && response.data) {
                     const newCaptchaInfo = {
                         // @ts-ignore
                         key: response.data.captchaKey,

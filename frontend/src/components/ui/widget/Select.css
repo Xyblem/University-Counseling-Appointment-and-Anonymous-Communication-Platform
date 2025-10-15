@@ -228,6 +228,11 @@
     transition: background-color 0.2s;
 }
 
+.select-option span{
+    display: flex;
+}
+
+
 .select-option:hover:not(.select-option--disabled) {
     background-color: #f5f5f5;
 }
