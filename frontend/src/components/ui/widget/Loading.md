@@ -1,0 +1,95 @@
+**Loading 使用示例**
+```typescript jsx
+import React, { useState, useEffect } from 'react';
+import Loading, { LoadingType } from './Loading';
+
+const App: React.FC = () => {
+  const [loadingType, setLoadingType] = useState<LoadingType>('spinner');
+  const [progress, setProgress] = useState(0);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+
+  // 模拟进度变化
+  useEffect(() => {
+    if (loadingType === 'progress') {
+      const interval = setInterval(() => {
+        setProgress(prev => (prev >= 100 ? 0 : prev + 10));
+      }, 500);
+      
+      return () => clearInterval(interval);
+    }
+  }, [loadingType]);
+
+  return (
+    <div style={{ padding: '20px', fontFamily: 'Arial, sans-serif' }}>
+      <h1>精美加载组件演示</h1>
+      
+      <div style={{ marginBottom: '20px' }}>
+        <label>加载类型: </label>
+        <select 
+          value={loadingType} 
+          onChange={(e) => {
+            setLoadingType(e.target.value as LoadingType);
+            setProgress(0);
+          }}
+        >
+          <option value="spinner">旋转器</option>
+          <option value="dots">点状</option>
+          <option value="pulse">脉冲</option>
+          <option value="skeleton">骨架屏</option>
+          <option value="progress">进度条</option>
+        </select>
+        
+        <label style={{ marginLeft: '20px' }}>
+          <input 
+            type="checkbox" 
+            checked={isFullScreen}
+            onChange={(e) => setIsFullScreen(e.target.checked)}
+          />
+          全屏显示
+        </label>
+      </div>
+      
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))',
+        gap: '20px',
+        marginBottom: '40px'
+      }}>
+        <div style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px', textAlign: 'center' }}>
+          <h3>默认样式</h3>
+          <Loading />
+        </div>
+        
+        <div style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px', textAlign: 'center' }}>
+          <h3>自定义颜色</h3>
+          <Loading color="#e91e63" text="加载中..." />
+        </div>
+        
+        <div style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px', textAlign: 'center' }}>
+          <h3>大尺寸</h3>
+          <Loading size="large" text="正在加载内容" />
+        </div>
+        
+        <div style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px', textAlign: 'center' }}>
+          <h3>快速加载</h3>
+          <Loading speed="fast" text="快速加载中" />
+        </div>
+      </div>
+      
+      <div style={{ padding: '20px', border: '1px solid #eee', borderRadius: '8px' }}>
+        <h3>当前选择的加载类型: {loadingType}</h3>
+        <Loading 
+          type={loadingType}
+          text={loadingType === 'progress' ? `加载进度: ${progress}%` : '正在加载...'}
+          color="#2196f3"
+          size="medium"
+          fullScreen={isFullScreen}
+          progress={progress}
+        />
+      </div>
+    </div>
+  );
+};
+
+export default App;
+```

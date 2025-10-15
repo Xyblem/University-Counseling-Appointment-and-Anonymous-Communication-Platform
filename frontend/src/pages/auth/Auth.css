@@ -1,0 +1,137 @@
+/* AuthForm.css */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 20px;
+}
+
+.auth-form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+}
+
+.auth-divide{
+    display: flex;
+    flex-direction: row;
+    gap: 40px;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.auth-bottom{
+    gap: 135px;
+    display: flex;
+    flex-direction: row;
+}
+
+.auth-form h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #333;
+    font-weight: 600;
+}
+
+.input-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+
+.input-icon {
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 12px 12px 40px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    box-sizing: border-box;
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.input-group input.error {
+    border-color: #e74c3c;
+}
+
+.error-message {
+    color: #e74c3c;
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
+}
+
+.general-error {
+    color: #e74c3c;
+    text-align: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fadbd8;
+    border-radius: 5px;
+}
+
+/*.submit-btn {*/
+/*    width: 100%;*/
+/*    padding: 12px;*/
+/*    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
+/*    color: white;*/
+/*    border: none;*/
+/*    border-radius: 5px;*/
+/*    font-size: 16px;*/
+/*    cursor: pointer;*/
+/*    transition: opacity 0.3s;*/
+/*}*/
+
+/*.submit-btn:hover {*/
+/*    opacity: 0.9;*/
+/*}*/
+
+/*.submit-btn:disabled {*/
+/*    opacity: 0.7;*/
+/*    cursor: not-allowed;*/
+/*}*/
+
+.auth-switch {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.auth-switch p {
+    color: #666;
+}
+
+.auth-switch span {
+    color: #667eea;
+    cursor: pointer;
+    margin-left: 5px;
+    font-weight: 500;
+}
+
+.auth-switch span:hover {
+    text-decoration: underline;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .auth-form {
+        padding: 20px;
+    }
+}

@@ -1,0 +1,202 @@
+.checkbox-group-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.checkbox-group-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #333;
+    border: none;
+    padding: 0;
+}
+
+.checkbox-required {
+    color: #ff4d4f;
+    margin-left: 4px;
+}
+
+.checkbox-group-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.checkbox-group--horizontal .checkbox-group-options {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+/* 尺寸变体 */
+.checkbox-group--small .checkbox-option-label {
+    font-size: 12px;
+    min-height: 20px;
+}
+
+.checkbox-group--medium .checkbox-option-label {
+    font-size: 14px;
+    min-height: 24px;
+}
+
+.checkbox-group--large .checkbox-option-label {
+    font-size: 16px;
+    min-height: 28px;
+}
+
+.checkbox-option-wrapper {
+    display: flex;
+}
+
+.checkbox-select-all {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 8px;
+    margin-bottom: 4px;
+}
+
+.checkbox-option-label {
+    display: flex;
+    align-items: flex-start;
+    cursor: pointer;
+    transition: all 0.2s;
+    padding: 2px 0;
+    position: relative;
+}
+
+.checkbox-option-label:hover:not(.checkbox-option-label--disabled) {
+    color: #1890ff;
+}
+
+.checkbox-option-label--checked:not(.checkbox-option-label--disabled) {
+    color: #1890ff;
+}
+
+.checkbox-option-label--disabled {
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.checkbox-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.checkbox-custom {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    margin-top: 2px;
+    border: 1px solid #d9d9d9;
+    border-radius: 2px;
+    background-color: #fff;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.checkbox-group--small .checkbox-custom {
+    width: 14px;
+    height: 14px;
+    margin-top: 1px;
+}
+
+.checkbox-group--large .checkbox-custom {
+    width: 18px;
+    height: 18px;
+    margin-top: 3px;
+}
+
+.option-label:hover:not(.checkbox-option-label--disabled) .checkbox-custom {
+    border-color: #1890ff;
+}
+
+.checkbox-option-label--checked .checkbox-custom {
+    border-color: #1890ff;
+    background-color: #1890ff;
+}
+
+.checkbox-option-label--disabled .checkbox-custom {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    cursor: not-allowed;
+}
+
+.checkbox-option-label--checked.checkbox-option-label--disabled .checkbox-custom {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+}
+
+.checkbox-checkmark {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    width: 100%;
+    height: 100%;
+}
+
+.checkbox-option-label--checked.checkbox-option-label--disabled .checkbox-checkmark {
+    color: #bfbfbf;
+}
+
+.checkbox-indeterminate {
+    width: 8px;
+    height: 2px;
+    background-color: #fff;
+    border-radius: 1px;
+}
+
+.checkbox-option-label--disabled .checkbox-indeterminate {
+    background-color: #bfbfbf;
+}
+
+.checkbox-text {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.4;
+}
+
+.checkbox-description {
+    font-size: 12px;
+    color: #8c8c8c;
+    margin-top: 2px;
+    font-weight: normal;
+}
+
+.checkbox-option-label--disabled .checkbox-description {
+    color: #bfbfbf;
+}
+
+/* 焦点状态 */
+.checkbox-input:focus-visible + .checkbox-custom {
+    outline: 2px solid #1890ff;
+    outline-offset: 2px;
+}
+
+.checkbox-group--focused .checkbox-custom {
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+/* 错误状态 */
+.checkbox-group--error .checkbox-custom {
+    border-color: #ff4d4f;
+}
+
+.checkbox-group--error .checkbox-group-label {
+    color: #ff4d4f;
+}
+
+.checkbox-group-error {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ff4d4f;
+    line-height: 1.5;
+}
