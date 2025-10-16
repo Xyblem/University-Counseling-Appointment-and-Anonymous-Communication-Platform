@@ -12,7 +12,7 @@ import {Loading} from "../../components/ui/widget/Loading";
 //API
 import api from "../../utils/api/api_config";
 //输入验证规则
-import {usernameValidationRules,passwordValidationRules} from "../../utils/validation/input_validation";
+import {usernameValidationRules,passwordValidationRules} from "../../entity/User";
 //输入选项
 import {userRoleOptions} from "../../utils/option/input-option";
 
@@ -63,7 +63,11 @@ export const LoginForm: React.FC = () => {
 
     //处理输入变化
     const handleInputChange = (field: string) => (value: string | string[]) => {
-        setFormData(prev => ({...prev, [field]: value}));
+        if(value==null||value.length===0){
+            setFormData(prev => ({...prev, [field]: null}));
+        }else{
+            setFormData(prev => ({...prev, [field]: value}));
+        }
     };
 
     const handleCaptchaInputChange = (field: string) => (value: string | string[]) => {
@@ -78,9 +82,10 @@ export const LoginForm: React.FC = () => {
         const isAccountValid = usernameInputRef.current?.validate();
         const isPasswordValid = passwordInputRef.current?.validate();
         const isRoleValid = roleRef.current?.validate();
+        const isCaptchaValid=captchaRef.current?.validate();
         // 阻止默认提交
         event.preventDefault();
-        if (isAccountValid && isPasswordValid && isRoleValid) {
+        if (isAccountValid && isPasswordValid && isRoleValid&&isCaptchaValid) {
             //console.log("暂停测试：",formData);alert("暂停测试");
             summitLogin();
         } else {
@@ -130,7 +135,7 @@ export const LoginForm: React.FC = () => {
             {error ? <div>
                     <h2>{error}</h2>
                     <p
-                        style={{minHeight: '400px', fontSize: "16px", display: "flex"}}
+                        style={{minHeight: '400px', fontSize: "16px", display: "flex",textAlign:"left"}}
                     >{errorDetail}</p>
                     <div className="auth-bottom">
                         <Button type="link" style={{textAlign: "left"}}

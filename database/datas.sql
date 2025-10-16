@@ -2,6 +2,7 @@ USE `UCAACP`;
 -- 需要SQL版本5.0及以上
 -- Dumping data for table `user`
 LOCK TABLES `user` WRITE;
+DELETE FROM `user` WHERE TRUE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
 INSERT INTO `user` VALUES ('adm201001','','','陈雪峰','Adm2010!',1,340000,'安徽大学','学生工作处',NULL,3,'心理部负责人','chenxf@ahu.edu.cn','13656010001','125678001','chen_xuefeng','2025-10-15 19:22:00'),
                           ('adm201202','','','林玉华','Adm2012!',2,340000,'安徽大学','团委',NULL,3,'心理部负责人','linyh@ahu.edu.cn','13656010002','125678002','lin_yuhua','2025-10-15 19:22:00'),

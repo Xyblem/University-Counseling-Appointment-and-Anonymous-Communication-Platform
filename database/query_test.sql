@@ -1,3 +1,7 @@
 USE `UCAACP`;
 -- 需要SQL版本5.0及以上
+SELECT VERSION();
+
 SELECT * FROM `user`;
+
+DELETE FROM `user` WHERE TRUE;

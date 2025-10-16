@@ -18,27 +18,26 @@ DROP TABLE IF EXISTS `user`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user` (
                         `username` VARCHAR(45) NOT NULL COMMENT '用户名（账号名）',-- 用户名长度为8-45个字符
-                        `nickname` VARCHAR(45) DEFAULT NULL COMMENT '昵称',-- 用户昵称为8-45个字符
-                        `description`  VARCHAR(255) DEFAULT NULL COMMENT '描述',-- 用户描述
+                        `nickname` VARCHAR(45) DEFAULT NULL COMMENT '昵称',-- 用户昵称最多45个字符(可以为NULL)
+                        `description`  VARCHAR(255) DEFAULT NULL COMMENT '描述',-- 用户描述(可以为NULL)
                         `name` VARCHAR(6) NOT NULL COMMENT '姓名（个人真实姓名）',-- 姓名长度为2-6个字符
                         `password` VARCHAR(45) NOT NULL COMMENT '密码',-- 密码长度为8-45个字符
                         `gender` TINYINT NOT NULL COMMENT '性别',-- 性别编码
                         `school_province` BIGINT(20) NOT NULL COMMENT '学校所在省份',-- 行政区编码
                         `school` VARCHAR(60) NOT NULL COMMENT '所属学校',-- 学校名称4-60个字符
                         `secondary_unit` VARCHAR(100) NOT NULL COMMENT '二级单位',-- 二级单位名称2-100个字符
-                        `major` VARCHAR(45) DEFAULT NULL COMMENT '专业',-- 专业名称长度2-45个字符
+                        `major` VARCHAR(45) DEFAULT NULL COMMENT '专业',-- 专业名称长度2-45个字符(可以为NULL)
                         `role` TINYINT NOT NULL COMMENT '用户类型',-- 用户类型编码
                         `position` VARCHAR(20) NOT NULL COMMENT '职务',-- 职务长度2-20个字符
                         `email` VARCHAR(255) NOT NULL COMMENT '邮箱',-- 邮箱长度最多255个字符
                         `phone_number` VARCHAR(20) NOT NULL COMMENT '电话号码',-- 电话号码长度20个字符
-                        `qq` VARCHAR(20) DEFAULT NULL COMMENT 'QQ账号',-- QQ账号长度6-20个字符
-                        `wechat` VARCHAR(45) DEFAULT NULL COMMENT '微信账号',-- 微信账号长度6-20个字符
+                        `qq` VARCHAR(20) DEFAULT NULL COMMENT 'QQ账号',-- QQ账号长度6-20个字符(可以为NULL)
+                        `wechat` VARCHAR(45) DEFAULT NULL COMMENT '微信账号',-- 微信账号长度6-20个字符(可以为NULL)
                         `registration_time` DATETIME NOT NULL DEFAULT NOW() COMMENT '注册时间',-- 注册时间
                         PRIMARY KEY (`username`),-- 用户名为主码
                         UNIQUE KEY `username_UNIQUE` (`username`),-- 用户名唯一
                         -- 用户名验证：用户名长度为8-45个字符，只能为字母、数字和下划线
                         CONSTRAINT `chk_username` CHECK((`username` REGEXP '^[A-Za-z0-9_]+$')AND(CHAR_LENGTH(`username`)>=8)),
-
                         -- 姓名验证：姓名长度为2-6个字符，只能为《通用规范汉字表》中汉字，符合国家标准【姓名登记条例】
                         CONSTRAINT `chk_name` CHECK((`name` REGEXP '^[\\x{4E00}-\\x{9FA5}\\x{3400}-\\x{4DBF}]+$')AND(CHAR_LENGTH(`name`)>=2)),
                         -- 密码验证：密码长度为8-45个字符，只能为字母、数字以及英文感叹号!和英文问号?
@@ -52,7 +51,7 @@ CREATE TABLE `user` (
                         -- 二级单位验证：二级单位名称2-100个字符
                         CONSTRAINT `chk_secondary_unit` CHECK((CHAR_LENGTH(`secondary_unit`)>=2)),
                         -- 专业验证：专业名称长度2-45个字符
-                        CONSTRAINT `chk_major` CHECK((CHAR_LENGTH(`major`)>=2)),
+                        CONSTRAINT `chk_major` CHECK((`major` IS NULL)OR(CHAR_LENGTH(`major`)>=2)),
                         -- 用户类型验证：使用本项目的用户类型编码[0未知，1学生，2(心理咨询)教师 3(学校心理中心)管理员 9未指定(其他)]，参考【2022级软件工程+软件工程综合实践+项目选题】
                         CONSTRAINT `chk_identity` CHECK ((`role` in (0,1,2,3,9))),
                         -- 职务验证：职务长度2-20个字符，只能是['未指定','学生','心理部咨询员','心理部负责人','非心理部教职工']
@@ -62,9 +61,9 @@ CREATE TABLE `user` (
                         -- 电话号码验证：电话号码长度20个字符，且符合电话号码格式，符合国家标准。
                         CONSTRAINT `chk_phone_number` CHECK(`phone_number` REGEXP '^[\+]?[0-9]{0,3}[\-]?(13|14|15|16|17|18|19)[0-9]{9}|0\d{2,3}-\d{7,8}|^0\d{2,3}-\d{7,8}-\d{1,4}$'),
                         -- QQ账号验证：QQ账号长度6-20个字符
-                        CONSTRAINT `chk_qq` CHECK((CHAR_LENGTH(`qq`)>=6)),
+                        CONSTRAINT `chk_qq` CHECK((`qq` IS NULL)OR(CHAR_LENGTH(`qq`)>=6)),
                         -- 微信账号验证：微信账号长度6-20个字符
-                        CONSTRAINT `chk_wechat` CHECK((CHAR_LENGTH(`wechat`)>=6))
+                        CONSTRAINT `chk_wechat` CHECK((`wechat` IS NULL)OR(CHAR_LENGTH(`wechat`)>=6))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表（用于注册和登录）';
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

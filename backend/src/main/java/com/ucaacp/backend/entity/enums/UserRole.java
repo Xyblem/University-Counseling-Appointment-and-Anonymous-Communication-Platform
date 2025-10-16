@@ -36,4 +36,9 @@ public enum UserRole {
         }
         return UNKNOWN;
     }
+
+    @Override
+    public String toString() {
+        return this.code.toString();
+    }
 }

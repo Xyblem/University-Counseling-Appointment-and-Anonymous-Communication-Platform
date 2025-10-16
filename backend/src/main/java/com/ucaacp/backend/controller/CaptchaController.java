@@ -34,7 +34,7 @@ public class CaptchaController {
     @GetMapping("/captcha")
     public ReturnObject getCaptcha(HttpSession session){
         try {
-            return ReturnObject.success(captchaService.specCaptcha(session));
+            return ReturnObject.success(captchaService.gifCaptcha(session));
         } catch (Exception e) {
             return ReturnObject.error(e.getMessage());
         }

@@ -106,4 +106,9 @@ public enum ProvinceCN {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        return this.code.toString();
+    }
 }

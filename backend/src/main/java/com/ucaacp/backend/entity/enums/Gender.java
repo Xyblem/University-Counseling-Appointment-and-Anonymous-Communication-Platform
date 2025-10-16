@@ -39,4 +39,8 @@ public enum Gender {
         return UNKNOWN;
     }
 
+    @Override
+    public String toString() {
+        return this.code.toString();
+    }
 }

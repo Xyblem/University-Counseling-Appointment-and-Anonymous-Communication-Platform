@@ -177,7 +177,7 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
                 }
             }
 
-            if (rule.minLength && typeof val === 'string' && val.length < rule.minLength) {
+            if (rule.minLength && typeof val === 'string' &&val.length>0&&val.length < rule.minLength) {
                 setError(rule.message || `至少需要${rule.minLength}个字符`);
                 return false;
             }

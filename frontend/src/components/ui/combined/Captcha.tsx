@@ -36,6 +36,7 @@ export interface CaptchaRef {
     getCaptchaData: () => { key: string; value: string } | null;
     clearInput: () => void;
     focus: () => void;
+    validate: () => boolean;
 }
 
 export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
@@ -66,11 +67,6 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
             pattern: /^[A-Za-z0-9_]+$/,
             message: '验证码只能为字母、数字和下划线'
         },
-        {
-            minLength: 4,
-            maxLength: 4,
-            message:'验证码长度为4个字符'
-        }
     ];
 
     // 获取验证码
@@ -156,7 +152,13 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
         refresh: fetchCaptcha,
         getCaptchaData,
         clearInput,
-        focus: focusInput
+        focus: focusInput,
+        validate: ():boolean=> {
+            if(inputRef.current!=null) {
+                return inputRef.current?.validate();
+            }
+            return false;
+        }
     }));
 
     // 自动刷新处理

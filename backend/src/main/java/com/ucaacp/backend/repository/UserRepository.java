@@ -198,6 +198,13 @@ public interface UserRepository extends JpaRepository<User, String> {
 //     */
 //    Optional<User> findByEmailAndPassword(String email, String password);
 
+
+
+    /**
+     * 根据用户名查找用户（由于username是主键，等同于findById）
+     */
+    Optional<User> findByUsername(String username);
+
     /**
      * 根据用户名和密码查找用户（用于登录验证）
      */
