@@ -108,3 +108,10 @@ ipconfig /flushdns # Windows
 ```shell
 sudo dscacheutil -flushcache # macOS
 ```
+**使用`FastGithub`工具**
+
+下载并安装`FastGithub`。
+
+启动工具后，它会自动优化`GitHub`的访问速度，包括克隆、下载等操作。
+
+支持`Windows`、`macOS` 和 `Linux`。
