@@ -1,5 +1,5 @@
 # 软件工程综合实践课程项目：高校心理咨询预约与匿名交流平台
-英文名称：University-Counseling-Appointment-and-Anonymous-Communication-Platform
+英文名称：University Counseling Appointment and Anonymous Communication-Platform
 
 ---
 ## 项目选题
@@ -91,6 +91,8 @@ spring.datasource.password=root
 
 获取最新的`GitHub IP`地址： 使用`GitHub520`提供的`hosts`文件。 或访问`Fetch GitHub Hosts`获取最新**IP**。
 
+获取`GitHub IP` [https://hosts.gitcdn.top/hosts.txt](https://hosts.gitcdn.top/hosts.txt)
+
 修改本地 hosts 文件： 
 - **Windows**: 编辑 C:\Windows\System32\drivers\etc\hosts。 
 - **macOS**/**Linux**: 编辑 /etc/hosts。
@@ -99,6 +101,7 @@ spring.datasource.password=root
 ```host
 140.82.113.3 github.com
 185.199.108.153 assets-cdn.github.com
+...
 ```
 
 保存文件并刷新 DNS 缓存：
@@ -110,7 +113,7 @@ sudo dscacheutil -flushcache # macOS
 ```
 **使用`FastGithub`工具**
 
-下载并安装`FastGithub`。
+下载并安装`FastGithub`，[https://github.com/creazyboyone/FastGithub/releases](https://github.com/creazyboyone/FastGithub/releases)
 
 启动工具后，它会自动优化`GitHub`的访问速度，包括克隆、下载等操作。
 
