@@ -26,6 +26,7 @@ import {
 import {userRoleOptions,genderOptions,provinceOptions,userPositionOptions} from "../../utils/option/input-option";
 import {Loading} from "../../components/ui/widget/Loading";
 import api from "../../utils/api/api_config";
+import {ReturnCode, ReturnObject} from "../../utils/api/ReturnObject";
 
 //登录请求类型
 interface SignupRequest{
@@ -47,15 +48,6 @@ interface SignupRequest{
     captcha?: string;
     captchaKey?:string;
 }
-
-// 登录响应类型
-interface SignupResponse {
-    code: number;
-    message: string;
-    status: string;
-    data:any;
-}
-
 //注册界面
 export const SignUpForm: React.FC = () => {
     //状态
@@ -164,10 +156,10 @@ export const SignUpForm: React.FC = () => {
         setError(null);
         setErrorDetail(null);
         try {
-            await api.get<SignupResponse>("api/user/signup", {params: formData}).then(response => {
+            await api.get<ReturnObject>("api/user/signup", {params: formData}).then(response => {
                 //console.log("暂停测试：",response);alert("暂停测试");
                 // @ts-ignore
-                if (response.code === 200) {
+                if (response.code === ReturnCode.SUCCESS) {
                     setSucceeded(true);
                 } else {
                     setError('注册失败');
@@ -185,40 +177,27 @@ export const SignUpForm: React.FC = () => {
         }
     }
 
-    return (<div className="auth-container">
-        <div className="auth-form" style={{maxWidth: "900px"}}>
+    return (<div className="auth-background">
+        <div className="auth-signup-form">
             <h2>高校心理咨询预约与匿名交流平台</h2>
-            {loading ? <Loading
-                type="dots"
-                text='注册中...'
-                color="#2196f3"
-                size="large"
-                fullScreen
-            ></Loading> : null}
+            {loading ? <Loading type="dots" text='注册中...' color="#2196f3" size="large" fullScreen></Loading> : null}
             {error ?
                 <div>
                     <h2>{error}</h2>
-                    <p style={{minHeight: '400px', fontSize: "16px", display: "flex",textAlign:"left"}}>{errorDetail}</p>
+                    <p className=".auth-error-detail">{errorDetail}</p>
                     <div className="auth-bottom">
-                        <Button type="link" style={{textAlign: "left"}}
-                                onClick={(e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-                                    setError(null);
-                                    setErrorDetail(null);
-                                }}>重试</Button>
+                        <Button type="link" className="btn-text-align-left" onClick={() => {setError(null);setErrorDetail(null);}}>重试</Button>
                     </div>
                 </div> :
                 succeeded ? <div>
                     <h2>注册成功</h2>
                     <div className="auth-bottom">
-                        <Button type="link" style={{textAlign: "left"}}
-                                onClick={(e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-                                    navigate('/auth/login')
-                                }}>返回登录</Button>
+                        <Button type="link" className="btn-text-align-left" onClick={() => {navigate('/auth/login')}}>返回登录</Button>
                     </div>
                 </div> : <div>
                     <h2>用户注册</h2>
                     <form onSubmit={handleSubmit}>
-                        <div className="auth-divide">
+                        <div className="auth-pair-divide">
                             <div style={{width: "400px"}}>
                                 <InputField
                                     ref={nameInputRef}
@@ -236,7 +215,6 @@ export const SignUpForm: React.FC = () => {
                                     onChange={handleInputChange("gender")}
                                     size="large"
                                     options={genderOptions}
-                                    // value={formData.gender}
                                     required
                                     layout="horizontal"
                                     error={errors.gender}
@@ -298,7 +276,6 @@ export const SignUpForm: React.FC = () => {
                                     showSelectAll
                                     maxTagCount={2}
                                     error={errors.jobRole}
-                                    //onChange={handleMultiChange}
                                 />
                             </div>
                             <div style={{width: "400px"}}>
@@ -377,10 +354,7 @@ export const SignUpForm: React.FC = () => {
                         <Button type="primary" block={true} summit>注册</Button>
                         <br/>
                         <div className="auth-bottom">
-                            <Button type="link" style={{textAlign: "left"}}
-                                    onClick={(e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-                                        navigate('/auth/login')
-                                    }}>返回登录</Button>
+                            <Button type="link" className="btn-text-align-left" onClick={() => {navigate('/auth/login')}}>返回登录</Button>
                         </div>
                     </form>
                 </div>}

@@ -281,3 +281,24 @@
 .btn-link .btn-icon-right {
     margin-left: 6px;
 }
+
+/*客户使用*/
+.btn-text-align-left{
+    text-align: left;
+}
+
+.btn-text-align-right{
+    text-align: right;
+}
+
+.btn-text-align-center{
+    text-align: center;
+}
+
+.btn-text-align-justify{
+    text-align: justify;
+}
+
+.btn-text-align-inherit{
+    text-align: inherit;
+}

@@ -15,6 +15,7 @@ import api from "../../utils/api/api_config";
 import {usernameValidationRules,passwordValidationRules} from "../../entity/User";
 //输入选项
 import {userRoleOptions} from "../../utils/option/input-option";
+import {ReturnCode, ReturnObject} from "../../utils/api/ReturnObject";
 
 //登录请求类型
 interface LoginRequest{
@@ -23,14 +24,6 @@ interface LoginRequest{
     role?: string;
     captcha?: string;
     captchaKey?:string;
-}
-
-// 登录响应类型
-interface LoginResponse {
-    code: number;
-    message: string;
-    status: string;
-    data:any;
 }
 
 //登录界面
@@ -70,6 +63,7 @@ export const LoginForm: React.FC = () => {
         }
     };
 
+    //处理验证码的输入变化
     const handleCaptchaInputChange = (field: string) => (value: string | string[]) => {
         const kd = captchaRef.current == null ? null : captchaRef.current.getCaptchaData();
         const key=kd==null ? '' : kd.key;
@@ -99,10 +93,10 @@ export const LoginForm: React.FC = () => {
         setError(null);
         setErrorDetail(null);
         try {
-            await api.get<LoginResponse>("api/user/login", {params: formData}).then(response => {
+            await api.get<ReturnObject>("api/user/login", {params: formData}).then(response => {
                 //console.log("暂停测试：",response);alert("暂停测试");
                 // @ts-ignore
-                if (response.code === 200) {
+                if (response.code === ReturnCode.SUCCESS) {
                     navigate('/home');
                 } else {
                     setError('登录失败');
@@ -120,29 +114,16 @@ export const LoginForm: React.FC = () => {
         }
     }
 
-    return (<div className="auth-container">
-        <div className="auth-form">
+    return (<div className="auth-background">
+        <div className="auth-login-form">
             <h2>高校心理咨询预约与匿名交流平台</h2>
-
-            {loading ? <Loading
-                type="dots"
-                text='登录中...'
-                color="#2196f3"
-                size="large"
-                fullScreen
-            ></Loading> : null}
+            {loading ? <Loading type="dots" text='登录中...' color="#2196f3" size="large" fullScreen></Loading> : null}
 
             {error ? <div>
                     <h2>{error}</h2>
-                    <p
-                        style={{minHeight: '400px', fontSize: "16px", display: "flex",textAlign:"left"}}
-                    >{errorDetail}</p>
+                    <p className=".auth-error-detail">{errorDetail}</p>
                     <div className="auth-bottom">
-                        <Button type="link" style={{textAlign: "left"}}
-                                onClick={(e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-                                    setError(null);
-                                    setErrorDetail(null);
-                                }}>重试</Button>
+                        <Button type="link" className="btn-text-align-left" onClick={() => {setError(null);setErrorDetail(null);}}>重试</Button>
                     </div>
                 </div> :
                 <div>
@@ -186,14 +167,11 @@ export const LoginForm: React.FC = () => {
                             api_getCaptcha="api/captcha"
                         />
                         <br/>
-                        <Button type="primary" block={true} summit>登录</Button>
+                        <Button type="primary" block summit>登录</Button>
                         <br/>
                         <div className="auth-bottom">
-                            <Button type="link" style={{textAlign: "left"}}
-                                    onClick={(e: React.MouseEvent<HTMLButtonElement | HTMLAnchorElement>) => {
-                                        navigate('/auth/signup')
-                                    }}>还没有账号？点击注册</Button>
-                            <Button type="link" style={{textAlign: "right"}}>忘记密码</Button>
+                            <Button type="link" className="btn-text-align-left"  onClick={() => {navigate('/auth/signup')}}>还没有账号？点击注册</Button>
+                            <Button type="link" className="btn-text-align-right" >忘记密码</Button>
                         </div>
                     </form>
                 </div>

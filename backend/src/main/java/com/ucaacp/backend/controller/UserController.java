@@ -156,6 +156,16 @@ public class UserController {
         return ReturnObject.success(session.getAttribute("user"));
     }
 
+    @GetMapping("/logout")
+    public ReturnObject logout(HttpSession session){
+        boolean isLogin=session.getAttribute("user") != null;
+        if(!isLogin){
+            return ReturnObject.fail("用户未登录");
+        }
+        session.removeAttribute("user");
+        return ReturnObject.success("用户已登出");
+    }
+
 //
 //
 //    @GetMapping("/{username}")

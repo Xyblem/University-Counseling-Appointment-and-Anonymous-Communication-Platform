@@ -1,6 +1,7 @@
 import {InputRef, ValidationRule} from "../components/ui/widget/InputField";
 import {Gender, ProvinceCN, UserPosition, UserRole} from "./enums/enums";
 import api from "../utils/api/api_config";
+import {ReturnCode, ReturnObject} from "../utils/api/ReturnObject";
 
 
 export interface User {
@@ -121,16 +122,11 @@ export const wechatValidationRules:ValidationRule[]=[
 
 //获取已经登录的用户信息
 export const getLoggedInUser=async ( setUser:React.Dispatch<React.SetStateAction<User | null>>): Promise<User | null> => {
-    interface LoggedInUserResponse {
-        code: number;
-        message: string;
-        status: string;
-        data: User;
-    }
+
     let result: User|null=null;
-    await api.get<LoggedInUserResponse>("api/user/logged-in_user").then(response => {
+    await api.get<ReturnObject<User>>("api/user/logged-in_user").then(response => {
         //@ts-ignore
-        if (response.code === 200) {
+        if (response.code === ReturnCode.SUCCESS) {
             //@ts-ignore
             setUser(response.data);
             //@ts-ignore

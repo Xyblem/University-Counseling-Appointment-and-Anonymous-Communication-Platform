@@ -1,5 +1,5 @@
 # 软件工程综合实践课程项目：高校心理咨询预约与匿名交流平台
-英文名称：University Counseling Appointment and Anonymous Communication-Platform
+英文名称：University Counseling Appointment and Anonymous Communication Platform
 
 ---
 ## 项目选题

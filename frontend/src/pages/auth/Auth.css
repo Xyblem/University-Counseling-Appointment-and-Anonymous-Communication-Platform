@@ -1,5 +1,5 @@
-/* AuthForm.css */
-.auth-container {
+/* Auth.css */
+.auth-background {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -8,7 +8,7 @@
     padding: 20px;
 }
 
-.auth-form {
+.auth-login-form {
     background: white;
     padding: 30px;
     border-radius: 10px;
@@ -17,7 +17,16 @@
     max-width: 450px;
 }
 
-.auth-divide{
+.auth-signup-form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 900px;
+}
+
+.auth-signup-form .auth-pair-divide{
     display: flex;
     flex-direction: row;
     gap: 40px;
@@ -31,6 +40,53 @@
     display: flex;
     flex-direction: row;
 }
+
+.auth-error-detail{
+    min-height: 400px;
+    font-size: 16px;
+    display: flex;
+    text-align:left;
+}
+
+/* 响应式设计 */
+@media (max-width: 480px) {
+    .auth-login-form {
+        padding: 20px;
+    }
+
+    .auth-signup-form{
+        padding: 30px;
+    }
+}
+
+
+
+/* 废弃
+
+
+.submit-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: opacity 0.3s;
+}
+
+.submit-btn:hover {
+    opacity: 0.9;
+}
+
+.submit-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+
+
 
 .auth-form h2 {
     text-align: center;
@@ -88,26 +144,7 @@
     border-radius: 5px;
 }
 
-/*.submit-btn {*/
-/*    width: 100%;*/
-/*    padding: 12px;*/
-/*    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);*/
-/*    color: white;*/
-/*    border: none;*/
-/*    border-radius: 5px;*/
-/*    font-size: 16px;*/
-/*    cursor: pointer;*/
-/*    transition: opacity 0.3s;*/
-/*}*/
 
-/*.submit-btn:hover {*/
-/*    opacity: 0.9;*/
-/*}*/
-
-/*.submit-btn:disabled {*/
-/*    opacity: 0.7;*/
-/*    cursor: not-allowed;*/
-/*}*/
 
 .auth-switch {
     text-align: center;
@@ -129,9 +166,9 @@
     text-decoration: underline;
 }
 
-/* 响应式设计 */
-@media (max-width: 480px) {
-    .auth-form {
-        padding: 20px;
-    }
-}
+
+
+
+
+
+*/
