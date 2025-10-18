@@ -141,3 +141,27 @@ import React, { useRef, useState } from 'react';
 
  export default App;
 ```
+
+## 组件特性
+
+- 完整的类型安全: 使用TypeScript确保类型安全
+
+- 单选组功能: 支持单选按钮组管理
+
+- 多种布局: 水平和垂直布局选项
+
+- 尺寸变体: 小、中、大三种尺寸
+
+- 完整验证: 必填验证和错误提示
+
+- 无障碍支持: 完整的ARIA属性支持
+
+- 禁用状态: 支持整体禁用和单个选项禁用
+
+- 丰富的事件: onChange、onFocus、onBlur等
+
+- 描述文本: 支持选项描述信息
+
+- 受控/非受控: 支持两种模式
+
+- 完整的API: focus、validate、getValue等方法

@@ -3,20 +3,11 @@ import api from "../../utils/api/api_config";
 import {AxiosError, AxiosResponse} from "axios";
 import ReactDOM from "react-dom/client";
 
-// API响应数据类型
-export interface LoginCheckResponse {
-    code: number;
-    data: {
-        isLogin: 'true' | 'false';
-    };
-    status: string;
-    timestamp: number;
-}
-
 // 组件Props类型
 export interface CheckLoginProps {
     to: string | null,
-    request_api: string,
+    // request_api: string, 弃用
+    checkLogin:()=>Promise<boolean>,
     children: ReactNode,
     loadingComponent?: ReactNode,
     notLoginComponent?: ReactNode,
@@ -34,7 +25,8 @@ export interface CheckLoginRef {
 export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref) => {
     const {
         to = null,
-        request_api,
+        // request_api, 弃用
+        checkLogin,
         children,
         loadingComponent,
         notLoginComponent,
@@ -58,52 +50,41 @@ export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref)
     }));
     useEffect(() => {
         _checkLoginStatus();
-    }, [request_api]);
+    }, [children]);
 
     //检查登录状态
     const _checkLoginStatus = async (): Promise<void> => {
-        try {
-            setIsChecking(true);
-            setHasError(false);
-            //alert("暂停测试");
-            await api.get(request_api, {
-                timeout: 10000, // 10秒超时
-                withCredentials: true // 携带cookie
-            }).then(response => {
-                //@ts-ignore
-                if (response.code === 200) {
-                    //@ts-ignore
-                    const loginStatus = response.data.isLogin === 'true';
-                    setIsLoggedIn(loginStatus);
-                    if (loginStatus) {
-                        onLoginSuccess?.();
-                    } else {
-                        onLoginFail?.();
-                        // 未登录，跳转到指定页面
-                        if (to != null) {
-                            window.location.href = to;
-                        }
-                    }
+        setIsChecking(true);
+        setHasError(false);
+        await checkLogin().then(result=>{
+                setIsLoggedIn(result);
+                if (result) {
+                    onLoginSuccess?.();
                 } else {
-                    //@ts-ignore
-                    throw new Error(`API返回错误码: ${data.code}`);
+                    onLoginFail?.();
+                    // 未登录，跳转到指定页面
+                    if (to != null) {
+                        window.location.href = to;
+                    }
                 }
-            });
-        } catch (error) {
-            setHasError(true);
-            console.error('检查登录状态失败:', error);
-            const axiosError = error as AxiosError;
-            if (axiosError.response) {
-                // 服务器返回错误状态码
-                console.error('服务器错误:', axiosError.response.status);
-            } else if (axiosError.request) {
-                // 请求发送失败
-                console.error('网络错误: 无法连接到服务器');
             }
-            onLoginFail?.();
-        } finally {
+        ).catch(error=>{
+                setHasError(true);
+                console.error('检查登录状态失败:', error);
+                const axiosError = error as AxiosError;
+                if (axiosError.response) {
+                    // 服务器返回错误状态码
+                    console.error('服务器错误:', axiosError.response.status);
+                } else if (axiosError.request) {
+                    // 请求发送失败
+                    console.error('网络错误: 无法连接到服务器');
+                }
+                onLoginFail?.();
+                }
+        ).finally(()=>{
             setIsChecking(false);
-        }
+            }
+        );
     };
 
     //重试

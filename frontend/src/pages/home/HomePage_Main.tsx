@@ -2,13 +2,18 @@
 import React, {useEffect, useState} from "react";
 //样式
 import './Home.css'
-import {Button} from "../../components/ui/widget/Button";
-import {getLoggedInUser, User} from "../../entity/User";
+import '../../css/LayoutFlex.css'
 //自定义组件
-
+import {Button} from "../../components/ui/widget/Button";
+//实体
+import {User} from "../../entity/User";
+//控制器
+import {UserController} from "../../controller/UserController";
 
 //主页
 export const Homepage_Main: React.FC = () => {
+    //控制器
+    const userController=new UserController();
     //变量
     const currentDate = new Date();
     const year = currentDate.getFullYear();
@@ -18,13 +23,18 @@ export const Homepage_Main: React.FC = () => {
     const [user,setUser] = useState<User | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [errorDetail, setErrorDetail] = useState<string | null>(null);
+
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-首页";
         try{
             setError(null);
             setErrorDetail(null);
-            getLoggedInUser(setUser);
+            //这里可能因为未登录返回null,但不需要管
+            userController.loggedInUser().then(result=>{
+                    setUser(result);
+                }
+            );
         }catch(err:any){
             setError("出错了");
             setErrorDetail(err.message)
@@ -32,23 +42,20 @@ export const Homepage_Main: React.FC = () => {
     }, []);
 
 
-    return (<div className="home-main-container">
-        <div className="hello-lable">
+    return (<div className="home-main-form">
+        <div className="home-main-hello-label">
             {error?(
                 <div>
                     <h2>{error}</h2>
-                    <p style={{minHeight: '400px', fontSize: "16px", display: "flex", textAlign: "left"}}
-                    >{errorDetail}</p>
+                    <p className="home-error-detail">{errorDetail}</p>
                 </div>
-
             ) : (
                 <h2>你好{user == null ? null : user.name}同学，现在是{year}年{month}月{date}日</h2>
             )}
         </div>
-        <div className="double-page">
-            <div className="box-appointment-consulation">
-
-                <div className="buttons-list">
+        <div className="home-pair-page">
+            <div className="box-appointment-consultation">
+                <div className="layout-flex-column">
                     <h2>预约咨询</h2>
                     <br/>
                     <Button type="primary">匿名倾述</Button>

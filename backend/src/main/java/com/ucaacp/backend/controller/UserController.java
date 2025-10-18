@@ -7,6 +7,7 @@ import com.ucaacp.backend.entity.attribute_converter.UserPositionConverter;
 import com.ucaacp.backend.entity.attribute_converter.UserRoleConverter;
 import com.ucaacp.backend.entity.enums.Gender;
 import com.ucaacp.backend.service.CaptchaService;
+import com.ucaacp.backend.utils.return_object.ReturnCode;
 import com.ucaacp.backend.utils.return_object.ReturnObject;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -151,7 +152,7 @@ public class UserController {
     public ReturnObject loggedInUser(HttpSession session){
         boolean isLogin=session.getAttribute("user") != null;
         if(!isLogin){
-            return ReturnObject.fail("用户未登录");
+            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
         }
         return ReturnObject.success(session.getAttribute("user"));
     }
@@ -160,7 +161,7 @@ public class UserController {
     public ReturnObject logout(HttpSession session){
         boolean isLogin=session.getAttribute("user") != null;
         if(!isLogin){
-            return ReturnObject.fail("用户未登录");
+            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
         }
         session.removeAttribute("user");
         return ReturnObject.success("用户已登出");

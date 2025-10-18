@@ -120,21 +120,3 @@ export const wechatValidationRules:ValidationRule[]=[
 //注册时间输入验证规则
 
 
-//获取已经登录的用户信息
-export const getLoggedInUser=async ( setUser:React.Dispatch<React.SetStateAction<User | null>>): Promise<User | null> => {
-
-    let result: User|null=null;
-    await api.get<ReturnObject<User>>("api/user/logged-in_user").then(response => {
-        //@ts-ignore
-        if (response.code === ReturnCode.SUCCESS) {
-            //@ts-ignore
-            setUser(response.data);
-            //@ts-ignore
-            result=response.data;
-        }else{
-            //@ts-ignore
-            throw new Error(response.message);
-        }
-    });
-    return result;
-}

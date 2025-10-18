@@ -4,16 +4,6 @@ import api from '../../../utils/api/api_config';
 import {InputField, InputRef, ValidationRule} from "../widget/InputField";
 import './Captcha.css'
 
-// 验证码响应类型
-interface CaptchaResponse {
-    code: number;
-    data: {
-        captchaKey: string;
-        base64Image: string;
-    };
-    status: string;
-    timestamp: number;
-}
 
 // 组件props类型
 interface CaptchaProps {
@@ -24,7 +14,8 @@ interface CaptchaProps {
     inputClassName?: string;
     imageClassName?: string;
     buttonClassName?: string;
-    api_getCaptcha?:string;
+    // api_getCaptcha?:string;弃用
+    getCaptcha: () => Promise<{captchaKey: string; base64Image: string;}>;
     onChange?: (value: string | string[], event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     label?:string;
     name?:string;
@@ -47,7 +38,8 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
                                                           inputClassName = '',
                                                           imageClassName = '',
                                                           buttonClassName = '',
-                                                          api_getCaptcha='',
+                                                          // api_getCaptcha='',弃用
+                                                          getCaptcha,
                                                           label='验证码',
                                                           onChange,
                                                           name
@@ -70,36 +62,29 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
     ];
 
     // 获取验证码
-    const fetchCaptcha = useCallback(async (): Promise<void> => {
+    const fetchCaptcha = useCallback(async ():Promise<void>=> {
         setLoading(true);
         setError('');
-        try {
-            await api.get<CaptchaResponse>(api_getCaptcha).then(response=>{
-                //console.log('获取验证码response:', response);
-                // @ts-ignore
-                if (response.code === 200 && response.data) {
-                    const newCaptchaInfo = {
-                        // @ts-ignore
-                        key: response.data.captchaKey,
-                        // @ts-ignore
-                        image: response.data.base64Image
-                    };
-                    setCaptchaInfo(newCaptchaInfo);
-                    setInputValue('');
-                    // 通知父组件验证码已更新
-                    onCaptchaChange?.(newCaptchaInfo.key, '');
-                } else {
-                    setError('获取验证码失败');
-                    throw new Error('获取验证码失败');
-                }
-            });
-        } catch (err) {
-            setError('网络错误，请重试');
-            console.error('获取验证码失败:', err);
-            throw err;
-        } finally {
-            setLoading(false);
-        }
+        await getCaptcha().then(result=>{
+                const newCaptchaInfo = {
+                    // @ts-ignore
+                    key: result.captchaKey,
+                    // @ts-ignore
+                    image: result.base64Image
+                };
+                setCaptchaInfo(newCaptchaInfo);
+                setInputValue('');
+                // 通知父组件验证码已更新
+                onCaptchaChange?.(newCaptchaInfo.key, '');
+            }
+        ).catch(err =>{
+                setError('网络错误，请重试');
+                console.error('获取验证码失败:', err);
+            }
+        ).finally(()=>{
+                setLoading(false);
+            }
+        );
     }, [onCaptchaChange]);
 
     // 刷新验证码

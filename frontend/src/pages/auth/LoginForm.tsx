@@ -9,25 +9,20 @@ import {RadioGroup, RadioGroupRef} from "../../components/ui/widget/Radio";
 import {Button} from '../../components/ui/widget/Button'
 import {Captcha, CaptchaRef} from '../../components/ui/combined/Captcha'
 import {Loading} from "../../components/ui/widget/Loading";
-//API
-import api from "../../utils/api/api_config";
 //输入验证规则
 import {usernameValidationRules,passwordValidationRules} from "../../entity/User";
 //输入选项
 import {userRoleOptions} from "../../utils/option/input-option";
-import {ReturnCode, ReturnObject} from "../../utils/api/ReturnObject";
+import {CaptchaController} from "../../controller/CaptchaController";
+import {LoginRequest, UserController} from "../../controller/UserController";
 
-//登录请求类型
-interface LoginRequest{
-    username?: string;
-    password?: string;
-    role?: string;
-    captcha?: string;
-    captchaKey?:string;
-}
+
 
 //登录界面
 export const LoginForm: React.FC = () => {
+    //控制器
+    const userController=new UserController();
+    const captchaController=new CaptchaController();
     //状态
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -92,26 +87,19 @@ export const LoginForm: React.FC = () => {
         setLoading(true);
         setError(null);
         setErrorDetail(null);
-        try {
-            await api.get<ReturnObject>("api/user/login", {params: formData}).then(response => {
-                //console.log("暂停测试：",response);alert("暂停测试");
-                // @ts-ignore
-                if (response.code === ReturnCode.SUCCESS) {
-                    navigate('/home');
-                } else {
-                    setError('登录失败');
-                    // @ts-ignore
-                    setErrorDetail('详情：' + response.msg);
-                    // @ts-ignore
-                    throw new Error(response.message);
-                }
-            });
-        } catch (err:any) {
+        await userController.login(formData).then(result=>{
+            if(result.isLoggedIn){
+                navigate('/home');
+            }else{
+                setError('登录失败');
+                setErrorDetail('详情：' + result.message);
+            }
+        }).catch(err=>{
             setError('登录失败');
             setErrorDetail('详情：' + err.message);
-        } finally {
+        }).finally(()=>{
             setLoading(false);
-        }
+        });
     }
 
     return (<div className="auth-background">
@@ -164,7 +152,7 @@ export const LoginForm: React.FC = () => {
                             onChange={handleCaptchaInputChange("captcha")}
                             placeholder="请输入图片中的验证码"
                             autoRefresh={true}
-                            api_getCaptcha="api/captcha"
+                            getCaptcha={captchaController.captcha}
                         />
                         <br/>
                         <Button type="primary" block summit>登录</Button>

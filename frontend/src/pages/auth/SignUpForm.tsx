@@ -27,29 +27,15 @@ import {userRoleOptions,genderOptions,provinceOptions,userPositionOptions} from 
 import {Loading} from "../../components/ui/widget/Loading";
 import api from "../../utils/api/api_config";
 import {ReturnCode, ReturnObject} from "../../utils/api/ReturnObject";
+import {CaptchaController} from "../../controller/CaptchaController";
+import {UserController,SignupRequest} from "../../controller/UserController";
 
-//登录请求类型
-interface SignupRequest{
-    name?: string;
-    gender?: string;
-    schoolProvince?: string;
-    school?: string;
-    secondaryUnit?: string;
-    major?: string|null;
-    role?: string;
-    position?: string;
-    email?: string;
-    phoneNumber?: string;
-    qq?: string|null;
-    wechat?: string|null;
-    username?: string;
-    password?: string;
-    confirmedPassword?:string;
-    captcha?: string;
-    captchaKey?:string;
-}
+
 //注册界面
 export const SignUpForm: React.FC = () => {
+    //控制器
+    const userController=new UserController();
+    const captchaController=new CaptchaController();
     //状态
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
@@ -143,7 +129,7 @@ export const SignUpForm: React.FC = () => {
         // 阻止默认提交
         event.preventDefault();
         if (isNameValid&& isGenderValid&& isSchoolProvinceValid &&isSchoolValid&& isSecondaryUnitValid&& isMajorValid&& isRoleValid&& isPositionValid&& isEmailValid&& isPhoneNumberValid&& isQqValid&& isWechatValid&& isUsernameValid&& isPasswordValid&& isConfirmedPasswordValid&&isCaptchaValid) {
-            console.log("暂停测试：",formData);alert("暂停测试");
+            //console.log("暂停测试：",formData);alert("暂停测试");
             summitSignup();
         } else {
             alert('请检查表单错误!');
@@ -152,29 +138,23 @@ export const SignUpForm: React.FC = () => {
 
     //提交注册
     const summitSignup = async (): Promise<void> => {
+
         setLoading(true);
         setError(null);
         setErrorDetail(null);
-        try {
-            await api.get<ReturnObject>("api/user/signup", {params: formData}).then(response => {
-                //console.log("暂停测试：",response);alert("暂停测试");
-                // @ts-ignore
-                if (response.code === ReturnCode.SUCCESS) {
-                    setSucceeded(true);
-                } else {
-                    setError('注册失败');
-                    // @ts-ignore
-                    setErrorDetail('详情：' + response.msg);
-                    // @ts-ignore
-                    throw new Error(response.message);
-                }
-            });
-        } catch (err:any) {
+        await userController.signup(formData).then(result=>{
+            if(result.isSignedUp){
+                setSucceeded(true);
+            }else{
+                setError('注册失败');
+                setErrorDetail('详情：' + result.message);
+            }
+        }).catch(err=>{
             setError('注册失败');
             setErrorDetail('详情：' + err.message);
-        } finally {
+        }).finally(()=>{
             setLoading(false);
-        }
+        });
     }
 
     return (<div className="auth-background">
@@ -346,7 +326,7 @@ export const SignUpForm: React.FC = () => {
                                     onChange={handleCaptchaInputChange("captcha")}
                                     placeholder="请输入图片中的验证码"
                                     autoRefresh={true}
-                                    api_getCaptcha="api/captcha"
+                                    getCaptcha={captchaController.captcha}
                                 />
                             </div>
                         </div>

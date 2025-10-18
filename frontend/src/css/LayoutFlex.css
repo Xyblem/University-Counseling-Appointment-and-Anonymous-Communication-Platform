@@ -15,17 +15,17 @@
 
 .layout-flex-column-reverse{
     display: flex;
-    flex-direction: row-reverse;
+    flex-direction: column-reverse;
 }
 
 .layout-flex-row{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
 }
 
 .layout-flex-row-reverse{
     display: flex;
-    flex-direction: column-reverse;
+    flex-direction: row-reverse;
 }
 
 
