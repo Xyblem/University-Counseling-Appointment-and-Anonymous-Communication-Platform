@@ -9,9 +9,15 @@ import {Button} from "../../components/ui/widget/Button";
 import {User} from "../../entity/User";
 //控制器
 import {UserController} from "../../controller/UserController";
+import {Divider} from "../../components/decoration/Divider";
+
+
+
+
+
 
 //主页
-export const Homepage_Main: React.FC = () => {
+export const MainForm: React.FC = () => {
     //控制器
     const userController=new UserController();
     //变量
@@ -27,31 +33,26 @@ export const Homepage_Main: React.FC = () => {
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-首页";
-        try{
-            setError(null);
-            setErrorDetail(null);
+        setError(null);
+        setErrorDetail(null);
+        userController.loggedInUser().then(result=>{
             //这里可能因为未登录返回null,但不需要管
-            userController.loggedInUser().then(result=>{
-                    setUser(result);
-                }
-            );
-        }catch(err:any){
+            setUser(result);
+            }
+        ).catch(err=>{
             setError("出错了");
             setErrorDetail(err.message)
-        }
+        });
     }, []);
 
+    const showError= (<div>
+        <h2>{error}</h2>
+        <p className="home-error-detail">{errorDetail}</p>
+    </div>);
 
-    return (<div className="home-main-form">
+    return (<div className="layout-flex-column">
         <div className="home-main-hello-label">
-            {error?(
-                <div>
-                    <h2>{error}</h2>
-                    <p className="home-error-detail">{errorDetail}</p>
-                </div>
-            ) : (
-                <h2>你好{user == null ? null : user.name}同学，现在是{year}年{month}月{date}日</h2>
-            )}
+            {error ? showError : (<h2>你好{user == null ? null : user.name}同学，现在是{year}年{month}月{date}日</h2>)}
         </div>
         <div className="home-pair-page">
             <div className="box-appointment-consultation">

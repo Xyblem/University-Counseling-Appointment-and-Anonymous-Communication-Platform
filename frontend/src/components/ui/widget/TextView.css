@@ -1,5 +1,6 @@
 /* TextDisplay.css */
 .text-display-container {
+    display: flex;
     position: relative;
     width: 100%;
 }
@@ -145,4 +146,12 @@
 
 .copy-button-full:hover {
     background-color: #0056b3;
+}
+
+.text-view-label {
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
 }

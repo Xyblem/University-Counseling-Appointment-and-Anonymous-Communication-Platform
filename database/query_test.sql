@@ -2,6 +2,6 @@ USE `UCAACP`;
 -- 需要SQL版本5.0及以上
 SELECT VERSION();
 
-SELECT * FROM `user`;
+SELECT * FROM `user` WHERE `username`='stu2022007';
 
 DELETE FROM `user` WHERE TRUE;

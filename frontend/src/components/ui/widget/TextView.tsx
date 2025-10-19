@@ -1,8 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './TextDisplay.css';
+import './TextView.css';
 
 // 组件属性类型定义
 interface TextDisplayProps {
+    /**  标题*/
+    label?: string;
     /** 要显示的文本内容 */
     text: string;
     /** 最大显示行数，默认为1（单行） */
@@ -25,7 +27,8 @@ interface TextDisplayProps {
     tooltipContent?: string;
 }
 
-const TextView: React.FC<TextDisplayProps> = ({
+export const TextView: React.FC<TextDisplayProps> = ({
+                                                    label=null,
                                                      text,
                                                      maxLines = 1,
                                                      copyable = false,
@@ -111,6 +114,11 @@ const TextView: React.FC<TextDisplayProps> = ({
 
     return (
         <div className="text-display-container">
+            {label && (
+                <label className="text-view-label">
+                    {label}
+                </label>
+            )}
             <div className="text-content-wrapper">
                 <p
                     ref={textRef}
@@ -127,6 +135,7 @@ const TextView: React.FC<TextDisplayProps> = ({
                         className={`copy-button ${isCopied ? 'copied' : ''}`}
                         onClick={handleCopy}
                         aria-label={isCopied ? '已复制' : '复制文本'}
+                        title="复制"
                     >
                         {isCopied ? '✓' : '📋'}
                     </button>
@@ -156,5 +165,3 @@ const TextView: React.FC<TextDisplayProps> = ({
         </div>
     );
 };
-
-export default TextView;

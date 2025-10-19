@@ -9,12 +9,15 @@ import com.ucaacp.backend.entity.enums.ProvinceCN;
 import com.ucaacp.backend.entity.enums.UserPosition;
 import com.ucaacp.backend.entity.enums.UserRole;
 import jakarta.persistence.*;
+import jakarta.validation.Constraint;
 import jakarta.validation.constraints.*;
 
 
 import lombok.Data;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Data
@@ -110,4 +113,28 @@ public class User {
     @NotNull(message = "注册时间不能为null")
     @Column(name = "registration_time")
     private Date registrationTime;
+
+
+    public Map<String,String> getReturnData(){
+        Map<String,String> map = new HashMap<>();
+        map.put("username",username);
+        map.put("nickname",nickname);
+        map.put("password",password);
+        map.put("name",name);
+        map.put("description",description);
+        map.put("gender",gender.getCode().toString());
+        map.put("schoolProvince",schoolProvince.getCode().toString());
+        map.put("school",school);
+        map.put("secondaryUnit",secondaryUnit);
+        map.put("major",major);
+        map.put("role",role.getCode().toString());
+        map.put("position",position.getValue());
+        map.put("email",email);
+        map.put("phoneNumber",phoneNumber);
+        map.put("qq",qq);
+        map.put("wechat",wechat);
+        map.put("registrationTime",registrationTime.toString());
+        return map;
+    }
+
 }

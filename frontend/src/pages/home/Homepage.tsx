@@ -2,18 +2,26 @@
 import React, {useRef, useState} from "react";
 import {Outlet} from "react-router";
 import {NavLink, useNavigate} from "react-router-dom";
-import { Navigate } from 'react-router-dom';
 //样式
 import './Home.css'
 import '../../css/LayoutFlex.css'
 import '../../css/Text.css'
+import '../../css/Decoration.css'
 //自定义组件
 import {Button} from "../../components/ui/widget/Button";
 import {CheckLogin, CheckLoginRef} from "../../components/functional/CheckLogin";
 import {Loading} from "../../components/ui/widget/Loading";
 import {Dialog,DialogRef} from "../../components/ui/container/Dialog";
 import {UserController} from "../../controller/UserController";
+import {Divider} from "../../components/decoration/Divider";
+import {MineForm, MineForm_Children} from "./MineForm";
+import {MainForm} from "./MainForm";
 
+//子路由
+export const Homepage_Children=[
+    {path:"/home/main",element:<MainForm/>},
+    {path:"/home/mine",element:<MineForm/>,children:MineForm_Children},
+];
 
 //主页
 export const Homepage: React.FC = () => {
@@ -100,7 +108,7 @@ export const Homepage: React.FC = () => {
     </Dialog>);
 
     return (<div className="home-background">
-            <Navigate to="/home/main"/>
+            {/*<Navigate to="/home/main" replace/>*/}
             {logoutDialog}
             {logoutResultDialog}
             {logoutLoading&&<Loading type="dots" text='登出中...' color="#2196f3" size="large" fullScreen></Loading>}
@@ -111,8 +119,11 @@ export const Homepage: React.FC = () => {
                         <nav className="nav">
                             <ul>
                                 <li><NavLink to="main">首页</NavLink></li>
+                                {/*<Divider color="Black" spacing="0" orientation="vertical" length="32px"/>*/}
                                 <li><NavLink to="appointment">预约</NavLink></li>
+                                {/*<Divider color="Black" spacing="0" orientation="vertical" length="32px"/>*/}
                                 <li><NavLink to="community">社区</NavLink></li>
+                                {/*<Divider color="Black" spacing="0" orientation="vertical" length="32px"/>*/}
                                 <li><NavLink to="mine">我的</NavLink></li>
                             </ul>
                         </nav>
@@ -123,6 +134,7 @@ export const Homepage: React.FC = () => {
                         </div>
                     </div>
                 </header>
+                <Divider color="Black" spacing="0" />
 
                 <CheckLogin
                     ref={checkLoginRef}

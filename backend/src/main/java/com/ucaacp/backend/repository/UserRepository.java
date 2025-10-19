@@ -209,4 +209,20 @@ public interface UserRepository extends JpaRepository<User, String> {
      * 根据用户名和密码查找用户（用于登录验证）
      */
     Optional<User> findByUsernameAndPassword(String username, String password);
+    /**
+     * 更新用户密码
+     */
+    @Modifying
+    @Query("UPDATE User u SET u.password = :password WHERE u.username = :username")
+    int updatePassword(@Param("username") String username, @Param("password") String password);
+
+    /**
+     * 删除用户（由于username是主键，等同于deleteById）
+     */
+    User deleteByUsername(String username);
+
+    /**
+     * 更新用户信息
+     */
+    //int updateUserByUsername(User user);
 }

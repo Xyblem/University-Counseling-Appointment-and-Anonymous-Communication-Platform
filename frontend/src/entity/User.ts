@@ -1,27 +1,25 @@
 import {InputRef, ValidationRule} from "../components/ui/widget/InputField";
 import {Gender, ProvinceCN, UserPosition, UserRole} from "./enums/enums";
-import api from "../utils/api/api_config";
-import {ReturnCode, ReturnObject} from "../utils/api/ReturnObject";
 
 
 export interface User {
-    "username":string;
-    "nickname":string|null;
-    "description":string|null;
-    "name":string;
-    "password":null,//密码保护
-    "gender":Gender,
-    "schoolProvince":ProvinceCN,
-    "school":string;
-    "secondaryUnit":string;
-    "major":string|null;
-    "role":UserRole,
-    "position":UserPosition,
-    "email":string;
-    "phoneNumber":string;
-    "qq":string|null,
-    "wechat":string|null,
-    "registrationTime":Date,
+    username:string;
+    nickname:string|null;
+    description:string|null;
+    name:string;
+    password:null,//密码保护
+    gender:number,
+    schoolProvince:number,
+    school:string;
+    secondaryUnit:string;
+    major:string|null;
+    role:number,
+    position:string,
+    email:string;
+    phoneNumber:string;
+    qq:string|null,
+    wechat:string|null,
+    registrationTime:Date,
 }
 
 //账号输入验证规则

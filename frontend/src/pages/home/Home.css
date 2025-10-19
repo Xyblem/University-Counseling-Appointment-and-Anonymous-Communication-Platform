@@ -17,9 +17,19 @@
     min-height: 700px;
  }
 
+
+/*!*水平全局分界线*!*/
+/*.home-global-horizontal-divider{*/
+/*    min-width: 1390px;*/
+/*    margin-left: -25px;*/
+/*    position: sticky;*/
+/*    top: 0;*/
+/*    z-index: 100;*/
+/*}*/
+
 /* 导航栏 */
 .home-header {
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -35,7 +45,7 @@
 
 .home-header .container {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     align-items: center;
     padding: 15px 0;
     margin-left:-25px;
@@ -53,9 +63,20 @@
 }
 
 
+nav a.active {
+    font-weight: bold;
+    font-size: 20px;
+}
+
 
 .home-error-detail{
     min-height: 400px;
+    font-size: 16px;
+    display: flex;
+    text-align:left;
+}
+
+.home-error-detail-mini{
     font-size: 16px;
     display: flex;
     text-align:left;

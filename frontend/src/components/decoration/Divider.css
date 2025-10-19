@@ -1,0 +1,22 @@
+/* Divider.css */
+.divider {
+    display: block;
+    border: none;
+}
+
+.divider-with-text {
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+
+.divider-line {
+    flex-shrink: 0;
+}
+
+.divider-text {
+    flex-shrink: 0;
+    color: #666;
+    font-size: 14px;
+    white-space: nowrap;
+}

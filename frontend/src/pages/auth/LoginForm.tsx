@@ -89,7 +89,7 @@ export const LoginForm: React.FC = () => {
         setErrorDetail(null);
         await userController.login(formData).then(result=>{
             if(result.isLoggedIn){
-                navigate('/home');
+                navigate('/home/main');
             }else{
                 setError('登录失败');
                 setErrorDetail('详情：' + result.message);

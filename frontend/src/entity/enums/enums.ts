@@ -14,7 +14,7 @@ export enum Gender {
 /**
  * 根据性别枚举(性别编码获取性别名称)
  */
-export let GenderNamesCN=new Map<Gender,string>([
+export let GenderNamesCN=new Map<number,string>([
     [Gender.UNKNOWN,"未知"],
     [Gender.MALE,"男"],
     [Gender.FEMALE,"女"],
@@ -35,7 +35,7 @@ export enum UserRole {
 /**
  * 根据用户角色枚举(用户角色编码获取用户角色名称)
  */
-export let UserRoleNamesCN=new Map<UserRole,string>([
+export let UserRoleNamesCN=new Map<number,string>([
     [UserRole.UNKNOWN,"未知"],
     [UserRole.STUDENT,"学生"],
     [UserRole.TEACHER,"教师"],
@@ -57,7 +57,7 @@ export enum UserPosition {
 /**
  * 根据用户职务枚举(用户职务名称获取用户职务名称)
  */
-export let UserPositionNamesCN=new Map<UserPosition,string>([
+export let UserPositionNamesCN=new Map<string,string>([
     [UserPosition.UNKNOWN,"未指定"],
     [UserPosition.STUDENT,"学生"],
     [UserPosition.PSYCHOLOGICAL_COUNSELING_STAFF,"心理部咨询员"],
@@ -113,7 +113,7 @@ export enum ProvinceCN {
 /**
  * 根据省级行政区枚举(省级行政区编码获取省级行政区名称)
  */
-export let ProvinceCN_NamesCN=new Map<ProvinceCN,string>([
+export let ProvinceCN_NamesCN=new Map<number,string>([
     [ProvinceCN.BEIJING,"北京市"],
     [ProvinceCN.TIANJIN,"天津市"],
     [ProvinceCN.HEBEI,"河北省"],

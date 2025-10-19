@@ -145,9 +145,21 @@ public class ReturnObject extends HashMap<String, Object> {
         return returnObject;
     }
 
+    public static ReturnObject fail(Object data) {
+        ReturnObject returnObject = ReturnObject.fail();
+        returnObject.put("data", data);
+        return returnObject;
+    }
+
     public static ReturnObject fail(int code,String message) {
         ReturnObject returnObject = ReturnObject.fail(code);
         returnObject.put("message", message);
+        return returnObject;
+    }
+
+    public static ReturnObject fail(int code,Object data) {
+        ReturnObject returnObject = ReturnObject.fail(code);
+        returnObject.put("data", data);
         return returnObject;
     }
 

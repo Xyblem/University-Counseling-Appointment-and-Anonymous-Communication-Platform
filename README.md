@@ -33,9 +33,10 @@
 - 用户登录
 - 用户注册
 - 退出登录
-- <font color=Grey>修改信息（待实现）</font>
-- <font color=Grey>修改密码（待实现）</font>
-- <font color=Grey>注销账号（待实现）</font>
+- 修改密码
+- 注销账号
+- 修改信息
+
 ---
 ## 项目部署
 

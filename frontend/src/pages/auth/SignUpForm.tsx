@@ -107,7 +107,6 @@ export const SignUpForm: React.FC = () => {
     //处理表单提交
     const handleSubmit = (event: { preventDefault: () => void; }) => {
         // 手动验证所有字段
-
         const isNameValid=nameInputRef.current?.validate();
         const isGenderValid=genderRadioRef.current?.validate();
         const isSchoolProvinceValid = schoolProvinceSelectRef.current?.validate();
@@ -308,6 +307,7 @@ export const SignUpForm: React.FC = () => {
                                     type="password"
                                     label="密码"
                                     placeholder="请输入密码"
+                                    prefix={<span>*</span>}
                                     onChange={handleInputChange("password")}
                                     validationRules={passwordValidationRules}
                                     required
@@ -316,6 +316,7 @@ export const SignUpForm: React.FC = () => {
                                     ref={confirmedPasswordInputRef}
                                     type="password"
                                     label="确认密码"
+                                    prefix={<span>*</span>}
                                     placeholder="请确认密码"
                                     onChange={handleInputChange("confirmedPassword")}
                                     validationRules={confirmedPasswordValidationRules(passwordInputRef)}

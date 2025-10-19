@@ -49,13 +49,27 @@ public class UserService {
         return userRepository.findByUsername(username).isPresent();
     }
 
+    /**
+     * 更新用户密码
+    */
+    public int updatePassword(String username, String newPassword) {
+        return userRepository.updatePassword(username, newPassword);
+    }
 
-//    /**
-//     * 保存用户
-//     */
-//    public User saveUser(User user) {
-//        return userRepository.save(user);
-//    }
+    /**
+     * 注销账号
+     */
+    public User closeAccount(String username) {
+        return userRepository.deleteByUsername(username);
+    }
+
+
+    /**
+     * 保存用户
+     */
+    public User updateUser(@Valid User user) {
+        return userRepository.save(user);
+    }
 //
 //    /**
 //     * 根据用户名查找用户
