@@ -188,6 +188,7 @@ export const UpdateUserForm: React.FC = () => {
                                 placeholder="请输入用户名"
                                 validationRules={nicknameValidationRules}
                                 disabled
+                                required
                             />
                             <InputField
                                 ref={nicknameInputRef}
