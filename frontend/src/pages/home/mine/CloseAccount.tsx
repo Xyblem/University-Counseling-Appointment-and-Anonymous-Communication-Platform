@@ -108,7 +108,7 @@ export const CloseAccount: React.FC = () => {
         ): (
             <div>
             <h2>注销账号</h2>
-                <p style={{color:"Red",fontSize:"12px"}}>提示：注销账号后将删除你的所有信息</p>
+                <p className="home-warning" >提示：注销账号后将删除你的所有信息</p>
             <form onSubmit={handleSubmit}>
                 <InputField
                     ref={passwordInputRef}

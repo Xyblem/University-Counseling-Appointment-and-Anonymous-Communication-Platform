@@ -327,7 +327,6 @@ public class UserController {
         String school=updateUserRequestBody.get("school")==null?null:updateUserRequestBody.get("school").toString();
         String secondaryUnit=updateUserRequestBody.get("secondaryUnit")==null?null:updateUserRequestBody.get("secondaryUnit").toString();
         String major=updateUserRequestBody.get("major")==null?null:updateUserRequestBody.get("major").toString();
-        String role=updateUserRequestBody.get("role")==null?null:updateUserRequestBody.get("role").toString();
         String position=updateUserRequestBody.get("position")==null?null:updateUserRequestBody.get("position").toString();
         String email=updateUserRequestBody.get("email")==null?null:updateUserRequestBody.get("email").toString();
         String phoneNumber=updateUserRequestBody.get("phoneNumber")==null?null:updateUserRequestBody.get("phoneNumber").toString();
@@ -369,7 +368,6 @@ public class UserController {
         user.setSchool(school);
         user.setSecondaryUnit(secondaryUnit);
         user.setMajor(major);
-        user.setRole(role==null?null:userRoleConverter.convertToEntityAttribute(Integer.parseInt(role)));
         user.setPosition(userPositionConverter.convertToEntityAttribute(position));
         user.setEmail(email);
         user.setPhoneNumber(phoneNumber);

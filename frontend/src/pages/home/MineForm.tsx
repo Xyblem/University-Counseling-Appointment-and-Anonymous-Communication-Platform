@@ -32,17 +32,17 @@ export const MineForm: React.FC = () => {
     return (
         <div className="layout-flex-row">
             <div className="vertical-menu">
-                <NavLink to="basic_information">基本信息</NavLink>
-                <NavLink to="appointment_manage">预约管理</NavLink>
-                <NavLink to="evaluation_record">测评记录</NavLink>
-                <NavLink to="update_password">修改密码</NavLink>
-                <NavLink to="update_user">修改信息</NavLink>
-                <NavLink to="system_setting">系统设置</NavLink>
-                <NavLink to="close_account">注销账号</NavLink>
+                    <NavLink to="basic_information">基本信息</NavLink>
+                    <NavLink to="appointment_manage">预约管理</NavLink>
+                    <NavLink to="evaluation_record">测评记录</NavLink>
+                    <NavLink to="update_password">修改密码</NavLink>
+                    <NavLink to="update_user">修改信息</NavLink>
+                    <NavLink to="system_setting">系统设置</NavLink>
+                    <NavLink to="close_account">注销账号</NavLink>
+                </div>
+                <div className="layout-flex-column">
+                    <Outlet></Outlet>
+                </div>
             </div>
-            <div className="layout-flex-column">
-                <Outlet></Outlet>
-            </div>
-        </div>
-    )
-}
+            )
+            }

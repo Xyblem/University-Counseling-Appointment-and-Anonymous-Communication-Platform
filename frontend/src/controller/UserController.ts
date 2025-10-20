@@ -64,7 +64,6 @@ export interface UpdateUserRequest{
     school:string;
     secondaryUnit:string;
     major:string|null;
-    role:number,
     position:string,
     email:string;
     phoneNumber:string;

@@ -45,7 +45,6 @@ export const UpdateUserForm: React.FC = () => {
         phoneNumber: "",
         position: "",
         qq: null,
-        role: 0,
         school: "",
         schoolProvince: 0,
         secondaryUnit: "",
@@ -53,6 +52,7 @@ export const UpdateUserForm: React.FC = () => {
         wechat: null
     });
     //引用
+    const usernameInputRef=useRef<InputRef>(null);
     const nicknameInputRef = useRef<InputRef>(null);
     const descriptionInputRef = useRef<InputRef>(null);
     const nameInputRef = useRef<InputRef>(null);
@@ -75,6 +75,7 @@ export const UpdateUserForm: React.FC = () => {
                 //这里可能因为未登录返回null,但不需要管
                 setUser(result);
                 //设置信息
+                usernameInputRef.current?.setValue(result==null?'':''+(result.username==null?'':result.username));
                 nicknameInputRef.current?.setValue(result==null?'':''+(result.nickname==null?'':result.nickname));
                 descriptionInputRef.current?.setValue(result==null?'':''+(result.description==null?'':result.description));
                 nameInputRef.current?.setValue(result==null?'':''+result.name);
@@ -113,6 +114,7 @@ export const UpdateUserForm: React.FC = () => {
     //处理表单提交
     const handleSubmit = (event: { preventDefault: () => void; }) => {
         // 手动验证所有字段
+        const isUsernameValid=usernameInputRef.current?.getValue();
         const isNicknameValid=nicknameInputRef.current?.validate();
         const isDescriptionValid=nicknameInputRef.current?.validate();
         const isNameValid=nameInputRef.current?.validate();
@@ -132,7 +134,7 @@ export const UpdateUserForm: React.FC = () => {
 
         // 阻止默认提交
         event.preventDefault();
-        if (isNicknameValid&&isDescriptionValid&&isNameValid&& isGenderValid&& isSchoolProvinceValid &&isSchoolValid&& isSecondaryUnitValid&& isMajorValid&& isRoleValid&& isPositionValid&& isEmailValid&& isPhoneNumberValid&& isQqValid&& isWechatValid&&isCaptchaValid) {
+        if (isUsernameValid&&isNicknameValid&&isDescriptionValid&&isNameValid&& isGenderValid&& isSchoolProvinceValid &&isSchoolValid&& isSecondaryUnitValid&& isMajorValid&& isRoleValid&& isPositionValid&& isEmailValid&& isPhoneNumberValid&& isQqValid&& isWechatValid&&isCaptchaValid) {
             //console.log("暂停测试：",formData);alert("暂停测试");
             summitUpdateUser();
         } else {
@@ -175,9 +177,18 @@ export const UpdateUserForm: React.FC = () => {
             ):(
             <div>
                 <h2>修改信息</h2>
+                <p className="home-notice">提示：若无法获取输入框中的初始信息，请尝试刷新</p>
                 <form onSubmit={handleSubmit}>
                     <div className="home-pair-page">
                         <div style={{width: "400px"}}>
+                            <InputField
+                                ref={usernameInputRef}
+                                type="text"
+                                label="用户名"
+                                placeholder="请输入用户名"
+                                validationRules={nicknameValidationRules}
+                                disabled
+                            />
                             <InputField
                                 ref={nicknameInputRef}
                                 type="text"
@@ -204,16 +215,7 @@ export const UpdateUserForm: React.FC = () => {
                                 validationRules={nameValidationRules}
                                 required
                             />
-                            <RadioGroup
-                                ref={genderRadioRef}
-                                name="gender"
-                                label="性别"
-                                onChange={handleInputChange("gender")}
-                                size="large"
-                                options={genderOptions}
-                                required
-                                layout="horizontal"
-                            />
+
                             <Select
                                 ref={schoolProvinceSelectRef}
                                 label="学校所在省份"
@@ -252,13 +254,22 @@ export const UpdateUserForm: React.FC = () => {
                             />
 
                         </div>
-                        <div style={{width: "400px",marginLeft:"25px"}}>
+                        <div style={{width: "400px", marginLeft: "25px"}}>
+                            <RadioGroup
+                                ref={genderRadioRef}
+                                name="gender"
+                                label="性别"
+                                onChange={handleInputChange("gender")}
+                                size="large"
+                                options={genderOptions}
+                                required
+                                layout="horizontal"
+                            />
                             <RadioGroup
                                 ref={roleRadioRef}
                                 label="用户类型"
                                 size="large"
                                 options={userRoleOptions}
-                                onChange={handleInputChange("role")}
                                 required
                                 layout="horizontal"
                                 disabled

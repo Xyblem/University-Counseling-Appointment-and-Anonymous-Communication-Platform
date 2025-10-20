@@ -118,3 +118,14 @@ nav a.active {
     height: 400px;
     margin-left: 50px;
 }
+
+
+.home-warning{
+    color:Red;
+    font-size:12px;
+}
+
+.home-notice{
+    color:Gray;
+    font-size:12px;
+}
