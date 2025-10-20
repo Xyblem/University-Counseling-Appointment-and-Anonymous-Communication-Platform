@@ -17,10 +17,14 @@ import {UserController} from "../../controller/UserController";
 import {Divider} from "../../components/decoration/Divider";
 import {MineForm, MineForm_Children} from "./MineForm";
 import {MainForm} from "./MainForm";
+import {AppointmentForm} from "./AppointmentForm";
+import {CommunityForm} from "./CommunityForm";
 
 //子路由
 export const Homepage_Children=[
     {path:"/home/main",element:<MainForm/>},
+    {path:"/home/appointment",element:<AppointmentForm/>},
+    {path:"/home/community",element:<CommunityForm/>},
     {path:"/home/mine",element:<MineForm/>,children:MineForm_Children},
 ];
 
