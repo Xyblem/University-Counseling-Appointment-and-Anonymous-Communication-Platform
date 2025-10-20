@@ -1,7 +1,8 @@
 //React框架
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Outlet} from "react-router";
 import {NavLink, useNavigate} from "react-router-dom";
+import { useLocation } from "react-router-dom"
 //样式
 import './Home.css'
 import '../../css/LayoutFlex.css'
@@ -32,11 +33,19 @@ export const Homepage: React.FC = () => {
     //控制器
     const userController = new UserController();
     //引用
+    const checkLoginRef = useRef<CheckLoginRef>(null);
     const logoutDialogRef = useRef<DialogRef>(null);
     const logoutResultDialogRef = useRef<DialogRef>(null);
     //路由
     const navigate = useNavigate();
-    const checkLoginRef = useRef<CheckLoginRef>(null);
+    const urlLocation = useLocation();
+
+
+    useEffect(() => {
+        if(urlLocation.pathname==='/home'||urlLocation.pathname==='/home/'){
+            window.location.href="/home/main";
+        }
+    }, []);
 
     const logoutDialog = (<Dialog
         ref={logoutDialogRef}

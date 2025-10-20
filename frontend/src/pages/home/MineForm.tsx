@@ -1,6 +1,6 @@
 //React框架
 import React, {useEffect} from "react";
-import {NavLink} from "react-router-dom";
+import {NavLink, useLocation} from "react-router-dom";
 import {Outlet} from "react-router";
 //样式
 import './Home.css'
@@ -25,9 +25,13 @@ export const MineForm_Children=[
 ];
 //我的
 export const MineForm: React.FC = () => {
+    const urlLocation = useLocation();
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的";
+        if(urlLocation.pathname==='/home/mine'||urlLocation.pathname==='/home/mine/'){
+            window.location.href="/home/mine/basic_information";
+        }
     });
     return (
         <div className="layout-flex-row">
