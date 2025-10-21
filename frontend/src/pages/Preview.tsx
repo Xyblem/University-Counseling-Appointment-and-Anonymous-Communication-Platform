@@ -1,10 +1,13 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import './Preview.css';
 
 // 首页组件
 export const Preview: React.FC = () => {
     const [activeTab, setActiveTab] = useState('features');
-
+    //钩子
+    useEffect(() => {
+        document.title = "高校心理咨询预约与匿名交流平台";
+    });
     return (
         <div className="counseling-platform">
             {/* 导航栏 */}

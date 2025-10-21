@@ -19,6 +19,7 @@ import {MineForm, MineForm_Children} from "./MineForm";
 import {MainForm} from "./MainForm";
 import {AppointmentForm} from "./AppointmentForm";
 import {CommunityForm} from "./CommunityForm";
+import {CheckLoginErrorView, CheckLoginLoading, CheckLoginNotLoginView} from "../../utils/views/CommonViews";
 
 //子路由
 export const Homepage_Children=[
@@ -151,36 +152,10 @@ export const Homepage: React.FC = () => {
 
                 <CheckLogin
                     ref={checkLoginRef}
-                    to={null}
                     checkLogin={userController.checkLogin}
-                    loadingComponent={
-                        <Loading type="dots" text='页面加载中...' color="#2196f3" size="large" fullScreen></Loading>
-                    }
-                    errorComponent={
-                        <div>
-                            <div className="layout-flex">
-                                <h2 style={{color: 'red'}}>验证登录状态失败，请检查网络连接</h2>
-                            </div>
-                            <div className="layout-flex">
-                                <Button type="default" onClick={checkLoginRef.current?.handleRetry}>重新加载</Button>
-                            </div>
-                        </div>
-                    }
-
-                    notLoginComponent={
-                        <div>
-                            <div className="layout-flex">
-                                <h2>您还未登录，请登录</h2>
-                            </div>
-                            <div className="layout-flex">
-                                <Button type="default" onClick={checkLoginRef.current?.handleRetry}>重新加载</Button>
-                                &nbsp;
-                                <Button type="default" onClick={() => {
-                                    navigate("/auth/login");
-                                }}>去登录</Button>
-                            </div>
-                        </div>
-                    }
+                    loadingComponent={CheckLoginLoading}
+                    errorComponent={CheckLoginErrorView(checkLoginRef)}
+                    notLoginComponent={CheckLoginNotLoginView(checkLoginRef)}
                 >
                     <Outlet></Outlet>
                 </CheckLogin>

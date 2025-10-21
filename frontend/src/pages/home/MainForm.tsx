@@ -59,9 +59,9 @@ export const MainForm: React.FC = () => {
                 <div className="layout-flex-column">
                     <h2>预约咨询</h2>
                     <br/>
-                    <Button type="primary">匿名倾述</Button>
+                    <Button type="primary" >匿名倾述</Button>
                     <br/>
-                    <Button type="primary">心理测试</Button>
+                    <Button type="primary" onClick={()=>{window.location.href="/psych_test_entrance"}}>心理测试</Button>
                     <br/>
                     <Button type="primary">科普广场</Button>
                 </div>

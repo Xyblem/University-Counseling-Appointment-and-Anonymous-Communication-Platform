@@ -22,7 +22,6 @@ export enum ReturnCode {
     DATA_ACCESS_ERROR = 1002
 }
 
-
 /**返回状态枚举*/
 export enum ReturnStatus {
     SUCCESS = "success",

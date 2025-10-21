@@ -5,7 +5,7 @@ import ReactDOM from "react-dom/client";
 
 // 组件Props类型
 export interface CheckLoginProps {
-    to: string | null,
+    to?: string | null,
     // request_api: string, 弃用
     checkLogin:()=>Promise<boolean>,
     children: ReactNode,
