@@ -262,21 +262,21 @@ spring.datasource.password=root
 ```
 
 4、在IDEA上配置好数据库
-![数据库配置入口.png](readme%2Fimages%2F%E6%95%B0%E6%8D%AE%E5%BA%93%E9%85%8D%E7%BD%AE%E5%85%A5%E5%8F%A3.png)
-![新建数据库连接.png](readme%2Fimages%2F%E6%96%B0%E5%BB%BA%E6%95%B0%E6%8D%AE%E5%BA%93%E8%BF%9E%E6%8E%A5.png)
-![找到MySQL.png](readme%2Fimages%2F%E6%89%BE%E5%88%B0MySQL.png)
-![配置数据源和驱动程序.png](readme%2Fimages%2F%E9%85%8D%E7%BD%AE%E6%95%B0%E6%8D%AE%E6%BA%90%E5%92%8C%E9%A9%B1%E5%8A%A8%E7%A8%8B%E5%BA%8F.png)
+![数据库配置入口.png](readme/images/数据库配置入口.png)
+![新建数据库连接.png](readme/images/新建数据库连接.png)
+![找到MySQL.png](readme/images/找到MySQL.png)
+![配置数据源和驱动程序.png](readme/images/配置数据源和驱动程序.png)
 
 5、运行`database/tables.sql`创建各种表
 
 6、运行`database/datas.sql`添加初始数据
 
 ### 后端部署
-![当前文件.png](readme%2Fimages%2F%E5%BD%93%E5%89%8D%E6%96%87%E4%BB%B6.png)
-![编辑配置.png](readme%2Fimages%2F%E7%BC%96%E8%BE%91%E9%85%8D%E7%BD%AE.png)
-![添加新配置.png](readme%2Fimages%2F%E6%B7%BB%E5%8A%A0%E6%96%B0%E9%85%8D%E7%BD%AE.png)
-![添加新配置（后端）.png](readme%2Fimages%2F%E6%B7%BB%E5%8A%A0%E6%96%B0%E9%85%8D%E7%BD%AE%EF%BC%88%E5%90%8E%E7%AB%AF%EF%BC%89.png)
-![配置后端.png](readme%2Fimages%2F%E9%85%8D%E7%BD%AE%E5%90%8E%E7%AB%AF.png)
+![当前文件.png](readme/images/当前文件.png)
+![编辑配置.png](readme/images/编辑配置.png)
+![添加新配置.png](readme/images/添加新配置.png)
+![添加新配置（后端）.png](readme/images/添加新配置（后端）.png)
+![配置后端.png](readme/images/配置后端.png)
 如图
 
 **注意事项：**`backend/src/main/resources/libs/easy-captcha-1.6.2.jar`要添加为库，否则Java编译时可能会报错`找不到com.wf.captcha`
