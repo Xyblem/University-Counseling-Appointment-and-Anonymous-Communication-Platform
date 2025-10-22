@@ -78,21 +78,11 @@ export class UserController {
      * @param loginRequest 登录请求体
      * @return boolean 若登录成功则返回true，若登录失败(请求参数失败)则返回false
      */
-    login=async (loginRequest:LoginRequest):Promise<{isLoggedIn:boolean,message:string}> =>{
-        let result:{isLoggedIn:boolean,message:string}={isLoggedIn:false,message:''};
+    login=async (loginRequest:LoginRequest):Promise<ReturnObject> =>{
+        let result:ReturnObject={code:0,status:"",timestamp:0};
         await api.post<ReturnObject>("api/user/login",loginRequest).then(response=>{
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                //@ts-ignore
-                result = {isLoggedIn:true,message:response.message};
-                //@ts-ignore
-            }else if(response.code === ReturnCode.BAD_REQUEST){
-                //@ts-ignore
-                result={isLoggedIn:false,message:response.message};
-            }else{
-                //@ts-ignore
-                throw Error(response.message)
-            }
+            result=response;
         })
         return result;
     }
@@ -102,21 +92,11 @@ export class UserController {
      * @param signupRequest 注册请求体
      * @return boolean 若注册成功则返回true，若注册失败(请求参数失败)则返回false
      */
-    signup=async (signupRequest:SignupRequest):Promise<{isSignedUp:boolean,message:string}> =>{
-        let result:{isSignedUp:boolean,message:string}={isSignedUp:false,message:''};
+    signup=async (signupRequest:SignupRequest):Promise<ReturnObject> =>{
+        let result:ReturnObject={code:0,status:"",timestamp:0};
         await api.post<ReturnObject>("api/user/signup",signupRequest).then(response=>{
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                //@ts-ignore
-                result = {isSignedUp:true,message:response.message};
-                //@ts-ignore
-            }else if(response.code === ReturnCode.BAD_REQUEST){
-                //@ts-ignore
-                result={isSignedUp:false,message:response.message};
-            }else{
-                //@ts-ignore
-                throw Error(response.message)
-            }
+            result=response;
         });
         return result;
     }

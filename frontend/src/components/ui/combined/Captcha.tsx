@@ -16,7 +16,7 @@ interface CaptchaProps {
     buttonClassName?: string;
     // api_getCaptcha?:string;弃用
     getCaptcha: () => Promise<{captchaKey: string; base64Image: string;}>;
-    onChange?: (value: string | string[], event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
     label?:string;
     name?:string;
 }
@@ -211,4 +211,24 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
 // 设置显示名称，便于调试
 Captcha.displayName = 'Captcha';
 
-export default Captcha;
+
+export class CaptchaCallback{
+    /**
+     * 处理验证码的输入变化
+     * @param captchaKeyField 验证码Key的字段名
+     * @param captchaCodeField 验证码的字段名
+     * @param captchaRef 验证码输入组件引用
+     * @param setData 设置数据状态的方法
+     * @param emptyValue 输入为空时的验证码的值
+     */
+    static handleDataChange=<T=any>(captchaKeyField:string,captchaCodeField: string,captchaRef:React.RefObject<CaptchaRef | null>,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
+        const code = captchaRef.current == null ? null : captchaRef.current.getCaptchaData();
+        const key=code==null ? '' : code.key;
+        if(value==null||value.length===0){
+            setData((prev: any) => ({...prev, [captchaCodeField]: emptyValue,[captchaKeyField]:key}));
+        }else{
+            setData((prev: any) => ({...prev, [captchaCodeField]: value,[captchaKeyField]:key}));
+        }
+    }
+}
+

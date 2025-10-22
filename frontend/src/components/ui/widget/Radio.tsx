@@ -237,3 +237,18 @@ export const RadioGroup = forwardRef<RadioGroupRef, RadioGroupProps>((props, ref
 // 设置显示名称
 RadioGroup.displayName = 'RadioGroup';
 
+export class RadioGroupCallback{
+    /**
+     * 处理单选框输入变化
+     * @param field 字段名
+     * @param setData 设置数据状态的方法
+     * @param emptyValue  输入为空时的值
+     */
+    static handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
+        if(value==null||value.length===0){
+            setData((prev: any) => ({...prev, [field]: emptyValue}));
+        }else{
+            setData((prev: any) => ({...prev, [field]: value}));
+        }
+    }
+}

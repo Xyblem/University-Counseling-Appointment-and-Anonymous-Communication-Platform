@@ -1,0 +1,135 @@
+.textarea-container {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+    width: 100%;
+}
+
+.textarea-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.textarea-required {
+    color: #ff4d4f;
+    margin-left: 4px;
+}
+
+.textarea-wrapper {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.textarea-element {
+    min-height: 80px;
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    background-color: #fff;
+    transition: all 0.3s;
+    outline: none;
+}
+
+.textarea-element::placeholder {
+    color: #bfbfbf;
+}
+
+.textarea-element:hover:not(:disabled):not(.textarea-container--readonly) {
+    border-color: #40a9ff;
+}
+
+.textarea-container--focused .textarea-element {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.textarea-container--error .textarea-element {
+    border-color: #ff4d4f;
+}
+
+.textarea-container--error .textarea-element:hover {
+    border-color: #ff7875;
+}
+
+.textarea-container--error.textarea-container--focused .textarea-element {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+.textarea-container--disabled .textarea-element {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.textarea-container--disabled .textarea-element:hover {
+    border-color: #d9d9d9;
+}
+
+.textarea-container--readonly .textarea-element {
+    background-color: #fafafa;
+    border-color: #e8e8e8;
+    color: #666;
+}
+
+.textarea-hidden {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    height: 0;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.textarea-count {
+    position: absolute;
+    bottom: 8px;
+    right: 12px;
+    font-size: 12px;
+    color: #8c8c8c;
+    background-color: #fff;
+    padding: 0 4px;
+    line-height: 1.5;
+}
+
+.textarea-count--error {
+    color: #ff4d4f;
+}
+
+.textarea-error {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ff4d4f;
+    line-height: 1.5;
+}
+
+/* 调整不同resize选项的样式 */
+.textarea-element[style*="resize: both"],
+.textarea-element[style*="resize: horizontal"] {
+    min-width: 100%;
+}
+
+.textarea-element[style*="resize: none"] {
+    resize: none;
+}
+
+.textarea-element[style*="resize: vertical"] {
+    resize: vertical;
+}
+
+.textarea-element[style*="resize: horizontal"] {
+    resize: horizontal;
+}
+
+.textarea-element[style*="resize: both"] {
+    resize: both;
+}

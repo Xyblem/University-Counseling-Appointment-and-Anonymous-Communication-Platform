@@ -1,0 +1,254 @@
+.switch-container {
+    display: inline-flex;
+    flex-direction: column;
+    margin-bottom: 16px;
+}
+
+.switch-label {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    gap: 8px;
+}
+
+.switch-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.switch-track {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    background-color: #bfbfbf;
+    border-radius: 100px;
+    transition: all 0.3s ease;
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* 尺寸变体 */
+.switch--small .switch-track {
+    width: 36px;
+    height: 20px;
+}
+
+.switch--medium .switch-track {
+    width: 44px;
+    height: 24px;
+}
+
+.switch--large .switch-track {
+    width: 52px;
+    height: 28px;
+}
+
+/* 选中状态 */
+.switch--checked .switch-track {
+    background-color: #1890ff;
+}
+
+/* 禁用状态 */
+.switch--disabled .switch-track {
+    background-color: #f5f5f5;
+    cursor: not-allowed;
+}
+
+.switch--disabled.switch--checked .switch-track {
+    background-color: #bae7ff;
+}
+
+/* 焦点状态 */
+.switch--focused .switch-track {
+    box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.2);
+}
+
+/* 错误状态 */
+.switch--error .switch-track {
+    background-color: #ffccc7;
+}
+
+.switch--error.switch--checked .switch-track {
+    background-color: #ff7875;
+}
+
+.switch--error.switch--focused .switch-track {
+    box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.2);
+}
+
+.switch-handle {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    background-color: #fff;
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 不同尺寸的手柄 */
+.switch--small .switch-handle {
+    width: 16px;
+    height: 16px;
+}
+
+.switch--medium .switch-handle {
+    width: 20px;
+    height: 20px;
+}
+
+.switch--large .switch-handle {
+    width: 24px;
+    height: 24px;
+}
+
+/* 选中状态的手柄位置 */
+.switch--checked .switch-handle {
+    transform: translateX(100%);
+}
+
+.switch--small.switch--checked .switch-handle {
+    transform: translateX(16px);
+}
+
+.switch--medium.switch--checked .switch-handle {
+    transform: translateX(20px);
+}
+
+.switch--large.switch--checked .switch-handle {
+    transform: translateX(24px);
+}
+
+/* 禁用状态的手柄 */
+.switch--disabled .switch-handle {
+    background-color: #fafafa;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* 加载状态 */
+.switch--loading .switch-handle {
+    background-color: #f0f0f0;
+}
+
+.switch-loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #8c8c8c;
+}
+
+.switch--checked .switch-loading-spinner {
+    color: #1890ff;
+}
+
+.switch--disabled .switch-loading-spinner {
+    color: #bfbfbf;
+}
+
+/* 轨道内标签 */
+.switch-labels {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 4px;
+    font-size: 10px;
+    font-weight: 500;
+    color: #fff;
+    transition: all 0.3s ease;
+}
+
+.switch-checked-label,
+.switch-unchecked-label {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    line-height: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.switch--checked .switch-checked-label {
+    opacity: 1;
+}
+
+.switch:not(.switch--checked) .switch-unchecked-label {
+    opacity: 1;
+}
+
+/* 外部标签 */
+.switch-text {
+    font-size: 14px;
+    color: #333;
+    user-select: none;
+}
+
+.switch--small .switch-text {
+    font-size: 12px;
+}
+
+.switch--large .switch-text {
+    font-size: 16px;
+}
+
+.switch--disabled .switch-text {
+    color: #bfbfbf;
+}
+
+.switch--error .switch-text {
+    color: #ff4d4f;
+}
+
+.switch-required {
+    color: #ff4d4f;
+    margin-left: 2px;
+}
+
+/* 错误提示 */
+.switch-error {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ff4d4f;
+    line-height: 1.5;
+}
+
+/* 悬停效果 */
+.switch-label:not(.switch--disabled):not(.switch--loading):hover .switch-track {
+    background-color: #8c8c8c;
+}
+
+.switch-label:not(.switch--disabled):not(.switch--loading):hover.switch--checked .switch-track {
+    background-color: #40a9ff;
+}
+
+.switch-label:not(.switch--disabled):not(.switch--loading):hover.switch--error .switch-track {
+    background-color: #ffa39e;
+}
+
+.switch-label:not(.switch--disabled):not(.switch--loading):hover.switch--error.switch--checked .switch-track {
+    background-color: #ff7875;
+}
+
+/* 加载状态动画 */
+@keyframes switch-loading-rotate {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.switch-loading-spinner svg {
+    animation: switch-loading-rotate 1s linear infinite;
+}

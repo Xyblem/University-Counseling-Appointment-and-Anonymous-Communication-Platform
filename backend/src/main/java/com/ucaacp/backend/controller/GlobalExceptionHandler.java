@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
         for (Map.Entry<String, String> pairs : errors.entrySet()) {
             builder.append("参数").append(pairs.getKey()).append(":").append(pairs.getValue()).append("\r\n");
         }
-        return ReturnObject.fail(builder.toString());
+        return ReturnObject.validationError(builder.toString());
     }
 
 

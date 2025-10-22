@@ -65,6 +65,81 @@ CREATE TABLE `user` (
                         -- 微信账号验证：微信账号长度6-20个字符
                         CONSTRAINT `chk_wechat` CHECK((`wechat` IS NULL)OR(CHAR_LENGTH(`wechat`)>=6))
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户表（用于注册和登录）';
+
+
+
+
+
+DROP TABLE IF EXISTS `appointment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `appointment` (
+                               `appointment_id` int NOT NULL AUTO_INCREMENT COMMENT '预约ID，主键自增',
+                               `student_username` varchar(45) NOT NULL COMMENT '学生用户名（外键关联用户表）',
+                               `teacher_username` varchar(45) NOT NULL COMMENT '教师用户名（外键关联用户表）',
+                               `description` text COMMENT '预约描述',
+                               `start_time` datetime NOT NULL COMMENT '预约开始时间',
+                               `end_time` datetime NOT NULL COMMENT '预约结束时间',
+                               `apply_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '预约申请时间',
+                               `status` enum('CONFIRM','REJECT','RESCHEDULE') NOT NULL DEFAULT 'RESCHEDULE' COMMENT '处理状态',
+                               PRIMARY KEY (`appointment_id`),
+                               KEY `fk_appointment_student` (`student_username`),
+                               KEY `fk_appointment_teacher` (`teacher_username`),
+                               CONSTRAINT `fk_appointment_student` FOREIGN KEY (`student_username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+                               CONSTRAINT `fk_appointment_teacher` FOREIGN KEY (`teacher_username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+                               CONSTRAINT `chk_apply_time` CHECK ((`apply_time` <= `start_time`)),
+                               CONSTRAINT `chk_time_order` CHECK ((`end_time` > `start_time`))
+) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='预约表（学生与教师的预约记录）';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+
+
+
+DROP TABLE IF EXISTS `post`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `post` (
+                        `post_id` int NOT NULL AUTO_INCREMENT COMMENT '帖子ID，主键自增',
+                        `title` varchar(255) NOT NULL COMMENT '帖子标题',
+                        `content` text NOT NULL COMMENT '帖子内容',
+                        `username` varchar(45) NOT NULL COMMENT '发布者用户名，关联用户表',
+                        `publish_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '发布时间，默认当前时间',
+                        `is_anonymous` tinyint(1) NOT NULL COMMENT '是否匿名（0：否，1：是）',
+                        `is_public` tinyint(1) NOT NULL COMMENT '是否公开（0：否，1：是）',
+                        PRIMARY KEY (`post_id`),
+                        KEY `fk_post_user` (`username`),
+                        CONSTRAINT `fk_post_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE,
+                        CONSTRAINT `chk_is_anonymous` CHECK ((`is_anonymous` in (0,1))),
+                        CONSTRAINT `chk_is_public` CHECK ((`is_public` in (0,1)))
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='帖子表（存储用户发布的帖子信息）';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+DROP TABLE IF EXISTS `reply`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `reply` (
+                         `reply_id` int NOT NULL AUTO_INCREMENT COMMENT '回帖ID，主键自增',
+                         `content` text NOT NULL COMMENT '回复内容',
+                         `post_id` int NOT NULL COMMENT '被回复的帖子ID，关联帖子表',
+                         `username` varchar(45) NOT NULL COMMENT '回复者用户名，关联用户表',
+                         `reply_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '回帖时间',
+                         PRIMARY KEY (`reply_id`),
+                         KEY `fk_reply_post` (`post_id`),
+                         KEY `fk_reply_user` (`username`),
+                         CONSTRAINT `fk_reply_post` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                         CONSTRAINT `fk_reply_user` FOREIGN KEY (`username`) REFERENCES `user` (`username`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='回帖表（存储用户对帖子的回复信息）';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+
+
+
+
+
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

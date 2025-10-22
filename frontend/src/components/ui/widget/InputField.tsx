@@ -2,14 +2,7 @@ import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } f
 import './InputField.css';
 
 // 输入框类型定义
-export type InputType = 'text' | 'password' | 'number' | 'email' | 'tel' | 'url' | 'radio' | 'checkbox' | 'select';
-
-// 选项类型
-export interface Option {
-    label: string;
-    value: string;
-    disabled?: boolean;
-}
+export type InputType = 'text' | 'password' | 'number' | 'email' | 'tel' | 'url';
 
 // 验证规则类型
 export interface ValidationRule {
@@ -17,17 +10,18 @@ export interface ValidationRule {
     required?: boolean;
     minLength?: number;
     maxLength?: number;
-    validator?: (value: string | string[]) => boolean;
+    validator?: (value: string) => boolean;
     message?: string;
 }
 
 // 输入框组件属性
 export interface InputProps {
     type?: InputType;
-    value?: string | string[];
-    defaultValue?: string | string[];
+    value?: string;
+    defaultValue?: string;
     placeholder?: string;
     label?: string;
+    name?: string;
     disabled?: boolean;
     required?: boolean;
     readOnly?: boolean;
@@ -37,14 +31,12 @@ export interface InputProps {
     style?: React.CSSProperties;
     prefix?: React.ReactNode;
     suffix?: React.ReactNode;
-    options?: Option[]; // 用于radio、checkbox和select
-    name?: string; // 用于radio和checkbox分组
     validationRules?: ValidationRule[];
-    onChange?: (value: string | string[], event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onFocus?: (event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onBlur?: (event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => void;
-    onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement | HTMLSelectElement>) => void;
+    onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
+    onFocus?: (event: React.FocusEvent<HTMLInputElement>) => void;
+    onBlur?: (event: React.FocusEvent<HTMLInputElement>) => void;
+    onKeyDown?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
+    onKeyUp?: (event: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 // 输入框引用方法
@@ -52,8 +44,8 @@ export interface InputRef {
     focus: () => void;
     blur: () => void;
     validate: () => boolean;
-    getValue: () => string | string[];
-    setValue: (value: string | string[]) => void;
+    getValue: () => string;
+    setValue: (value: string) => void;
     clear: () => void;
 }
 
@@ -64,6 +56,7 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
         defaultValue = '',
         placeholder,
         label,
+        name,
         disabled = false,
         required = false,
         readOnly = false,
@@ -73,8 +66,6 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
         style,
         prefix,
         suffix,
-        options = [],
-        name,
         validationRules = [],
         onChange,
         onFocus,
@@ -84,42 +75,28 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
     } = props;
 
     // 状态管理
-    const [internalValue, setInternalValue] = useState<string | string[]>(
-        controlledValue !== undefined ? controlledValue : defaultValue
-    );
+    const [internalValue, setInternalValue] = useState(controlledValue !== undefined ? controlledValue : defaultValue);
     const [isFocused, setIsFocused] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [touched, setTouched] = useState(false);
 
     // 引用
     const inputRef = useRef<HTMLInputElement>(null);
-    const selectRef = useRef<HTMLSelectElement>(null);
 
     // 受控/非受控值处理
     const value = controlledValue !== undefined ? controlledValue : internalValue;
 
     // 暴露方法给父组件
     useImperativeHandle(ref, () => ({
-        focus: () => {
-            if (type === 'select' && selectRef.current) {
-                selectRef.current.focus();
-            } else if (inputRef.current) {
-                inputRef.current.focus();
-            }
-        },
-        blur: () => {
-            if (type === 'select' && selectRef.current) {
-                selectRef.current.blur();
-            } else if (inputRef.current) {
-                inputRef.current.blur();
-            }
-        },
+        focus: () => inputRef.current?.focus(),
+        blur: () => inputRef.current?.blur(),
         validate: () => validateInput(value),
         getValue: () => value,
-        setValue: (newValue: string | string[]) => {
+        setValue: (newValue: string) => {
             if (controlledValue === undefined) {
                 setInternalValue(newValue);
             }
+            // 如果组件是受控的，我们不应该直接设置值，而是应该调用onChange
             if (onChange) {
                 const event = {
                     target: { value: newValue }
@@ -128,66 +105,47 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
             }
         },
         clear: () => {
-            const clearValue = type === 'checkbox' ? [] : '';
             if (controlledValue === undefined) {
-                setInternalValue(clearValue);
+                setInternalValue('');
             }
             if (onChange) {
                 const event = {
-                    target: { value: clearValue }
+                    target: { value: '' }
                 } as React.ChangeEvent<HTMLInputElement>;
-                onChange(clearValue, event);
+                onChange('', event);
             }
             setError(null);
         }
     }));
 
     // 验证输入
-    const validateInput = (val: string | string[]): boolean => {
+    const validateInput = (val: string): boolean => {
         if (disabled) return true;
 
         // 必填验证
-        if (required) {
-            if (type === 'checkbox') {
-                if (!Array.isArray(val) || val.length === 0) {
-                    setError('至少需要选择一个选项');
-                    return false;
-                }
-            } else {
-                if (!val || (typeof val === 'string' && !val.trim())) {
-                    setError('此字段为必填项');
-                    return false;
-                }
-            }
+        if (required && !val.trim()) {
+            setError('此字段为必填项');
+            return false;
         }
 
         // 自定义验证规则
         for (const rule of validationRules) {
-            if (rule.required) {
-                if (type === 'checkbox') {
-                    if (!Array.isArray(val) || val.length === 0) {
-                        setError(rule.message || '至少需要选择一个选项');
-                        return false;
-                    }
-                } else {
-                    if (!val || (typeof val === 'string' && !val.trim())) {
-                        setError(rule.message || '此字段为必填项');
-                        return false;
-                    }
-                }
+            if (rule.required && !val.trim()) {
+                setError(rule.message || '此字段为必填项');
+                return false;
             }
 
-            if (rule.minLength && typeof val === 'string' &&val.length>0&&val.length < rule.minLength) {
+            if (rule.minLength && (val.length>0&&val.length < rule.minLength)) {
                 setError(rule.message || `至少需要${rule.minLength}个字符`);
                 return false;
             }
 
-            if (rule.maxLength && typeof val === 'string' && val.length > rule.maxLength) {
+            if (rule.maxLength && val.length > rule.maxLength) {
                 setError(rule.message || `不能超过${rule.maxLength}个字符`);
                 return false;
             }
 
-            if (rule.pattern && typeof val === 'string' && !rule.pattern.test(val)) {
+            if (rule.pattern && !rule.pattern.test(val)) {
                 setError(rule.message || '格式不正确');
                 return false;
             }
@@ -202,223 +160,38 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
         return true;
     };
 
-    // 处理文本输入变化
-    const handleTextChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // 处理值变化
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value;
 
+        // 更新内部状态（如果是非受控组件）
         if (controlledValue === undefined) {
             setInternalValue(newValue);
         }
 
+        // 调用外部onChange
         if (onChange) {
             onChange(newValue, event);
         }
 
-        if (touched) {
-            validateInput(newValue);
-        }
-    };
-
-    // 处理单选变化
-    const handleRadioChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = event.target.value;
-
-        if (controlledValue === undefined) {
-            setInternalValue(newValue);
-        }
-
-        if (onChange) {
-            onChange(newValue, event);
-        }
-
-        if (touched) {
-            validateInput(newValue);
-        }
-    };
-
-    // 处理多选变化
-    const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const optionValue = event.target.value;
-        const currentValues = Array.isArray(value) ? value : [];
-        let newValues: string[];
-
-        if (event.target.checked) {
-            newValues = [...currentValues, optionValue];
-        } else {
-            newValues = currentValues.filter(v => v !== optionValue);
-        }
-
-        if (controlledValue === undefined) {
-            setInternalValue(newValues);
-        }
-
-        if (onChange) {
-            onChange(newValues, event);
-        }
-
-        if (touched) {
-            validateInput(newValues);
-        }
-    };
-
-    // 处理下拉选择变化
-    const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newValue = event.target.value;
-
-        if (controlledValue === undefined) {
-            setInternalValue(newValue);
-        }
-
-        if (onChange) {
-            onChange(newValue, event);
-        }
-
+        // 如果已经触摸过，进行实时验证
         if (touched) {
             validateInput(newValue);
         }
     };
 
     // 处理焦点事件
-    const handleFocus = (event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleFocus = (event: React.FocusEvent<HTMLInputElement>) => {
         setIsFocused(true);
         if (onFocus) onFocus(event);
     };
 
     // 处理失去焦点事件
-    const handleBlur = (event: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleBlur = (event: React.FocusEvent<HTMLInputElement>) => {
         setIsFocused(false);
         setTouched(true);
         validateInput(value);
         if (onBlur) onBlur(event);
-    };
-
-    // 渲染文本输入框
-    const renderTextInput = () => (
-        <input
-            ref={inputRef}
-            type={type}
-            name={name}
-            value={value as string}
-            placeholder={placeholder}
-            disabled={disabled}
-            readOnly={readOnly}
-            autoComplete={autoComplete}
-            className="enhanced-input-element"
-            onChange={handleTextChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onKeyDown={onKeyDown}
-            onKeyUp={onKeyUp}
-        />
-    );
-
-    // 渲染单选框组
-    const renderRadioGroup = () => (
-        <div className="enhanced-input-options">
-            {options.map((option, index) => (
-                <label key={option.value} className="enhanced-input-option">
-                    <input
-                        ref={index === 0 ? inputRef : undefined}
-                        type="radio"
-                        name={name}
-                        value={option.value}
-                        checked={value === option.value}
-                        disabled={disabled || option.disabled}
-                        onChange={handleRadioChange}
-                        onFocus={handleFocus}
-                        onBlur={handleBlur}
-                    />
-                    <span className="enhanced-input-option-label">{option.label}</span>
-                </label>
-            ))}
-        </div>
-    );
-
-    // 渲染复选框组
-    const renderCheckboxGroup = () => (
-        <div className="enhanced-input-options">
-            {options.map((option, index) => {
-                const isChecked = Array.isArray(value) && value.includes(option.value);
-                return (
-                    <label key={option.value} className="enhanced-input-option">
-                        <input
-                            ref={index === 0 ? inputRef : undefined}
-                            type="checkbox"
-                            name={name}
-                            value={option.value}
-                            checked={isChecked}
-                            disabled={disabled || option.disabled}
-                            onChange={handleCheckboxChange}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                        />
-                        <span className="enhanced-input-option-label">{option.label}</span>
-                    </label>
-                );
-            })}
-        </div>
-    );
-
-    // 渲染下拉菜单
-    const renderSelect = () => (
-        <select
-            ref={selectRef}
-            value={value as string}
-            disabled={disabled}
-            name={name}
-            className="enhanced-input-element"
-            onChange={handleSelectChange}
-            onFocus={handleFocus}
-            onBlur={handleBlur}
-            onKeyDown={onKeyDown}
-            onKeyUp={onKeyUp}
-        >
-            {placeholder && <option value="">{placeholder}</option>}
-            {options.map(option => (
-                <option
-                    key={option.value}
-                    value={option.value}
-                    disabled={option.disabled}
-                >
-                    {option.label}
-                </option>
-            ))}
-        </select>
-    );
-
-    // 渲染输入元素
-    const renderInputElement = () => {
-        switch (type) {
-            case 'radio':
-                return renderRadioGroup();
-            case 'checkbox':
-                return options.length > 0 ? renderCheckboxGroup() : (
-                    <label className="enhanced-input-option">
-                        <input
-                            ref={inputRef}
-                            type="checkbox"
-                            checked={!!value}
-                            disabled={disabled}
-                            onChange={(e) => {
-                                const newValue = e.target.checked ? 'true' : '';
-                                if (controlledValue === undefined) {
-                                    setInternalValue(newValue);
-                                }
-                                if (onChange) {
-                                    onChange(newValue, e);
-                                }
-                            }}
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                        />
-                        <span className="enhanced-input-option-label">{label}</span>
-                    </label>
-                );
-            case 'select':
-                return renderSelect();
-            default:
-                return renderTextInput();
-        }
     };
 
     // 当受控值变化时验证
@@ -430,52 +203,76 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
 
     // 自动聚焦
     useEffect(() => {
-        if (autoFocus) {
-            if (type === 'select' && selectRef.current) {
-                selectRef.current.focus();
-            } else if (inputRef.current) {
-                inputRef.current.focus();
-            }
+        if (autoFocus && inputRef.current) {
+            inputRef.current.focus();
         }
-    }, [autoFocus, type]);
+    }, [autoFocus]);
 
     // 构建CSS类名
-    const isOptionType = type === 'radio' || type === 'checkbox';
     const containerClasses = [
-        'enhanced-input-container',
-        disabled && 'enhanced-input-container--disabled',
-        readOnly && 'enhanced-input-container--readonly',
-        isFocused && 'enhanced-input-container--focused',
-        error && 'enhanced-input-container--error',
-        isOptionType && 'enhanced-input-container--options',
+        'input-container',
+        disabled && 'input-container--disabled',
+        readOnly && 'input-container--readonly',
+        isFocused && 'input-container--focused',
+        error && 'input-container--error',
         className
     ].filter(Boolean).join(' ');
 
     return (
         <div className={containerClasses} style={style}>
-            {label && type !== 'checkbox' && (
-                <label className="enhanced-input-label">
+            {label && (
+                <label className="input-label">
                     {label}
-                    {required && <span className="enhanced-input-required">*</span>}
+                    {required && <span className="input-required">*</span>}
                 </label>
             )}
 
-            {!isOptionType ? (
-                <div className="enhanced-input-wrapper">
-                    {prefix && <div className="enhanced-input-prefix">{prefix}</div>}
-                    {renderInputElement()}
-                    {suffix && <div className="enhanced-input-suffix">{suffix}</div>}
-                </div>
-            ) : (
-                renderInputElement()
-            )}
+            <div className="input-wrapper">
+                {prefix && <div className="input-prefix">{prefix}</div>}
 
-            {error && <div className="enhanced-input-error">{error}</div>}
+                <input
+                    ref={inputRef}
+                    type={type}
+                    value={value}
+                    name={name}
+                    placeholder={placeholder}
+                    disabled={disabled}
+                    readOnly={readOnly}
+                    autoComplete={autoComplete}
+                    className="input-element"
+                    onChange={handleChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    onKeyDown={onKeyDown}
+                    onKeyUp={onKeyUp}
+                />
+
+                {suffix && <div className="input-suffix">{suffix}</div>}
+            </div>
+
+            {error && <div className="input-error">{error}</div>}
         </div>
     );
 });
 
 // 设置显示名称
-InputField.displayName = 'EnhancedInput';
+InputField.displayName = 'Input';
+
+
+export class InputFieldCallback{
+    /**
+     * 处理输入框输入变化
+     * @param field 字段名
+     * @param setData 设置数据状态的方法
+     * @param emptyValue 输入为空时的值
+     */
+    static handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
+        if(value==null||value.length===0){
+            setData((prev: any) => ({...prev, [field]: emptyValue}));
+        }else{
+            setData((prev: any) => ({...prev, [field]: value}));
+        }
+    }
+}
 
 
