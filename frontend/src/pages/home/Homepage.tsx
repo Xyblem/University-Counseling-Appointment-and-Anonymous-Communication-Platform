@@ -20,6 +20,8 @@ import {MainForm} from "./MainForm";
 import {AppointmentForm} from "./AppointmentForm";
 import {CommunityForm} from "./CommunityForm";
 import {CheckLoginErrorView, CheckLoginLoading, CheckLoginNotLoginView} from "../../utils/views/CommonViews";
+import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../utils/api/ReturnObject";
+import {CheckReturnObject} from "../../components/functional/CheckReturnObject";
 
 //子路由
 export const Homepage_Children=[
@@ -31,20 +33,19 @@ export const Homepage_Children=[
 
 //主页
 export const Homepage: React.FC = () => {
-    //状态
-    const [logoutError, setLogoutError] = useState<boolean>(false);
-    const [logoutMessage, setLogoutMessage] = useState<string | null>(null);
-    const [logoutLoading,setLogoutLoading]=useState<boolean>(false)
     //控制器
     const userController = new UserController();
+    //路由
+    const navigate = useNavigate();
+    const urlLocation = useLocation();
+    //状态
+    const [logoutLoading,setLogoutLoading]=useState<boolean>(false);
+    const [logoutReturnObject,setLogoutReturnObject]=useState<ReturnObject|null>(null);
+    const [logoutNetworkError,setLogoutNetworkError]=useState<Error|null>(null);
     //引用
     const checkLoginRef = useRef<CheckLoginRef>(null);
     const logoutDialogRef = useRef<DialogRef>(null);
     const logoutResultDialogRef = useRef<DialogRef>(null);
-    //路由
-    const navigate = useNavigate();
-    const urlLocation = useLocation();
-
 
     useEffect(() => {
         if(urlLocation.pathname==='/home'||urlLocation.pathname==='/home/'){
@@ -72,22 +73,15 @@ export const Homepage: React.FC = () => {
                 <Button type="primary" style={{flexGrow: 1}} onClick={() => {
                     logoutDialogRef.current?.close();
                     setLogoutLoading(true);
-                    //不需要await
+                    setLogoutNetworkError(null);
+                    setLogoutReturnObject(null);
                     userController.logout().then(result => {
-                        setLogoutError(false);
-                        setLogoutMessage(null);
-                        if (result) {
-
-                        } else {
-                            setLogoutMessage("用户未登录");
-                        }
-                        setLogoutLoading(false);
+                        setLogoutReturnObject(result);
                     }).catch(err => {
-                            setLogoutError(true);
-                            setLogoutMessage(err.message);
-                            setLogoutLoading(false);
+                            setLogoutNetworkError(err);
                         }
                     ).finally(()=>{
+                        setLogoutLoading(false);
                         logoutResultDialogRef.current?.open();
                     });
                 }}>确定</Button>
@@ -98,25 +92,41 @@ export const Homepage: React.FC = () => {
     const logoutResultDialog = (<Dialog
         ref={logoutResultDialogRef}
         type="modal"
-        title={"退出登录" + (logoutError ? "出错" : (logoutMessage == null ? "成功" : "失败"))}
+        title={logoutNetworkError!=null?"网络错误":("退出登录" + ReturnStatusNamesCN.get(logoutReturnObject?.status))}
         showCloseButton
         closeOnBackdropClick
         closeOnEscape
         onClose={() => {
-            if (logoutError === false && logoutMessage == null) {
+            if (logoutLoading === false && logoutNetworkError == null && logoutReturnObject != null && logoutReturnObject.status===ReturnStatus.SUCCESS) {
                 window.location.href="/auth/login";
             }
         }}
     >
+        <CheckReturnObject
+            returnObject={logoutReturnObject}
+            networkError={logoutNetworkError}
+            networkErrorComponent={<div className="layout-flex-column">
+                <p className="text-align-left">{logoutNetworkError?.message}</p>
+                <br/>
+                <div className="layout-flex-row justify-content-flex-end">
+                    <span style={{flexGrow: 3.1}}></span>
+                    <Button type="default"
+                            style={{flexGrow: 1}} onClick={() => {
+                        logoutResultDialogRef.current?.close();
+                    }}>返回</Button>
+                </div>
+            </div>}
+        >
+        </CheckReturnObject>
         <div className="layout-flex-column">
-            <p className="text-align-left">{(logoutError ? logoutMessage : (logoutMessage == null ? "登出成功，即将返回登录界面" : logoutMessage))}</p>
+            <p className="text-align-left">{(logoutReturnObject?.status===ReturnStatus.SUCCESS)?"登出成功，即将返回登录界面":logoutReturnObject?.message}</p>
             <br/>
             <div className="layout-flex-row justify-content-flex-end">
                 <span style={{flexGrow: 3.1}}></span>
-                <Button type={(logoutError ? "default" : (logoutMessage == null ? "primary" : "default"))}
+                <Button type={(logoutReturnObject?.status===ReturnStatus.SUCCESS)? "primary" : "default"}
                         style={{flexGrow: 1}} onClick={() => {
                     logoutResultDialogRef.current?.close();
-                }}>{(logoutError ? "返回" : (logoutMessage == null ? "确定" : "返回"))}</Button>
+                }}>{(logoutReturnObject?.status===ReturnStatus.SUCCESS)? "确定" : "返回"}</Button>
             </div>
         </div>
     </Dialog>);

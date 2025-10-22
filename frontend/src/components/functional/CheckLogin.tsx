@@ -2,12 +2,13 @@ import React, {useState, useEffect, ReactNode, forwardRef, useImperativeHandle} 
 import api from "../../utils/api/api_config";
 import {AxiosError, AxiosResponse} from "axios";
 import ReactDOM from "react-dom/client";
+import {ReturnObject} from "../../utils/api/ReturnObject";
 
 // 组件Props类型
 export interface CheckLoginProps {
     to?: string | null,
     // request_api: string, 弃用
-    checkLogin:()=>Promise<boolean>,
+    checkLogin:()=>Promise<ReturnObject>,
     children: ReactNode,
     loadingComponent?: ReactNode,
     notLoginComponent?: ReactNode,
@@ -57,7 +58,7 @@ export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref)
         setIsChecking(true);
         setHasError(false);
         await checkLogin().then(result=>{
-                setIsLoggedIn(result);
+                setIsLoggedIn(result.data.isLogin);
                 if (result) {
                     onLoginSuccess?.();
                 } else {

@@ -17,24 +17,28 @@ import {
     usernameValidationRules,
     wechatValidationRules
 } from "../../../entity/User";
-import {InputField, InputRef} from "../../../components/ui/widget/InputField";
-import {Select, SelectRef} from "../../../components/ui/widget/Select";
-import {RadioGroup, RadioGroupRef} from "../../../components/ui/widget/Radio";
-import {Captcha, CaptchaRef} from "../../../components/ui/combined/Captcha";
+import {InputField, InputFieldCallback, InputRef} from "../../../components/ui/widget/InputField";
+import {Select, SelectCallback, SelectRef} from "../../../components/ui/widget/Select";
+import {RadioGroup, RadioGroupCallback, RadioGroupRef} from "../../../components/ui/widget/Radio";
+import {Captcha, CaptchaCallback, CaptchaRef} from "../../../components/ui/combined/Captcha";
 import {Loading} from "../../../components/ui/widget/Loading";
 import {Button} from "../../../components/ui/widget/Button";
 import {genderOptions, provinceOptions, userPositionOptions, userRoleOptions} from "../../../utils/option/input-option";
+import {ReturnObject, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
+import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
 
 export const UpdateUserForm: React.FC = () => {
 //控制器
     const userController=new UserController();
     const captchaController=new CaptchaController();
     //状态
-    const [user, setUser] = useState<User | null>(null);
-    const [error, setError] = useState<boolean>(false);
-    const [done,setDone]=useState<boolean>(false);
-    const [loading, setLoading] = useState<boolean>(false);
-    const [message, setMessage] = useState<string | null>(null);
+    const [userLoading, setUserLoading] = useState<boolean>(false);
+    const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
+    const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const user=userReturnObject?.data;
+    const [updateUserLoading, setUpdateUserLoading] = useState<boolean>(false);
+    const [updateUserReturnObject,setUpdateUserReturnObject]=useState<ReturnObject|null>(null);
+    const [updateUserNetworkError, setUpdateUserNetworkError]=useState<Error|null>(null);
     const [formData, setFormData] = useState<UpdateUserRequest>({
         description: null,
         email: "",
@@ -71,45 +75,34 @@ export const UpdateUserForm: React.FC = () => {
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的修改信息";
+        setUserLoading(true);
+        setUserReturnObject(null);
+        setUserNetworkError(null);
         userController.loggedInUser().then(result => {
-                //这里可能因为未登录返回null,但不需要管
-                setUser(result);
-                //设置信息
-                usernameInputRef.current?.setValue(result==null?'':''+(result.username==null?'':result.username));
-                nicknameInputRef.current?.setValue(result==null?'':''+(result.nickname==null?'':result.nickname));
-                descriptionInputRef.current?.setValue(result==null?'':''+(result.description==null?'':result.description));
-                nameInputRef.current?.setValue(result==null?'':''+result.name);
-                genderRadioRef.current?.setValue(result==null?'':''+result.gender);
-                schoolProvinceSelectRef.current?.setValue(result==null?'':''+result.schoolProvince);
-                schoolInputRef.current?.setValue(result==null?'':''+result.school);
-                secondaryUnitInputRef.current?.setValue(result==null?'':''+result.secondaryUnit);
-                majorInputRef.current?.setValue(result==null?'':''+(result.major==null?'':result.major));
-                roleRadioRef.current?.setValue(result==null?'':''+result.role);
-                positionSelectRef.current?.setValue(result==null?'':''+result.position);
-                emailInputRef.current?.setValue(result==null?'':''+result.email);
-                phoneNumberInputRef.current?.setValue(result==null?'':''+result.phoneNumber);
-                qqInputRef.current?.setValue(result==null?'':''+(result.qq==null?'':result.qq));
-                wechatInputRef.current?.setValue(result==null?'':''+(result.wechat==null?'':result.wechat));
-
+                setUserReturnObject(result);
+                usernameInputRef.current?.setValue(result.data?.username == null ? '' : result.data?.username);
+                nicknameInputRef.current?.setValue(result.data?.nickname == null ? '' : result.data?.nickname);
+                descriptionInputRef.current?.setValue(result.data?.description == null ? '' : result.data?.description);
+                nameInputRef.current?.setValue('' + result.data?.name);
+                genderRadioRef.current?.setValue('' + result.data?.gender);
+                schoolProvinceSelectRef.current?.setValue('' + result.data?.schoolProvince);
+                schoolInputRef.current?.setValue('' + result.data?.school);
+                secondaryUnitInputRef.current?.setValue('' + result.data?.secondaryUnit);
+                majorInputRef.current?.setValue(result.data?.major == null ? '' : result.data?.major);
+                roleRadioRef.current?.setValue('' + result.data?.role);
+                positionSelectRef.current?.setValue('' + result.data?.position);
+                emailInputRef.current?.setValue('' + result.data?.email);
+                phoneNumberInputRef.current?.setValue('' + result.data?.phoneNumber);
+                qqInputRef.current?.setValue(result.data?.qq == null ? '' : result.data?.qq);
+                wechatInputRef.current?.setValue(result.data?.wechat == null ? '' : result.data?.wechat);
             }
-        );
+        ).catch(err => {
+            setUserNetworkError(err);
+        }).finally(()=>{
+            setUserLoading(false);
+        });
     },[]);
 
-    //处理输入变化
-    const handleInputChange = (field: string) => (value: string | string[]) => {
-        if(value==null||value.length===0){
-            setFormData(prev => ({...prev, [field]: null}));
-        }else{
-            setFormData(prev => ({...prev, [field]: value}));
-        }
-    };
-
-    //处理验证码的输入变化
-    const handleCaptchaInputChange = (field: string) => (value: string | string[]) => {
-        const kd = captchaRef.current == null ? null : captchaRef.current.getCaptchaData();
-        const key=kd==null ? '' : kd.key;
-        setFormData(prev => ({...prev, [field]: value,captchaKey:key}));
-    };
 
     //处理表单提交
     const handleSubmit = (event: { preventDefault: () => void; }) => {
@@ -131,7 +124,6 @@ export const UpdateUserForm: React.FC = () => {
         const isWechatValid=wechatInputRef.current?.validate();
         formData.username=user==null?'':user.username;
         const isCaptchaValid=captchaRef.current?.validate();
-
         // 阻止默认提交
         event.preventDefault();
         if (isUsernameValid&&isNicknameValid&&isDescriptionValid&&isNameValid&& isGenderValid&& isSchoolProvinceValid &&isSchoolValid&& isSecondaryUnitValid&& isMajorValid&& isRoleValid&& isPositionValid&& isEmailValid&& isPhoneNumberValid&& isQqValid&& isWechatValid&&isCaptchaValid) {
@@ -142,39 +134,58 @@ export const UpdateUserForm: React.FC = () => {
         }
     };
 
+
     //提交修改密码
     const summitUpdateUser = async (): Promise<void> => {
-        setLoading(true);
-        setError(false);
-        setMessage(null);
-        setDone(false);
+        setUpdateUserLoading(true);
+        setUpdateUserReturnObject(null);
+        setUpdateUserNetworkError(null);
         formData.username=user==null?'':user.username;
         await userController.updateUser(formData).then(response=>{
-            if(!response.success){
-                setMessage(response.message);
-            }
+            setUpdateUserReturnObject(response);
         }).catch(err=>{
-            setError(true);
-            setMessage(err.message);
+            setUpdateUserNetworkError(err);
         }).finally(()=>{
-            setDone(true);
-            setLoading(false);
+            setUpdateUserLoading(false);
         });
     };
 
+    const checkUserView=(<CheckReturnObject
+        loading={userLoading}
+        returnObject={userReturnObject}
+        networkError={userNetworkError}
+        loadingComponent={<Loading type="dots" text='加载页面中...' color="#2196f3" size="large" fullScreen></Loading>}
+        networkErrorComponent={<div>
+            <h3>网络错误</h3>
+            <p className="home-error-detail">{userNetworkError?.message}</p>
+</div>}
+    >
+        <div>
+            <h3>加载信息{ReturnStatusNamesCN.get(userReturnObject?.status)}</h3>
+            <p className="home-error-detail">{userReturnObject?.message}</p>
+        </div>
+    </CheckReturnObject>);
+
+
+    const checkUpdateUserView=(<CheckReturnObject
+        loading={updateUserLoading}
+        returnObject={updateUserReturnObject}
+        networkError={updateUserNetworkError}
+        loadingComponent={<Loading type="dots" text='修改用户信息中...' color="#2196f3" size="large"
+                                   fullScreen></Loading>}
+        networkErrorComponent={<div>
+            <h3>网络错误</h3>
+            <p className="home-error-detail">{updateUserNetworkError?.message}</p>
+        </div>}
+    >
+        <div>
+            <h3>修改用户信息{ReturnStatusNamesCN.get(updateUserReturnObject?.status)}</h3>
+            <p className="home-error-detail">{updateUserReturnObject?.message}</p>
+        </div>
+    </CheckReturnObject>);
+
     return (<div style={{marginLeft: "25px"}}>
-        {loading ? <Loading type="dots" text='修改信息中...' color="#2196f3" size="large" fullScreen></Loading> : null}
-        {done?(
-                <div className="">
-                    <h2>修改信息{error?"出错":(message==null?"成功":"失败")}</h2>
-                    {message==null?
-                        <p>信息修改成功~~~</p>
-                        : <div>
-                            <p className="home-error-detail-mini">详情：{message}</p>
-                            <Button block type="default" className="btn-text-align-left" onClick={() => {setDone(false);}}>重试</Button>
-                        </div>}
-                </div>
-            ):(
+        {userReturnObject != null ? (checkUserView): (updateUserReturnObject!=null?(checkUpdateUserView) : (
             <div>
                 <h2>修改信息</h2>
                 <p className="home-notice">提示：若无法获取输入框中的初始信息，请尝试刷新</p>
@@ -195,7 +206,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="昵称"
                                 placeholder="请输入昵称"
-                                onChange={handleInputChange("nickname")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("nickname",setFormData,null)}
                                 validationRules={nicknameValidationRules}
                             />
                             <InputField
@@ -203,7 +214,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="描述"
                                 placeholder="请输入描述"
-                                onChange={handleInputChange("description")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("description",setFormData,null)}
                                 validationRules={descriptionValidationRules}
                             />
 
@@ -212,7 +223,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="姓名"
                                 placeholder="请输入姓名"
-                                onChange={handleInputChange("name")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("name",setFormData,null)}
                                 validationRules={nameValidationRules}
                                 required
                             />
@@ -221,7 +232,7 @@ export const UpdateUserForm: React.FC = () => {
                                 ref={schoolProvinceSelectRef}
                                 label="学校所在省份"
                                 options={provinceOptions}
-                                onChange={handleInputChange("schoolProvince")}
+                                onChange={SelectCallback.handleDataChange<UpdateUserRequest>("schoolProvince",setFormData,null)}
                                 placeholder="请选择入学校所在省份"
                                 required
                                 showSelectAll
@@ -232,7 +243,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="所属学校"
                                 placeholder="所属学校"
-                                onChange={handleInputChange("school")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("school",setFormData,null)}
                                 validationRules={schoolValidationRules}
                                 required
                             />
@@ -241,7 +252,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="二级单位"
                                 placeholder="二级单位"
-                                onChange={handleInputChange("secondaryUnit")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("secondaryUnit",setFormData,null)}
                                 validationRules={secondaryUnitValidationRules}
                                 required
                             />
@@ -249,7 +260,7 @@ export const UpdateUserForm: React.FC = () => {
                                 ref={majorInputRef}
                                 type="text"
                                 label="专业"
-                                onChange={handleInputChange("major")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("major",setFormData,null)}
                                 placeholder="专业"
                                 validationRules={majorValidationRules}
                             />
@@ -260,7 +271,7 @@ export const UpdateUserForm: React.FC = () => {
                                 ref={genderRadioRef}
                                 name="gender"
                                 label="性别"
-                                onChange={handleInputChange("gender")}
+                                onChange={RadioGroupCallback.handleDataChange<UpdateUserRequest>("gender",setFormData,null)}
                                 size="large"
                                 options={genderOptions}
                                 required
@@ -279,7 +290,7 @@ export const UpdateUserForm: React.FC = () => {
                                 ref={positionSelectRef}
                                 label="职务"
                                 options={userPositionOptions}
-                                onChange={handleInputChange("position")}
+                                onChange={SelectCallback.handleDataChange<UpdateUserRequest>("position",setFormData,null)}
                                 placeholder="请选择职务"
                                 required
                                 showSelectAll
@@ -290,7 +301,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="email"
                                 label="Email"
                                 placeholder="Email"
-                                onChange={handleInputChange("email")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("email",setFormData,null)}
                                 validationRules={emailValidationRules}
                                 prefix={<span>@</span>}
                                 required
@@ -300,7 +311,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="电话号码"
                                 placeholder="电话号码"
-                                onChange={handleInputChange("phoneNumber")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("phoneNumber",setFormData,null)}
                                 validationRules={phoneNumberValidationRules}
                                 required
                             />
@@ -309,7 +320,7 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="QQ"
                                 placeholder="QQ"
-                                onChange={handleInputChange("qq")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("qq",setFormData,null)}
                                 validationRules={qqValidationRules}
                             />
                             <InputField
@@ -317,13 +328,13 @@ export const UpdateUserForm: React.FC = () => {
                                 type="text"
                                 label="微信"
                                 placeholder="微信"
-                                onChange={handleInputChange("wechat")}
+                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("wechat",setFormData,null)}
                                 validationRules={wechatValidationRules}
                             />
 
                             <Captcha
                                 ref={captchaRef}
-                                onChange={handleCaptchaInputChange("captcha")}
+                                onChange={CaptchaCallback.handleDataChange<UpdateUserRequest>("captchaKey", "captcha", captchaRef, setFormData, null)}
                                 placeholder="请输入图片中的验证码"
                                 autoRefresh={true}
                                 getCaptcha={captchaController.captcha}
@@ -334,6 +345,6 @@ export const UpdateUserForm: React.FC = () => {
                     <Button type="primary" block={true} summit>提交修改</Button>
                 </form>
             </div>
-        )}
+        ))}
     </div>)
 }

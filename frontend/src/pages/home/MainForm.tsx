@@ -10,6 +10,9 @@ import {User} from "../../entity/User";
 //控制器
 import {UserController} from "../../controller/UserController";
 import {Divider} from "../../components/decoration/Divider";
+import {ReturnObject, ReturnStatusNamesCN} from "../../utils/api/ReturnObject";
+import {CheckReturnObject} from "../../components/functional/CheckReturnObject";
+import {Loading} from "../../components/ui/widget/Loading";
 
 
 
@@ -26,49 +29,74 @@ export const MainForm: React.FC = () => {
     const month = currentDate.getMonth() + 1; // 月份从0开始，需要加1
     const date = currentDate.getDate();
     //状态
-    const [user,setUser] = useState<User | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [errorDetail, setErrorDetail] = useState<string | null>(null);
+    const [userLoading, setUserLoading] = useState<boolean>(false);
+    const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
+    const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const user=userReturnObject?.data;
 
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-首页";
-        setError(null);
-        setErrorDetail(null);
-        userController.loggedInUser().then(result=>{
-            //这里可能因为未登录返回null,但不需要管
-            setUser(result);
+        setUserLoading(true);
+        setUserReturnObject(null);
+        setUserNetworkError(null);
+        userController.loggedInUser().then(result => {
+                setUserReturnObject(result);
             }
-        ).catch(err=>{
-            setError("出错了");
-            setErrorDetail(err.message)
+        ).catch(err => {
+            setUserNetworkError(err);
+        }).finally(()=>{
+            setUserLoading(false);
         });
     }, []);
 
-    const showError= (<div>
-        <h2>{error}</h2>
-        <p className="home-error-detail">{errorDetail}</p>
-    </div>);
+
+    const checkUserView=(<CheckReturnObject
+        loading={userLoading}
+        returnObject={userReturnObject}
+        networkError={userNetworkError}
+        loadingComponent={<Loading type="dots" text='加载页面中...' color="#2196f3" size="large" fullScreen></Loading>}
+        networkErrorComponent={
+            <div>
+                <h3>网络错误</h3>
+                <p className="home-error-detail">{userNetworkError?.message}</p>
+            </div>
+        }
+    >
+        <div>
+            <h3>加载信息{ReturnStatusNamesCN.get(userReturnObject?.status)}</h3>
+            <p className="home-error-detail">{userReturnObject?.message}</p>
+        </div>
+    </CheckReturnObject>);
+
+
+
 
     return (<div className="layout-flex-column">
-        <div className="home-main-hello-label">
-            {error ? showError : (<h2>你好{user == null ? null : user.name}同学，现在是{year}年{month}月{date}日</h2>)}
-        </div>
-        <div className="home-pair-page">
-            <div className="box-appointment-consultation">
-                <div className="layout-flex-column">
-                    <h2>预约咨询</h2>
-                    <br/>
-                    <Button type="primary" >匿名倾述</Button>
-                    <br/>
-                    <Button type="primary" onClick={()=>{window.location.href="/psych_test_entrance"}}>心理测试</Button>
-                    <br/>
-                    <Button type="primary">科普广场</Button>
+        {userReturnObject!=null?(checkUserView): (
+            <div>
+                <div className="home-main-hello-label">
+                    <h2>你好{user == null ? null : user.name}同学，现在是{year}年{month}月{date}日</h2>
+                </div>
+                <div className="home-pair-page">
+                    <div className="box-appointment-consultation">
+                        <div className="layout-flex-column">
+                            <h2>预约咨询</h2>
+                            <br/>
+                            <Button type="primary">匿名倾述</Button>
+                            <br/>
+                            <Button type="primary" onClick={() => {
+                                window.location.href = "/psych_test_entrance"
+                            }}>心理测试</Button>
+                            <br/>
+                            <Button type="primary">科普广场</Button>
+                        </div>
+                    </div>
+                    <div className="box-popular-science">
+                        <h2>科普内容推荐</h2>
+                    </div>
                 </div>
             </div>
-            <div className="box-popular-science">
-                <h2>科普内容推荐</h2>
-            </div>
-        </div>
+        )}
     </div>)
 }

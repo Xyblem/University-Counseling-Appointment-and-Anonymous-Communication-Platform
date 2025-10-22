@@ -106,17 +106,11 @@ export class UserController {
      * 检查用户登录
      * @return boolean 若已登录则返回true，若未登录则返回false
      */
-    checkLogin=async (): Promise<boolean> => {
-        let result:boolean=false;
-        await api.get<ReturnObject<{isLogin: 'true' | 'false';}>>("api/user/check_login").then(response => {
+    checkLogin=async (): Promise<ReturnObject> => {
+        let result:ReturnObject={code:0,status:"",timestamp:0};
+        await api.get<ReturnObject>("api/user/check_login").then(response => {
                 //@ts-ignore
-                if (response.code === ReturnCode.SUCCESS && response.data) {
-                    //@ts-ignore
-                    result = response.data.isLogin === 'true';
-                }else{
-                    //@ts-ignore
-                    throw Error(response.message);
-                }
+                result = response;
             }
         );
         return result;
@@ -127,20 +121,11 @@ export class UserController {
      * 获取已经登录的用户信息
      * @return boolean 若已登录则返回用户信息，若未登录则返回null
      */
-    loggedInUser=async (): Promise<User | null> => {
-        let result: User|null=null;
+    loggedInUser=async (): Promise<ReturnObject<User>> => {
+        let result: ReturnObject<User>={code:0,status:"",timestamp:0};
         await api.get<ReturnObject<User>>("api/user/logged-in_user").then(response => {
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                //@ts-ignore
-                result=response.data;
-                //@ts-ignore
-            }else if(response.code === ReturnCode.UNAUTHORIZED) {
-                result=null;
-            }else{
-                //@ts-ignore
-                throw new Error(response.message);
-            }
+            result=response;
         });
         return result;
     }
@@ -149,19 +134,11 @@ export class UserController {
      * 执行登出操作
      * @return boolean 若已登录则执行登出并返回true，若未登录则返回false
      */
-    logout=async (): Promise<boolean> => {
-        let result: boolean=false;
-        await api.post<ReturnObject<User>>("api/user/logout").then(response => {
+    logout=async (): Promise<ReturnObject> => {
+        let result: ReturnObject={code:0,status:"",timestamp:0};
+        await api.post<ReturnObject>("api/user/logout").then(response => {
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                result=true;
-                //@ts-ignore
-            }else if(response.code === ReturnCode.UNAUTHORIZED) {
-                result=false;
-            }else{
-                //@ts-ignore
-                throw new Error(response.message);
-            }
+            result=response;
         });
         return result;
     }
@@ -172,22 +149,11 @@ export class UserController {
      * @param updatePasswordRequest 更新密码请求体
      * @return boolean 若更新成功则返回true，更新失败则返回false
      */
-    updatePassword=async (updatePasswordRequest:UpdatePasswordRequest): Promise<{success:boolean,message:string}> => {
-        let result:{success:boolean,message:string}={success:false,message:''};
+    updatePassword=async (updatePasswordRequest:UpdatePasswordRequest): Promise<ReturnObject> => {
+        let result:ReturnObject={code:0,status:"",timestamp:0};
         await api.post<ReturnObject>("api/user/update_password",updatePasswordRequest).then(response => {
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                result={success:true,message:''};
-                //@ts-ignore
-            }else if(response.code === ReturnCode.UNAUTHORIZED||response.code===ReturnCode.BAD_REQUEST) {
-                //@ts-ignore
-                result={success:false,message:response.message};
-            }else{
-                //@ts-ignore
-                result={success:false,message:response.message};
-                //@ts-ignore
-                throw new Error(response.message);
-            }
+            result=response;
         })
         return result;
     }
@@ -197,22 +163,11 @@ export class UserController {
      * @param closeAccountRequest 注销账号请求体
      * @return boolean 若注销成功则返回true，注销失败则返回false
      */
-    closeAccount=async (closeAccountRequest:CloseAccountRequest):Promise<{success:boolean,message:string}> => {
-        let result:{success:boolean,message:string}={success:false,message:''};
+    closeAccount=async (closeAccountRequest:CloseAccountRequest):Promise<ReturnObject> => {
+        let result:ReturnObject={code:0,status:"",timestamp:0};
         await api.post<ReturnObject>("api/user/close_account",closeAccountRequest).then(response => {
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                result={success:true,message:''};
-                //@ts-ignore
-            }else if(response.code === ReturnCode.UNAUTHORIZED||response.code===ReturnCode.BAD_REQUEST) {
-                //@ts-ignore
-                result={success:false,message:response.message};
-            }else{
-                //@ts-ignore
-                result={success:false,message:response.message};
-                //@ts-ignore
-                throw new Error(response.message);
-            }
+            result=response;
         })
         return result;
     }
@@ -222,22 +177,11 @@ export class UserController {
      * @param updateUserRequest 更新用户请求体
      * @return boolean 若更新成功则返回true，更新失败则返回false
      */
-    updateUser=async (updateUserRequest:UpdateUserRequest):Promise<{success:boolean,message:string}> => {
-        let result:{success:boolean,message:string}={success:false,message:''};
+    updateUser=async (updateUserRequest:UpdateUserRequest):Promise<ReturnObject> => {
+        let result:ReturnObject={code:0,status:"",timestamp:0};
         await api.post<ReturnObject>("api/user/update_user",updateUserRequest).then(response => {
             //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                result={success:true,message:''};
-                //@ts-ignore
-            }else if(response.code === ReturnCode.UNAUTHORIZED||response.code===ReturnCode.BAD_REQUEST) {
-                //@ts-ignore
-                result={success:false,message:response.message};
-            }else{
-                //@ts-ignore
-                result={success:false,message:response.message};
-                //@ts-ignore
-                throw new Error(response.message);
-            }
+            result=response;
         })
         return result;
     }

@@ -1,5 +1,5 @@
 //React框架
-import React, {use, useEffect, useState} from "react";
+import React, {useEffect, useState} from "react";
 //样式表
 import '../Home.css'
 import '../../../css/LayoutFlex.css'
@@ -7,37 +7,59 @@ import {User} from "../../../entity/User";
 import {UserController} from "../../../controller/UserController";
 import {TextView} from "../../../components/ui/widget/TextView"
 import {GenderNamesCN, ProvinceCN_NamesCN, UserPositionNamesCN, UserRoleNamesCN} from "../../../entity/enums/enums";
+import {ReturnObject, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
+import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
+import {Loading} from "../../../components/ui/widget/Loading";
 
 export const BasicInformationForm: React.FC = () => {
     //控制器
     const userController = new UserController();
     //状态
-    const [user, setUser] = useState<User | null>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [errorDetail, setErrorDetail] = useState<string | null>(null);
+    const [userLoading, setUserLoading] = useState<boolean>(false);
+    const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
+    const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const user=userReturnObject?.data;
+
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的基本信息";
-        setError(null);
-        setErrorDetail(null);
+        setUserLoading(true);
+        setUserReturnObject(null);
+        setUserNetworkError(null);
         userController.loggedInUser().then(result => {
-                //这里可能因为未登录返回null,但不需要管
-                setUser(result);
+                setUserReturnObject(result);
             }
         ).catch(err => {
-            setError("出错了");
-            setErrorDetail(err.message)
+            setUserNetworkError(err);
+        }).finally(()=>{
+            setUserLoading(false);
         });
     }, []);
 
-    const showError = (<div>
-        <h3>{error}</h3>
-        <p className="home-error-detail">{errorDetail}</p>
-    </div>);
+
+
+    const checkUserView=(<CheckReturnObject
+        loading={userLoading}
+        returnObject={userReturnObject}
+        networkError={userNetworkError}
+        loadingComponent={<Loading type="dots" text='加载页面中...' color="#2196f3" size="large" fullScreen></Loading>}
+        networkErrorComponent={
+            <div>
+                <h3>网络错误</h3>
+                <p className="home-error-detail">{userNetworkError?.message}</p>
+            </div>
+        }
+    >
+        <div>
+            <h3>加载信息{ReturnStatusNamesCN.get(userReturnObject?.status)}</h3>
+            <p className="home-error-detail">{userReturnObject?.message}</p>
+        </div>
+    </CheckReturnObject>);
+
 
     return (<div className="layout-flex-column">
         <h2>基本信息</h2>
-        {error ? showError : (
+        {userReturnObject!=null?(checkUserView): (
             <div className="layout-flex-column" style={{marginLeft: "25px"}}>
                 <TextView label="用户名：" text={user == null ? "null" : user.username} copyable/>
                 <TextView label="昵称：" text={user == null ? "null" : "" + user.nickname} copyable/>
@@ -62,6 +84,5 @@ export const BasicInformationForm: React.FC = () => {
                 <TextView label="注册时间：" text={user == null ? "null" : "" + user.registrationTime} copyable/>
             </div>
         )}
-
     </div>)
 }
