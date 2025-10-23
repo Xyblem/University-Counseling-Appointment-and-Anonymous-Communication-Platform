@@ -310,7 +310,6 @@ public class UserController {
     public ReturnObject updateIndividualInformation(@RequestBody Map<String,Object> updateUserRequestBody,HttpSession session){
         GenderConverter genderConverter=new GenderConverter();
         ProvinceCN_Converter provinceCN_Converter=new ProvinceCN_Converter();
-        UserRoleConverter userRoleConverter=new UserRoleConverter();
         UserPositionConverter userPositionConverter=new UserPositionConverter();
         //获取参数
         String username=updateUserRequestBody.get("username")==null?null:updateUserRequestBody.get("username").toString();
