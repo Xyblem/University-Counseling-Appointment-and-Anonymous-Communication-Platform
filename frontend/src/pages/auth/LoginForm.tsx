@@ -1,22 +1,20 @@
+//样式
+import './Auth.css'
 //React框架
 import React, {useEffect, useRef, useState} from "react";
 import {useNavigate} from 'react-router-dom'
-//样式
-import './Auth.css'
 //自定义组件
-import {InputField, InputFieldCallback, InputRef} from '../../components/ui/widget/InputField'
-import {RadioGroup, RadioGroupCallback, RadioGroupRef} from "../../components/ui/widget/Radio";
-import {Button} from '../../components/ui/widget/Button'
-import {Captcha, CaptchaCallback, CaptchaRef} from '../../components/ui/combined/Captcha'
-import {Loading} from "../../components/ui/widget/Loading";
-//输入验证规则
-import {usernameValidationRules,passwordValidationRules} from "../../entity/User";
-//输入选项
-import {userRoleOptions} from "../../utils/option/input-option";
-import {CaptchaController} from "../../controller/CaptchaController";
 import {LoginRequest, UserController} from "../../controller/UserController";
-import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../utils/api/ReturnObject";
-import {CheckReturnObject} from "../../components/functional/CheckReturnObject";
+import {CaptchaController} from "../../controller/CaptchaController";
+import {ReturnObject} from "../../common/response/ReturnObject";
+import {Input, InputCallback, InputRef} from "../../common/view/input/Input";
+import {RadioGroup, RadioGroupCallback, RadioGroupRef} from "../../common/view/input/Radio";
+import {CaptchaCallback, CaptchaRef} from "../../common/view/custom-input/Captcha";
+import {Button} from "../../common/view/controller/Button";
+import {Captcha} from "../../common/view/custom-input/Captcha";
+import {User} from "../../entity/User";
+import {ResponseHandler, ResponseHandlerRef} from "../../common/response/ResponseHandler";
+import {Loading} from "../../common/view/display/Loading";
 
 //登录界面
 export const LoginForm: React.FC = () => {
@@ -26,9 +24,6 @@ export const LoginForm: React.FC = () => {
     //路由
     const navigate = useNavigate();
     //状态
-    const [loginLoading, setLoginLoading] = useState<boolean>(false);
-    const [loginReturnObject,setLoginReturnObject]=useState<ReturnObject|null>(null);
-    const [loginNetworkError, setLoginNetworkError]=useState<Error|null>(null);
     const [formData, setFormData] = useState<LoginRequest>({
         username: '',
         password: '',
@@ -41,7 +36,7 @@ export const LoginForm: React.FC = () => {
     const passwordInputRef = useRef<InputRef>(null);
     const roleRef = useRef<RadioGroupRef>(null);
     const captchaRef = useRef<CaptchaRef>(null);
-
+    const loginHandlerRef= useRef<ResponseHandlerRef<LoginRequest,any>>(null);
 
     //钩子
     useEffect(() => {
@@ -60,111 +55,104 @@ export const LoginForm: React.FC = () => {
         event.preventDefault();
         if (isAccountValid && isPasswordValid && isRoleValid&&isCaptchaValid) {
             //console.log("暂停测试：",formData);alert("暂停测试");
-            summitLogin();
+            loginHandlerRef.current?.request(formData);
         } else {
             alert('请检查表单错误!');
         }
     };
 
-    //提交登录
-    const summitLogin = async (): Promise<void> => {
-        setLoginLoading(true);
-        setLoginNetworkError(null);
-        setLoginReturnObject(null);
-        await userController.login(formData).then(result=>{
-            setLoginReturnObject(result);
-            if(result.status===ReturnStatus.SUCCESS){
-                navigate('/home/main');
-            }
-        }).catch(err=>{
-            setLoginNetworkError(err);
-        }).finally(()=>{
-            setLoginLoading(false);
-        });
-    }
+
 
     const retryButton=(<Button type="link" className="btn-text-align-left" onClick={() => {
-        setLoginNetworkError(null);
-        setLoginReturnObject(null);
+        loginHandlerRef.current?.recover();
     }}>重试</Button>);
 
     return (<div className="auth-background">
         <div className="auth-login-form">
             <h2>高校心理咨询预约与匿名交流平台</h2>
 
-            {loginReturnObject!=null ? (
-                <CheckReturnObject
-                    loading={loginLoading}
-                    returnObject={loginReturnObject}
-                    networkError={loginNetworkError}
-                    loadingComponent={<Loading type="dots" text='登录中...' color="#2196f3" size="large"
-                                               fullScreen></Loading>}
-                    networkErrorComponent={
-                        <div>
-                            <h2>网络错误</h2>
-                            <p className=".auth-error-detail">{loginNetworkError?.message}</p>
-                            <div className="auth-bottom">{retryButton}</div>
-                        </div>
-                    }
-                >
+            <ResponseHandler<LoginRequest,any>
+                ref={loginHandlerRef}
+                request={userController.login}
+                idleComponent={
                     <div>
-                        <h2>登录{ReturnStatusNamesCN.get(loginReturnObject?.status)}</h2>
-                        <p className=".auth-error-detail">{loginReturnObject?.message}</p>
+                        <h2>用户登录</h2>
+                        <form onSubmit={handleSubmit}>
+                            <Input
+                                ref={usernameInputRef}
+                                type="text"
+                                label="用户名"
+                                placeholder="请输入用户名"
+                                prefix={<span>A</span>}
+                                validationRules={User.ValidationRules.username}
+                                onChange={InputCallback.handleDataChange<LoginRequest>("username", setFormData, null)}
+                                required
+                            />
+                            <Input
+                                ref={passwordInputRef}
+                                type="password"
+                                label="密码"
+                                placeholder="请输入密码"
+                                prefix={<span>P</span>}
+                                validationRules={User.ValidationRules.password}
+                                onChange={InputCallback.handleDataChange<LoginRequest>("password", setFormData, null)}
+                                required
+                            />
+                            <RadioGroup
+                                ref={roleRef}
+                                label="用户类型"
+                                size="large"
+                                options={User.Options.role}
+                                required
+                                layout="horizontal"
+                                onChange={RadioGroupCallback.handleDataChange<LoginRequest>("role", setFormData, null)}
+                            />
+                            <Captcha
+                                ref={captchaRef}
+                                onChange={CaptchaCallback.handleDataChange<LoginRequest>("captchaKey", "captcha", captchaRef, setFormData, null)}
+                                placeholder="请输入图片中的验证码"
+                                autoRefresh={true}
+                                getCaptcha={captchaController.captcha}
+                            />
+                            <br/>
+                            <Button type="primary" block summit>登录</Button>
+                            <br/>
+                            <div className="auth-bottom">
+                                <Button type="link" className="btn-text-align-left" onClick={() => {
+                                    navigate('/auth/signup')
+                                }}>还没有账号？点击注册</Button>
+                                <Button type="link" className="btn-text-align-right">忘记密码</Button>
+                            </div>
+                        </form>
+                    </div>
+                }
+
+                loadingComponent={<Loading type="dots" text='登录中...' color="#2196f3" size="large"
+                                           fullScreen></Loading>}
+
+                handlingReturnObjectComponent={<Loading type="dots" text='处理处理登录结果中...' color="#2196f3" size="large"
+                                                        fullScreen></Loading>}
+
+                finishedComponent={
+                    <div>
+                        <h2>登录{ReturnObject.Status.ChineseName.get(loginHandlerRef.current?.returnObject?.status)}</h2>
+                        <p className=".auth-error-detail">{loginHandlerRef.current?.returnObject?.message}</p>
                         <div className="auth-bottom">{retryButton}</div>
                     </div>
-                </CheckReturnObject>
-            ): (
-                <div>
-                    <h2>用户登录</h2>
-                    <form onSubmit={handleSubmit}>
-                        <InputField
-                            ref={usernameInputRef}
-                            type="text"
-                            label="用户名"
-                            placeholder="请输入用户名"
-                            prefix={<span>A</span>}
-                            validationRules={usernameValidationRules}
-                            onChange={InputFieldCallback.handleDataChange<LoginRequest>("username", setFormData, null)}
-                            required
-                        />
-                        <InputField
-                            ref={passwordInputRef}
-                            type="password"
-                            label="密码"
-                            placeholder="请输入密码"
-                            prefix={<span>P</span>}
-                            validationRules={passwordValidationRules}
-                            onChange={InputFieldCallback.handleDataChange<LoginRequest>("password", setFormData, null)}
-                            required
-                        />
-                        <RadioGroup
-                            ref={roleRef}
-                            label="用户类型"
-                            size="large"
-                            options={userRoleOptions}
-                            required
-                            layout="horizontal"
-                            onChange={RadioGroupCallback.handleDataChange<LoginRequest>("role", setFormData, null)}
-                        />
-                        <Captcha
-                            ref={captchaRef}
-                            onChange={CaptchaCallback.handleDataChange<LoginRequest>("captchaKey", "captcha", captchaRef, setFormData, null)}
-                            placeholder="请输入图片中的验证码"
-                            autoRefresh={true}
-                            getCaptcha={captchaController.captcha}
-                        />
-                        <br/>
-                        <Button type="primary" block summit>登录</Button>
-                        <br/>
-                        <div className="auth-bottom">
-                            <Button type="link" className="btn-text-align-left" onClick={() => {
-                                navigate('/auth/signup')
-                            }}>还没有账号？点击注册</Button>
-                            <Button type="link" className="btn-text-align-right">忘记密码</Button>
-                        </div>
-                    </form>
-                </div>
-            )}
+                }
+
+                onRequestEnd={()=>{
+                    if(loginHandlerRef.current?.returnObject?.code === ReturnObject.Code.SUCCESS){
+                        navigate('/home/main');
+                    }
+                }}
+
+                networkErrorComponent={<div>
+                    <h2>网络错误</h2>
+                    <p className=".auth-error-detail">{loginHandlerRef.current?.networkError?.message}</p>
+                    <div className="auth-bottom">{retryButton}</div>
+                </div>}
+            />
         </div>
     </div>)
 }

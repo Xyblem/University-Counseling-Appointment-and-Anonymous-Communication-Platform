@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import './TextView.css';
+import './Text.css';
 
 // 组件属性类型定义
-interface TextDisplayProps {
+interface TextProps {
     /**  标题*/
     label?: string;
     /** 要显示的文本内容 */
@@ -27,19 +27,19 @@ interface TextDisplayProps {
     tooltipContent?: string;
 }
 
-export const TextView: React.FC<TextDisplayProps> = ({
-                                                    label=null,
-                                                     text,
-                                                     maxLines = 1,
-                                                     copyable = false,
-                                                     onCopy,
-                                                     className = '',
-                                                     style,
-                                                     selectable = false,
-                                                     align = 'left',
-                                                     showTooltip = true,
-                                                     tooltipContent,
-                                                 }) => {
+export const Text: React.FC<TextProps> = ({
+                                                         label=null,
+                                                         text,
+                                                         maxLines = 1,
+                                                         copyable = false,
+                                                         onCopy,
+                                                         className = '',
+                                                         style,
+                                                         selectable = false,
+                                                         align = 'left',
+                                                         showTooltip = true,
+                                                         tooltipContent,
+                                                     }) => {
     const [isCopied, setIsCopied] = useState(false);
     const [isOverflowed, setIsOverflowed] = useState(false);
     const [showFullText, setShowFullText] = useState(false);
@@ -165,3 +165,6 @@ export const TextView: React.FC<TextDisplayProps> = ({
         </div>
     );
 };
+
+
+Text.displayName="Text";

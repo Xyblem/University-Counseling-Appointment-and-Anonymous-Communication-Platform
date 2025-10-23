@@ -1,7 +1,7 @@
 //React框架
 import React, {useEffect} from "react";
 import {NavLink, useLocation} from "react-router-dom";
-import {Outlet} from "react-router";
+import {Outlet, useOutletContext} from "react-router";
 //样式
 import './Home.css'
 import '../../css/LayoutFlex.css'
@@ -13,6 +13,7 @@ import {EvaluationRecordForm} from "./mine/EvaluationRecordForm";
 import {SystemSetting} from "./mine/SystemSetting";
 import {UpdatePassword} from "./mine/UpdatePassword";
 import {UpdateUserForm} from "./mine/UpdateUserForm";
+import {Homepage} from "./HomepageForm";
 //子路由
 export const MineForm_Children=[
     {path:"/home/mine/appointment_manage",element:<AppointmentManage/>},
@@ -26,6 +27,7 @@ export const MineForm_Children=[
 //我的
 export const MineForm: React.FC = () => {
     const urlLocation = useLocation();
+    const context=useOutletContext<Homepage.OutletContext>();
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的";
@@ -45,8 +47,8 @@ export const MineForm: React.FC = () => {
                     <NavLink to="close_account">注销账号</NavLink>
                 </div>
                 <div className="layout-flex-column">
-                    <Outlet></Outlet>
+                    <Outlet context={context}></Outlet>
                 </div>
             </div>
-            )
-            }
+        )
+    }

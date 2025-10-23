@@ -370,4 +370,6 @@ CheckboxGroup.displayName = 'CheckboxGroup';
 
 
 
-
+export namespace CheckBoxCallback{
+    
+}

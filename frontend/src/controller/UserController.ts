@@ -1,5 +1,5 @@
 import {User} from "../entity/User";
-import {ReturnObject,ReturnCode} from "../utils/api/ReturnObject";
+import {ReturnObject} from "../common/response/ReturnObject";
 import api from "../utils/api/api_config";
 
 

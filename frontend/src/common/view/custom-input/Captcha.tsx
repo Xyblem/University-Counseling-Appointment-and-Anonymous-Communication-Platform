@@ -1,7 +1,7 @@
 // Captcha.tsx
 import React, { useState, useEffect, useCallback, forwardRef, useImperativeHandle } from 'react';
 import api from '../../../utils/api/api_config';
-import {InputField, InputRef, ValidationRule} from "../widget/InputField";
+import {Input, InputRef, ValidationRule} from "../input/Input";
 import './Captcha.css'
 
 
@@ -31,19 +31,19 @@ export interface CaptchaRef {
 }
 
 export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
-                                                          onCaptchaChange,
-                                                          className = '',
-                                                          placeholder = '请输入验证码',
-                                                          autoRefresh = false,
-                                                          inputClassName = '',
-                                                          imageClassName = '',
-                                                          buttonClassName = '',
-                                                          // api_getCaptcha='',弃用
-                                                          getCaptcha,
-                                                          label='验证码',
-                                                          onChange,
-                                                          name
-                                                      }, ref) => {
+                                                                 onCaptchaChange,
+                                                                 className = '',
+                                                                 placeholder = '请输入验证码',
+                                                                 autoRefresh = false,
+                                                                 inputClassName = '',
+                                                                 imageClassName = '',
+                                                                 buttonClassName = '',
+                                                                 // api_getCaptcha='',弃用
+                                                                 getCaptcha,
+                                                                 label='验证码',
+                                                                 onChange,
+                                                                 name
+                                                             }, ref) => {
     const [captchaInfo, setCaptchaInfo] = useState<{ key: string; image: string } | null>(null);
     const [inputValue, setInputValue] = useState('');
     const [loading, setLoading] = useState(false);
@@ -161,7 +161,7 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
     return (
         <div className={`captcha-container ${className}`}>
             <div className="captcha-input-group">
-                <InputField
+                <Input
                     label={label}
                     placeholder={placeholder}
                     validationRules={captchaInputRules}
@@ -212,7 +212,7 @@ export const Captcha = forwardRef<CaptchaRef, CaptchaProps>(({
 Captcha.displayName = 'Captcha';
 
 
-export class CaptchaCallback{
+export namespace CaptchaCallback{
     /**
      * 处理验证码的输入变化
      * @param captchaKeyField 验证码Key的字段名
@@ -221,7 +221,7 @@ export class CaptchaCallback{
      * @param setData 设置数据状态的方法
      * @param emptyValue 输入为空时的验证码的值
      */
-    static handleDataChange=<T=any>(captchaKeyField:string,captchaCodeField: string,captchaRef:React.RefObject<CaptchaRef | null>,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
+    export const handleDataChange=<T=any>(captchaKeyField:string,captchaCodeField: string,captchaRef:React.RefObject<CaptchaRef | null>,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
         const code = captchaRef.current == null ? null : captchaRef.current.getCaptchaData();
         const key=code==null ? '' : code.key;
         if(value==null||value.length===0){

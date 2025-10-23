@@ -1,42 +1,25 @@
 import React, {useEffect, useRef, useState} from "react";
 import {UpdateUserRequest, UserController} from "../../../controller/UserController";
 import {CaptchaController} from "../../../controller/CaptchaController";
-import {
-    descriptionValidationRules,
-    emailValidationRules,
-    majorValidationRules,
-    nameValidationRules,
-    nicknameValidationRules,
-    phoneNumberValidationRules,
-    qqValidationRules,
-    schoolValidationRules,
-    secondaryUnitValidationRules,
-    User,
-    wechatValidationRules
-} from "../../../entity/User";
-import {InputField, InputFieldCallback, InputRef} from "../../../components/ui/widget/InputField";
-import {Select, SelectCallback, SelectRef} from "../../../components/ui/widget/Select";
-import {RadioGroup, RadioGroupCallback, RadioGroupRef} from "../../../components/ui/widget/Radio";
-import {Captcha, CaptchaCallback, CaptchaRef} from "../../../components/ui/combined/Captcha";
-import {Loading} from "../../../components/ui/widget/Loading";
-import {Button} from "../../../components/ui/widget/Button";
-import {genderOptions, provinceOptions, userPositionOptions, userRoleOptions} from "../../../utils/option/input-option";
-import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
-import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
+import {useOutletContext} from "react-router";
+import {Homepage} from "../HomepageForm";
+import {ResponseHandler, ResponseHandlerRef} from "../../../common/response/ResponseHandler";
+import {Input, InputCallback, InputRef} from "../../../common/view/input/Input";
+import {Captcha, CaptchaCallback, CaptchaRef} from "../../../common/view/custom-input/Captcha";
+import {Button} from "../../../common/view/controller/Button";
+import {Select, SelectCallback, SelectRef} from "../../../common/view/input/Select";
+import {RadioGroup, RadioGroupCallback, RadioGroupRef} from "../../../common/view/input/Radio";
+import {User} from "../../../entity/User";
+import {Loading} from "../../../common/view/display/Loading";
+import {ReturnObject} from "../../../common/response/ReturnObject";
 
 export const UpdateUserForm: React.FC = () => {
 //控制器
     const userController=new UserController();
     const captchaController=new CaptchaController();
+    const context=useOutletContext<Homepage.OutletContext>();
     //状态
-    const [userLoading, setUserLoading] = useState<boolean>(false);
-    const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
-    const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
-    const [userSuccess,setUserSuccess]=useState<boolean>(false);
-    const user=userReturnObject?.data;
-    const [updateUserLoading, setUpdateUserLoading] = useState<boolean>(false);
-    const [updateUserReturnObject,setUpdateUserReturnObject]=useState<ReturnObject|null>(null);
-    const [updateUserNetworkError, setUpdateUserNetworkError]=useState<Error|null>(null);
+    const updateUserHandler=useRef<ResponseHandlerRef<UpdateUserRequest,any>>(null);
     const [formData, setFormData] = useState<UpdateUserRequest>({
         description: null,
         email: "",
@@ -73,36 +56,21 @@ export const UpdateUserForm: React.FC = () => {
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的修改信息";
-        setUserLoading(true);
-        setUserReturnObject(null);
-        setUserNetworkError(null);
-        setUserSuccess(false);
-        userController.loggedInUser().then(result => {
-                setUserReturnObject(result);
-                if(result.status===ReturnStatus.SUCCESS){
-                    setUserSuccess(true);
-                }
-                usernameInputRef.current?.setValue(result.data?.username == null ? '' : result.data?.username);
-                nicknameInputRef.current?.setValue(result.data?.nickname == null ? '' : result.data?.nickname);
-                descriptionInputRef.current?.setValue(result.data?.description == null ? '' : result.data?.description);
-                nameInputRef.current?.setValue('' + result.data?.name);
-                genderRadioRef.current?.setValue('' + result.data?.gender);
-                schoolProvinceSelectRef.current?.setValue('' + result.data?.schoolProvince);
-                schoolInputRef.current?.setValue('' + result.data?.school);
-                secondaryUnitInputRef.current?.setValue('' + result.data?.secondaryUnit);
-                majorInputRef.current?.setValue(result.data?.major == null ? '' : result.data?.major);
-                roleRadioRef.current?.setValue('' + result.data?.role);
-                positionSelectRef.current?.setValue('' + result.data?.position);
-                emailInputRef.current?.setValue('' + result.data?.email);
-                phoneNumberInputRef.current?.setValue('' + result.data?.phoneNumber);
-                qqInputRef.current?.setValue(result.data?.qq == null ? '' : result.data?.qq);
-                wechatInputRef.current?.setValue(result.data?.wechat == null ? '' : result.data?.wechat);
-            }
-        ).catch(err => {
-            setUserNetworkError(err);
-        }).finally(()=>{
-            setUserLoading(false);
-        });
+        usernameInputRef.current?.setValue(''+context.user?.username);
+        nicknameInputRef.current?.setValue(''+context.user?.nickname);
+        descriptionInputRef.current?.setValue(''+ context.user?.description);
+        nameInputRef.current?.setValue('' + context.user?.name);
+        genderRadioRef.current?.setValue('' + context.user?.gender);
+        schoolProvinceSelectRef.current?.setValue('' + context.user?.schoolProvince);
+        schoolInputRef.current?.setValue('' + context.user?.school);
+        secondaryUnitInputRef.current?.setValue('' + context.user?.secondaryUnit);
+        majorInputRef.current?.setValue('' + context.user?.major);
+        roleRadioRef.current?.setValue('' + context.user?.role);
+        positionSelectRef.current?.setValue('' + context.user?.position);
+        emailInputRef.current?.setValue('' + context.user?.email);
+        phoneNumberInputRef.current?.setValue('' + context.user?.phoneNumber);
+        qqInputRef.current?.setValue(''+context.user?.qq);
+        wechatInputRef.current?.setValue(''+context.user?.wechat);
     },[]);
 
 
@@ -124,147 +92,100 @@ export const UpdateUserForm: React.FC = () => {
         const isPhoneNumberValid=phoneNumberInputRef.current?.validate();
         const isQqValid=qqInputRef.current?.validate();
         const isWechatValid=wechatInputRef.current?.validate();
-        formData.username=user==null?'':user.username;
+        formData.username=""+context.user?.username;
         const isCaptchaValid=captchaRef.current?.validate();
         // 阻止默认提交
         event.preventDefault();
         if (isUsernameValid&&isNicknameValid&&isDescriptionValid&&isNameValid&& isGenderValid&& isSchoolProvinceValid &&isSchoolValid&& isSecondaryUnitValid&& isMajorValid&& isRoleValid&& isPositionValid&& isEmailValid&& isPhoneNumberValid&& isQqValid&& isWechatValid&&isCaptchaValid) {
             //console.log("暂停测试：",formData);alert("暂停测试");
-            summitUpdateUser();
+            updateUserHandler.current?.request(formData);
         } else {
             alert('请检查表单错误!');
         }
     };
 
 
-    //提交修改密码
-    const summitUpdateUser = async (): Promise<void> => {
-        setUpdateUserLoading(true);
-        setUpdateUserReturnObject(null);
-        setUpdateUserNetworkError(null);
-        formData.username=user==null?'':user.username;
-        await userController.updateUser(formData).then(response=>{
-            setUpdateUserReturnObject(response);
-        }).catch(err=>{
-            setUpdateUserNetworkError(err);
-        }).finally(()=>{
-            setUpdateUserLoading(false);
-        });
-    };
-
-    const checkUserView=(<CheckReturnObject
-        loading={userLoading}
-        returnObject={userReturnObject}
-        networkError={userNetworkError}
-        loadingComponent={<Loading type="dots" text='加载页面中...' color="#2196f3" size="large" fullScreen></Loading>}
-        networkErrorComponent={<div>
-            <h3>网络错误</h3>
-            <p className="home-error-detail">{userNetworkError?.message}</p>
-</div>}
-    >
-        <div>
-            <h3>加载信息{ReturnStatusNamesCN.get(userReturnObject?.status)}</h3>
-            <p className="home-error-detail">{userReturnObject?.message}</p>
-        </div>
-    </CheckReturnObject>);
-
-
-    const checkUpdateUserView=(<CheckReturnObject
-        loading={updateUserLoading}
-        returnObject={updateUserReturnObject}
-        networkError={updateUserNetworkError}
-        loadingComponent={<Loading type="dots" text='修改用户信息中...' color="#2196f3" size="large"
-                                   fullScreen></Loading>}
-        networkErrorComponent={<div>
-            <h3>网络错误</h3>
-            <p className="home-error-detail">{updateUserNetworkError?.message}</p>
-        </div>}
-    >
-        <div>
-            <h3>修改用户信息{ReturnStatusNamesCN.get(updateUserReturnObject?.status)}</h3>
-            <p className="home-error-detail">{updateUserReturnObject?.message}</p>
-        </div>
-    </CheckReturnObject>);
-
     return (<div style={{marginLeft: "25px"}}>
-        {!userSuccess? (checkUserView): (updateUserReturnObject!=null?(checkUpdateUserView) : (
-            <div>
+        <ResponseHandler<UpdateUserRequest,any>
+            ref={updateUserHandler}
+            request={userController.updateUser}
+            idleComponent={<div>
                 <h2>修改信息</h2>
                 <p className="home-notice">提示：若无法获取输入框中的初始信息，请尝试刷新</p>
                 <form onSubmit={handleSubmit}>
                     <div className="home-pair-page">
                         <div style={{width: "400px"}}>
-                            <InputField
+                            <Input
                                 ref={usernameInputRef}
                                 type="text"
                                 label="用户名"
                                 placeholder="请输入用户名"
-                                validationRules={nicknameValidationRules}
+                                validationRules={User.ValidationRules.username}
                                 disabled
                                 required
                             />
-                            <InputField
+                            <Input
                                 ref={nicknameInputRef}
                                 type="text"
                                 label="昵称"
                                 placeholder="请输入昵称"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("nickname",setFormData,null)}
-                                validationRules={nicknameValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("nickname", setFormData, null)}
+                                validationRules={User.ValidationRules.nickname}
                             />
-                            <InputField
+                            <Input
                                 ref={descriptionInputRef}
                                 type="text"
                                 label="描述"
                                 placeholder="请输入描述"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("description",setFormData,null)}
-                                validationRules={descriptionValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("description", setFormData, null)}
+                                validationRules={User.ValidationRules.description}
                             />
 
-                            <InputField
+                            <Input
                                 ref={nameInputRef}
                                 type="text"
                                 label="姓名"
                                 placeholder="请输入姓名"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("name",setFormData,null)}
-                                validationRules={nameValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("name", setFormData, null)}
+                                validationRules={User.ValidationRules.name}
                                 required
                             />
 
                             <Select
                                 ref={schoolProvinceSelectRef}
                                 label="学校所在省份"
-                                options={provinceOptions}
-                                onChange={SelectCallback.handleDataChange<UpdateUserRequest>("schoolProvince",setFormData,null)}
+                                options={User.Options.schoolProvince}
+                                onChange={SelectCallback.handleDataChange<UpdateUserRequest>("schoolProvince", setFormData, null)}
                                 placeholder="请选择入学校所在省份"
                                 required
                                 showSelectAll
                                 maxTagCount={2}
                             />
-                            <InputField
+                            <Input
                                 ref={schoolInputRef}
                                 type="text"
                                 label="所属学校"
                                 placeholder="所属学校"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("school",setFormData,null)}
-                                validationRules={schoolValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("school", setFormData, null)}
+                                validationRules={User.ValidationRules.school}
                                 required
                             />
-                            <InputField
+                            <Input
                                 ref={secondaryUnitInputRef}
                                 type="text"
                                 label="二级单位"
                                 placeholder="二级单位"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("secondaryUnit",setFormData,null)}
-                                validationRules={secondaryUnitValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("secondaryUnit", setFormData, null)}
+                                validationRules={User.ValidationRules.secondaryUnit}
                                 required
                             />
-                            <InputField
+                            <Input
                                 ref={majorInputRef}
                                 type="text"
                                 label="专业"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("major",setFormData,null)}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("major", setFormData, null)}
                                 placeholder="专业"
-                                validationRules={majorValidationRules}
+                                validationRules={User.ValidationRules.major}
                             />
 
                         </div>
@@ -273,9 +194,9 @@ export const UpdateUserForm: React.FC = () => {
                                 ref={genderRadioRef}
                                 name="gender"
                                 label="性别"
-                                onChange={RadioGroupCallback.handleDataChange<UpdateUserRequest>("gender",setFormData,null)}
+                                onChange={RadioGroupCallback.handleDataChange<UpdateUserRequest>("gender", setFormData, null)}
                                 size="large"
-                                options={genderOptions}
+                                options={User.Options.gender}
                                 required
                                 layout="horizontal"
                             />
@@ -283,7 +204,7 @@ export const UpdateUserForm: React.FC = () => {
                                 ref={roleRadioRef}
                                 label="用户类型"
                                 size="large"
-                                options={userRoleOptions}
+                                options={User.Options.role}
                                 required
                                 layout="horizontal"
                                 disabled
@@ -291,47 +212,47 @@ export const UpdateUserForm: React.FC = () => {
                             <Select
                                 ref={positionSelectRef}
                                 label="职务"
-                                options={userPositionOptions}
-                                onChange={SelectCallback.handleDataChange<UpdateUserRequest>("position",setFormData,null)}
+                                options={User.Options.position}
+                                onChange={SelectCallback.handleDataChange<UpdateUserRequest>("position", setFormData, null)}
                                 placeholder="请选择职务"
                                 required
                                 showSelectAll
                                 maxTagCount={2}
                             />
-                            <InputField
+                            <Input
                                 ref={emailInputRef}
                                 type="email"
                                 label="Email"
                                 placeholder="Email"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("email",setFormData,null)}
-                                validationRules={emailValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("email", setFormData, null)}
+                                validationRules={User.ValidationRules.email}
                                 prefix={<span>@</span>}
                                 required
                             />
-                            <InputField
+                            <Input
                                 ref={phoneNumberInputRef}
                                 type="text"
                                 label="电话号码"
                                 placeholder="电话号码"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("phoneNumber",setFormData,null)}
-                                validationRules={phoneNumberValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("phoneNumber", setFormData, null)}
+                                validationRules={User.ValidationRules.phoneNumber}
                                 required
                             />
-                            <InputField
+                            <Input
                                 ref={qqInputRef}
                                 type="text"
                                 label="QQ"
                                 placeholder="QQ"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("qq",setFormData,null)}
-                                validationRules={qqValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("qq", setFormData, null)}
+                                validationRules={User.ValidationRules.qq}
                             />
-                            <InputField
+                            <Input
                                 ref={wechatInputRef}
                                 type="text"
                                 label="微信"
                                 placeholder="微信"
-                                onChange={InputFieldCallback.handleDataChange<UpdateUserRequest>("wechat",setFormData,null)}
-                                validationRules={wechatValidationRules}
+                                onChange={InputCallback.handleDataChange<UpdateUserRequest>("wechat", setFormData, null)}
+                                validationRules={User.ValidationRules.wechat}
                             />
 
                             <Captcha
@@ -346,7 +267,22 @@ export const UpdateUserForm: React.FC = () => {
                     <br/>
                     <Button type="primary" block={true} summit>提交修改</Button>
                 </form>
-            </div>
-        ))}
+            </div>}
+            loadingComponent={<Loading type="dots" text='修改用户信息中...' color="#2196f3" size="large"
+                                       fullScreen></Loading>}
+            handlingReturnObjectComponent={<Loading type="dots" text='处理修改用户信息结果中...' color="#2196f3" size="large"
+                                                    fullScreen></Loading>}
+
+            networkErrorComponent={<div>
+                <h3>网络错误</h3>
+                <p className="home-error-detail">{updateUserHandler.current?.returnObject?.message}</p>
+            </div>}
+
+            finishedComponent={<div>
+                <h3>修改用户信息{ReturnObject.Status.ChineseName.get(updateUserHandler.current?.returnObject?.status)}</h3>
+                <p className="home-error-detail">{updateUserHandler.current?.returnObject?.message}</p>
+            </div>}
+
+        />
     </div>)
 }

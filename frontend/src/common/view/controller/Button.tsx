@@ -3,7 +3,9 @@ import './Button.css';
 
 // 按钮类型定义
 type ButtonType = 'primary' | 'default' | 'dashed' | 'text' | 'link';
+//按钮尺寸定义
 type ButtonSize = 'small' | 'medium' | 'large';
+//按钮形状定义
 type ButtonShape = 'default' | 'circle' | 'round';
 
 // 组件Props接口
@@ -77,16 +79,16 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
     // 构建CSS类名
     const classes = [
-        'btn',
-        `btn-${type}`,
-        `btn-${size}`,
-        shape !== 'default' && `btn-${shape}`,
-        disabled && 'btn-disabled',
-        loading && 'btn-loading',
-        danger && 'btn-danger',
-        ghost && 'btn-ghost',
-        block && 'btn-block',
-        iconOnly && 'btn-icon-only',
+        'button',
+        `button-${type}`,
+        `button-${size}`,
+        shape !== 'default' && `button-${shape}`,
+        disabled && 'button-disabled',
+        loading && 'button-loading',
+        danger && 'button-danger',
+        ghost && 'button-ghost',
+        block && 'button-block',
+        iconOnly && 'button-icon-only',
         className,
     ]
         .filter(Boolean)
@@ -94,7 +96,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
     // 渲染加载图标
     const renderLoadingIcon = () => (
-        <span className="btn-loading-icon">
+        <span className="button-loading-icon">
       <svg
           width="1em"
           height="1em"
@@ -124,7 +126,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
 
     // 渲染图标
     const renderIcon = (iconNode: ReactNode, position: 'left' | 'right') => (
-        <span className={`btn-icon btn-icon-${position}`}>
+        <span className={`button-icon button-icon-${position}`}>
       {iconNode}
     </span>
     );
@@ -134,7 +136,7 @@ export const Button: React.FC<ButtonProps> = (props) => {
         <>
             {loading && renderLoadingIcon()}
             {icon && !loading && renderIcon(icon, 'left')}
-            {!iconOnly && children && <span className="btn-text">{children}</span>}
+            {!iconOnly && children && <span className="button-text">{children}</span>}
             {iconRight && renderIcon(iconRight, 'right')}
         </>
     );

@@ -250,3 +250,15 @@ export const Switch = forwardRef<SwitchRef, SwitchProps>((props, ref) => {
 
 // 设置显示名称
 Switch.displayName = 'Switch';
+
+
+export namespace SwitchCallback{
+    /**
+     * 处理开关输入变化
+     * @param field 字段名
+     * @param setData 设置数据状态的方法
+     */
+    export const handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>) => (value: boolean) => {
+        setData((prev: any) => ({...prev, [field]: value}));
+    }
+}

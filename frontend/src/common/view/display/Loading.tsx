@@ -27,16 +27,16 @@ export interface LoadingProps {
 }
 
 export const Loading: React.FC<LoadingProps> = ({
-                                             type = 'spinner',
-                                             text,
-                                             color = '#3f51b5',
-                                             size = 'medium',
-                                             fullScreen = false,
-                                             progress = 0,
-                                             style,
-                                             className = '',
-                                             speed = 'normal'
-                                         }) => {
+                                                    type = 'spinner',
+                                                    text,
+                                                    color = '#3f51b5',
+                                                    size = 'medium',
+                                                    fullScreen = false,
+                                                    progress = 0,
+                                                    style,
+                                                    className = '',
+                                                    speed = 'normal'
+                                                }) => {
     // 获取尺寸数值
     const getSizeValue = (): number => {
         if (typeof size === 'number') return size;
@@ -213,3 +213,6 @@ export const Loading: React.FC<LoadingProps> = ({
 
     return content;
 };
+
+
+Loading.displayName="Loading";

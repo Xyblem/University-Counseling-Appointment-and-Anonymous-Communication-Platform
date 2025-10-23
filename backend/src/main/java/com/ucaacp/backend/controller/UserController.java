@@ -61,7 +61,7 @@ public class UserController {
             user.setPassword(null);//保护密码
             session.setAttribute("user", user);
             session.setAttribute("password", password);
-            return ReturnObject.success();
+            return ReturnObject.success("登录成功");
         } else {
             return ReturnObject.fail("用户角色错误");
         }
@@ -135,9 +135,9 @@ public class UserController {
 
         //保存用户，执行注册
         if(userService.signUp(user)!=null){
-            return ReturnObject.success();
+            return ReturnObject.success("注册成功");
         }else{
-            return ReturnObject.fail();
+            return ReturnObject.fail("注册失败");
         }
     }
 

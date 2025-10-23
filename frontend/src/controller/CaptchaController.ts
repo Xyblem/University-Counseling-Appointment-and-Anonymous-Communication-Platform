@@ -1,4 +1,4 @@
-import {ReturnCode, ReturnObject} from "../utils/api/ReturnObject";
+import {ReturnObject} from "../common/response/ReturnObject";
 import api from "../utils/api/api_config";
 
 export class CaptchaController {

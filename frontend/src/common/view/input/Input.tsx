@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, forwardRef, useImperativeHandle } from 'react';
-import './InputField.css';
+import './Input.css';
 
 // 输入框类型定义
 export type InputType = 'text' | 'password' | 'number' | 'email' | 'tel' | 'url';
@@ -49,7 +49,7 @@ export interface InputRef {
     clear: () => void;
 }
 
-export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
+export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     const {
         type = 'text',
         value: controlledValue,
@@ -256,17 +256,17 @@ export const InputField = forwardRef<InputRef, InputProps>((props, ref) => {
 });
 
 // 设置显示名称
-InputField.displayName = 'Input';
+Input.displayName = 'Input';
 
 
-export class InputFieldCallback{
+export namespace InputCallback{
     /**
      * 处理输入框输入变化
      * @param field 字段名
      * @param setData 设置数据状态的方法
      * @param emptyValue 输入为空时的值
      */
-    static handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
+    export const handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string) => {
         if(value==null||value.length===0){
             setData((prev: any) => ({...prev, [field]: emptyValue}));
         }else{

@@ -4,12 +4,7 @@ import React, {useEffect, useState} from "react";
 import './Home.css'
 import '../../css/LayoutFlex.css'
 //自定义组件
-import {Button} from "../../components/ui/widget/Button";
-//实体
-import {User} from "../../entity/User";
-//控制器
-import {UserController} from "../../controller/UserController";
-import {Divider} from "../../components/decoration/Divider";
+
 
 
 //主页

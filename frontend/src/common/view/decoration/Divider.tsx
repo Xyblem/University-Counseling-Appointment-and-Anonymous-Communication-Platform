@@ -47,19 +47,19 @@ export interface DividerProps {
 }
 
 export const Divider: React.FC<DividerProps> = ({
-                                             type = 'solid',
-                                             orientation = 'horizontal',
-                                             thickness = 1,
-                                             color = '#e0e0e0',
-                                             gradientFrom = '#667eea',
-                                             gradientTo = '#764ba2',
-                                             length,
-                                             spacing = '16px',
-                                             text,
-                                             textPosition = 'center',
-                                             className = '',
-                                             style,
-                                         }) => {
+                                                    type = 'solid',
+                                                    orientation = 'horizontal',
+                                                    thickness = 1,
+                                                    color = '#e0e0e0',
+                                                    gradientFrom = '#667eea',
+                                                    gradientTo = '#764ba2',
+                                                    length,
+                                                    spacing = '16px',
+                                                    text,
+                                                    textPosition = 'center',
+                                                    className = '',
+                                                    style,
+                                                }) => {
     // 生成分界线样式
     const getDividerStyle = (): React.CSSProperties => {
         const baseStyle: React.CSSProperties = {
@@ -188,3 +188,6 @@ export const Divider: React.FC<DividerProps> = ({
         />
     );
 };
+
+
+Divider.displayName="Divider";

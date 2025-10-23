@@ -1,6 +1,6 @@
 
 //心理题目选项
-import {ReturnCode, ReturnObject} from "../utils/api/ReturnObject";
+import {ReturnObject} from "../common/response/ReturnObject";
 import api from "../utils/api/api_config";
 
 export interface PsychOptions{

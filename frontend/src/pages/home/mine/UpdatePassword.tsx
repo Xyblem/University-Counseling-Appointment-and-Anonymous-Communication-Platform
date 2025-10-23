@@ -1,27 +1,25 @@
 import React, {useEffect, useRef, useState} from "react";
-import {confirmedPasswordValidationRules, passwordValidationRules, User} from "../../../entity/User";
 import {UpdatePasswordRequest, UserController} from "../../../controller/UserController";
 import {CaptchaController} from "../../../controller/CaptchaController";
-import {InputField, InputFieldCallback, InputRef} from "../../../components/ui/widget/InputField";
-import {Button} from "../../../components/ui/widget/Button";
-import {Loading} from "../../../components/ui/widget/Loading";
-import {Captcha, CaptchaCallback, CaptchaRef} from "../../../components/ui/combined/Captcha";
-import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
-import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
+import {useOutletContext} from "react-router";
+import {Homepage} from "../HomepageForm";
+import {ResponseHandler, ResponseHandlerRef} from "../../../common/response/ResponseHandler";
+import {InputCallback, InputRef} from "../../../common/view/input/Input";
+import {CaptchaCallback, CaptchaRef} from "../../../common/view/custom-input/Captcha";
+import {Input} from "../../../common/view/input/Input";
+import {Captcha} from "../../../common/view/custom-input/Captcha";
+import {Button} from "../../../common/view/controller/Button";
+import {User} from "../../../entity/User";
+import {Loading} from "../../../common/view/display/Loading";
+import {ReturnObject} from "../../../common/response/ReturnObject";
 
 export const UpdatePassword: React.FC = () => {
     //控制器
     const userController=new UserController();
     const captchaController=new CaptchaController();
+    const context=useOutletContext<Homepage.OutletContext>();
     //状态
-    const [userLoading, setUserLoading] = useState<boolean>(false);
-    const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
-    const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
-    const [userSuccess,setUserSuccess]=useState<boolean>(false);
-    const user=userReturnObject?.data;
-    const [updatePasswordLoading, setUpdatePasswordLoading] = useState<boolean>(false);
-    const [updatePasswordReturnObject,setUpdatePasswordReturnObject]=useState<ReturnObject|null>(null);
-    const [updatePasswordNetworkError, setUpdatePasswordNetworkError]=useState<Error|null>(null);
+    const updatePasswordHandler=useRef<ResponseHandlerRef<UpdatePasswordRequest,any>>(null);
     const [formData, setFormData] = useState<UpdatePasswordRequest>({
         username: '',
         oldPassword: '',
@@ -39,21 +37,6 @@ export const UpdatePassword: React.FC = () => {
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的修改密码";
-        setUserLoading(true);
-        setUserReturnObject(null);
-        setUserNetworkError(null);
-        setUserSuccess(false);
-        userController.loggedInUser().then(result => {
-                setUserReturnObject(result);
-                if (result.status === ReturnStatus.SUCCESS) {
-                    setUserSuccess(true);
-                }
-            }
-        ).catch(err => {
-            setUserNetworkError(err);
-        }).finally(()=>{
-            setUserLoading(false);
-        });
     },[]);
 
     //处理表单提交
@@ -63,113 +46,90 @@ export const UpdatePassword: React.FC = () => {
         const isNewPasswordValid=newPasswordInputRef.current?.validate();
         const isConfirmedNewPasswordValid=confirmedNewPasswordInputRef.current?.validate();
         const isCaptchaValid=captchaRef.current?.validate();
+        formData.username=context.user?.username;
         // 阻止默认提交
         event.preventDefault();
         if (isOldPasswordValid && isNewPasswordValid && isConfirmedNewPasswordValid &&isCaptchaValid) {
             //console.log("暂停测试：",formData);alert("暂停测试");
-            summitUpdatePassword();
+            updatePasswordHandler.current?.request(formData);
         } else {
             alert('请检查表单错误!');
         }
     };
 
-    //提交修改密码
-    const summitUpdatePassword = async (): Promise<void> => {
-        setUpdatePasswordLoading(true);
-        setUpdatePasswordReturnObject(null);
-        setUpdatePasswordNetworkError(null);
-        formData.username=user?.username;
-        await userController.updatePassword(formData).then(response=>{
-            setUpdatePasswordReturnObject(response);
-        }).catch(err=>{
-            setUpdatePasswordNetworkError(err);
-        }).finally(()=>{
-            setUpdatePasswordLoading(false);
-        });
-    };
-
-    const checkUserView=(<CheckReturnObject
-        loading={userLoading}
-        returnObject={userReturnObject}
-        networkError={userNetworkError}
-        loadingComponent={<Loading type="dots" text='加载页面中...' color="#2196f3" size="large" fullScreen></Loading>}
-        networkErrorComponent={<div>
-            <h3>网络错误</h3>
-            <p className="home-error-detail">{userNetworkError?.message}</p>
-        </div>}
-    >
-        <div>
-            <h3>加载信息{ReturnStatusNamesCN.get(userReturnObject?.status)}</h3>
-            <p className="home-error-detail">{userReturnObject?.message}</p>
-        </div>
-    </CheckReturnObject>);
-
-
-    const checkUpdatePasswordView=(<CheckReturnObject
-        loading={updatePasswordLoading}
-        returnObject={updatePasswordReturnObject}
-        networkError={updatePasswordNetworkError}
-        loadingComponent={<Loading type="dots" text='修改密码中...' color="#2196f3" size="large"
-                                   fullScreen></Loading>}
-        networkErrorComponent={<div>
-            <h3>网络错误</h3>
-            <p className="home-error-detail">{updatePasswordNetworkError?.message}</p>
-        </div>}
-    >
-        <div>
-            <h3>修改密码{ReturnStatusNamesCN.get(updatePasswordReturnObject?.status)}</h3>
-            <p className="home-error-detail">{updatePasswordReturnObject?.message}</p>
-        </div>
-    </CheckReturnObject>);
-
     return (<div style={{marginLeft: "25px"}}>
-        {!userSuccess? (checkUserView): (updatePasswordReturnObject!=null?(checkUpdatePasswordView) : (
-            <div>
-                <h2>修改密码</h2>
-                <form onSubmit={handleSubmit}>
-                    <InputField
-                        ref={oldPasswordInputRef}
-                        type="password"
-                        label="旧密码"
-                        placeholder="请输入旧密码"
-                        prefix={<span>*</span>}
-                        validationRules={passwordValidationRules}
-                        onChange={InputFieldCallback.handleDataChange<UpdatePasswordRequest>("oldPassword",setFormData,null)}
-                        required
-                    />
-                    <InputField
-                        ref={newPasswordInputRef}
-                        type="password"
-                        label="新密码"
-                        placeholder="请输入新密码"
-                        prefix={<span>*</span>}
-                        validationRules={passwordValidationRules}
-                        onChange={InputFieldCallback.handleDataChange<UpdatePasswordRequest>("newPassword",setFormData,null)}
-                        required
-                    />
-                    <InputField
-                        ref={confirmedNewPasswordInputRef}
-                        type="password"
-                        label="确认新密码"
-                        placeholder="请确认新密码"
-                        prefix={<span>*</span>}
-                        validationRules={confirmedPasswordValidationRules(newPasswordInputRef)}
-                        onChange={InputFieldCallback.handleDataChange<UpdatePasswordRequest>("confirmedNewPassword",setFormData,null)}
-                        required
-                    />
-                    <Captcha
-                        ref={captchaRef}
-                        onChange={CaptchaCallback.handleDataChange<UpdatePasswordRequest>("captchaKey", "captcha", captchaRef, setFormData, null)}
-                        placeholder="请输入图片中的验证码"
-                        autoRefresh={true}
-                        getCaptcha={captchaController.captcha}
-                    />
-                    <br/>
-                    <Button type="primary" block summit>提交修改</Button>
-                </form>
+            <ResponseHandler<UpdatePasswordRequest,any>
+                ref={updatePasswordHandler}
+                request={userController.updatePassword}
+                idleComponent={
+                    <div>
+                        <h2>修改密码</h2>
+                        <form onSubmit={handleSubmit}>
+                            <Input
+                                ref={oldPasswordInputRef}
+                                type="password"
+                                label="旧密码"
+                                placeholder="请输入旧密码"
+                                prefix={<span>*</span>}
+                                validationRules={User.ValidationRules.password}
+                                onChange={InputCallback.handleDataChange<UpdatePasswordRequest>("oldPassword", setFormData, null)}
+                                required
+                            />
+                            <Input
+                                ref={newPasswordInputRef}
+                                type="password"
+                                label="新密码"
+                                placeholder="请输入新密码"
+                                prefix={<span>*</span>}
+                                validationRules={User.ValidationRules.password}
+                                onChange={InputCallback.handleDataChange<UpdatePasswordRequest>("newPassword", setFormData, null)}
+                                required
+                            />
+                            <Input
+                                ref={confirmedNewPasswordInputRef}
+                                type="password"
+                                label="确认新密码"
+                                placeholder="请确认新密码"
+                                prefix={<span>*</span>}
+                                validationRules={User.ValidationRules.confirmedPassword(newPasswordInputRef)}
+                                onChange={InputCallback.handleDataChange<UpdatePasswordRequest>("confirmedNewPassword", setFormData, null)}
+                                required
+                            />
+                            <Captcha
+                                ref={captchaRef}
+                                onChange={CaptchaCallback.handleDataChange<UpdatePasswordRequest>("captchaKey", "captcha", captchaRef, setFormData, null)}
+                                placeholder="请输入图片中的验证码"
+                                autoRefresh={true}
+                                getCaptcha={captchaController.captcha}
+                            />
+                            <br/>
+                            <Button type="primary" block summit>提交修改</Button>
+                        </form>
 
-            </div>
-        ))}
+                    </div>
+                }
+
+                loadingComponent={<Loading type="dots" text='修改密码中...' color="#2196f3" size="large"
+                                           fullScreen></Loading>}
+
+                handlingReturnObjectComponent={<Loading type="dots" text='处理修改密码结果中...' color="#2196f3" size="large"
+                                                        fullScreen></Loading>}
+
+                networkErrorComponent={<div>
+                    <h3>网络错误</h3>
+                    <p className="home-error-detail">{updatePasswordHandler.current?.networkError?.message}</p>
+                </div>}
+
+                finishedComponent={<div>
+                    <h3>修改密码{ReturnObject.Status.ChineseName.get(updatePasswordHandler.current?.returnObject?.status)}</h3>
+                    {updatePasswordHandler.current?.returnObject?.status===ReturnObject.Status.SUCCESS?(
+                        <p className="home-error-detail">修改密码成功，请牢记你的新密码哟~~~</p>
+                        ):(
+                        <p className="home-error-detail">{updatePasswordHandler.current?.returnObject?.message}</p>
+                        )}
+
+                </div>}
+            />
         </div>
     )
 }

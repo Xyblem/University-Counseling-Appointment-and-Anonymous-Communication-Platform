@@ -585,14 +585,14 @@ export const Select = forwardRef<SelectRef, SelectProps>((props, ref) => {
 // 设置显示名称
 Select.displayName = 'Select';
 
-export class SelectCallback{
+export namespace SelectCallback{
     /**
      * 处理下拉菜单输入变化
      * @param field 字段名
      * @param setData 设置数据状态的方法
      * @param emptyValue 输入为空时的值
      */
-    static handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string| string[]) => {
+    export const handleDataChange=<T=any>(field: string,setData:React.Dispatch<React.SetStateAction<T>>,emptyValue:string|null=null) => (value: string| string[]) => {
         if(value==null||value.length===0){
             setData((prev: any) => ({...prev, [field]: emptyValue}));
         }else{
