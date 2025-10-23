@@ -4,10 +4,9 @@ import {Divider} from "../../components/decoration/Divider";
 import {Button} from "../../components/ui/widget/Button";
 import {CheckLogin, CheckLoginRef} from "../../components/functional/CheckLogin";
 import {
-    CheckLoginErrorView,
     CheckLoginErrorViewOld,
     CheckLoginLoading,
-    CheckLoginNotLoginView, CheckLoginNotLoginViewOld
+ CheckLoginNotLoginViewOld
 } from "../../utils/views/CommonViews";
 import {useLocation, useNavigate} from "react-router-dom";
 import {PsychOptions, PsychTest, PsychTestController, PsychTestResult} from "../../controller/PsychTestController";
@@ -30,7 +29,6 @@ export const PsychTestForm: React.FC = () => {
     //引用
     const checkLoginRef = useRef<CheckLoginRef>(null);
     //路由
-    const navigate = useNavigate();
     const urlLocation = useLocation();
     const searchParams = new URLSearchParams(urlLocation.search);
     const paramTest = searchParams.get('test');
@@ -57,7 +55,7 @@ export const PsychTestForm: React.FC = () => {
 
 
     const getOptions=psychTest?.questions?.at(questionIndex)?.options?.map(
-        (value0: PsychOptions, index: number):CheckboxOption =>({label:value0.key+":"+value0.text,value:""+value0.key}));
+        (value0: PsychOptions):CheckboxOption =>({label:value0.key+":"+value0.text,value:""+value0.key}));
 
     //处理输入变化
     const handleSelectionChange = (index:number) => (value: string | string[])=>{

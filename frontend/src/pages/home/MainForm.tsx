@@ -9,7 +9,6 @@ import {Button} from "../../components/ui/widget/Button";
 import {User} from "../../entity/User";
 //控制器
 import {UserController} from "../../controller/UserController";
-import {Divider} from "../../components/decoration/Divider";
 import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../utils/api/ReturnObject";
 import {CheckReturnObject} from "../../components/functional/CheckReturnObject";
 import {Loading} from "../../components/ui/widget/Loading";

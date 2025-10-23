@@ -2,16 +2,13 @@ import React, {useEffect, useRef, useState} from 'react';
 import {PsychTestController, PsychTestQueryListItem} from "../../controller/PsychTestController";
 import './PsychTest.css'
 import {Button} from "../../components/ui/widget/Button";
-import {Loading} from "../../components/ui/widget/Loading";
-import {Outlet} from "react-router";
 import {CheckLogin, CheckLoginRef} from "../../components/functional/CheckLogin";
 import {UserController} from "../../controller/UserController";
 import {Divider} from "../../components/decoration/Divider";
 import {
-    CheckLoginErrorView,
     CheckLoginErrorViewOld,
     CheckLoginLoading,
-    CheckLoginNotLoginView, CheckLoginNotLoginViewOld
+   CheckLoginNotLoginViewOld
 } from "../../utils/views/CommonViews";
 
 export const PsychTestEntranceForm: React.FC = () => {
