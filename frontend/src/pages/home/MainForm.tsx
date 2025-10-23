@@ -10,7 +10,7 @@ import {User} from "../../entity/User";
 //控制器
 import {UserController} from "../../controller/UserController";
 import {Divider} from "../../components/decoration/Divider";
-import {ReturnObject, ReturnStatusNamesCN} from "../../utils/api/ReturnObject";
+import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../utils/api/ReturnObject";
 import {CheckReturnObject} from "../../components/functional/CheckReturnObject";
 import {Loading} from "../../components/ui/widget/Loading";
 
@@ -32,6 +32,7 @@ export const MainForm: React.FC = () => {
     const [userLoading, setUserLoading] = useState<boolean>(false);
     const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
     const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const [userSuccess,setUserSuccess]=useState<boolean>(false);
     const user=userReturnObject?.data;
 
     //钩子
@@ -40,8 +41,12 @@ export const MainForm: React.FC = () => {
         setUserLoading(true);
         setUserReturnObject(null);
         setUserNetworkError(null);
+        setUserSuccess(false);
         userController.loggedInUser().then(result => {
                 setUserReturnObject(result);
+                if(result.status===ReturnStatus.SUCCESS){
+                    setUserSuccess(true);
+                }
             }
         ).catch(err => {
             setUserNetworkError(err);
@@ -73,7 +78,7 @@ export const MainForm: React.FC = () => {
 
 
     return (<div className="layout-flex-column">
-        {userReturnObject!=null?(checkUserView): (
+        {!userSuccess?(checkUserView): (
             <div>
                 <div className="home-main-hello-label">
                     <h2>你好{user == null ? null : user.name}同学，现在是{year}年{month}月{date}日</h2>

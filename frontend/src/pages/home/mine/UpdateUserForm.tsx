@@ -24,7 +24,7 @@ import {Captcha, CaptchaCallback, CaptchaRef} from "../../../components/ui/combi
 import {Loading} from "../../../components/ui/widget/Loading";
 import {Button} from "../../../components/ui/widget/Button";
 import {genderOptions, provinceOptions, userPositionOptions, userRoleOptions} from "../../../utils/option/input-option";
-import {ReturnObject, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
+import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
 import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
 
 export const UpdateUserForm: React.FC = () => {
@@ -35,6 +35,7 @@ export const UpdateUserForm: React.FC = () => {
     const [userLoading, setUserLoading] = useState<boolean>(false);
     const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
     const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const [userSuccess,setUserSuccess]=useState<boolean>(false);
     const user=userReturnObject?.data;
     const [updateUserLoading, setUpdateUserLoading] = useState<boolean>(false);
     const [updateUserReturnObject,setUpdateUserReturnObject]=useState<ReturnObject|null>(null);
@@ -78,8 +79,12 @@ export const UpdateUserForm: React.FC = () => {
         setUserLoading(true);
         setUserReturnObject(null);
         setUserNetworkError(null);
+        setUserSuccess(false);
         userController.loggedInUser().then(result => {
                 setUserReturnObject(result);
+                if(result.status===ReturnStatus.SUCCESS){
+                    setUserSuccess(true);
+                }
                 usernameInputRef.current?.setValue(result.data?.username == null ? '' : result.data?.username);
                 nicknameInputRef.current?.setValue(result.data?.nickname == null ? '' : result.data?.nickname);
                 descriptionInputRef.current?.setValue(result.data?.description == null ? '' : result.data?.description);
@@ -185,7 +190,7 @@ export const UpdateUserForm: React.FC = () => {
     </CheckReturnObject>);
 
     return (<div style={{marginLeft: "25px"}}>
-        {userReturnObject != null ? (checkUserView): (updateUserReturnObject!=null?(checkUpdateUserView) : (
+        {!userSuccess? (checkUserView): (updateUserReturnObject!=null?(checkUpdateUserView) : (
             <div>
                 <h2>修改信息</h2>
                 <p className="home-notice">提示：若无法获取输入框中的初始信息，请尝试刷新</p>

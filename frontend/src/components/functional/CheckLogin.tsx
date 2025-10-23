@@ -21,6 +21,7 @@ export interface CheckLoginProps {
 export interface CheckLoginRef {
     checkLoginStatus: () => void;
     handleRetry: () => void;
+    loading:boolean;
 }
 
 export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref) => {
@@ -47,7 +48,8 @@ export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref)
         },
         handleRetry: () => {
             _handleRetry();
-        }
+        },
+        loading:isChecking
     }));
     useEffect(() => {
         _checkLoginStatus();
@@ -58,8 +60,8 @@ export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref)
         setIsChecking(true);
         setHasError(false);
         await checkLogin().then(result=>{
-                setIsLoggedIn(result.data.isLogin);
-                if (result) {
+                setIsLoggedIn(result.data.isLogin==="true");
+                if (result.data.isLogin==="true") {
                     onLoginSuccess?.();
                 } else {
                     onLoginFail?.();
@@ -144,8 +146,6 @@ export const CheckLogin= forwardRef<CheckLoginRef, CheckLoginProps>((props, ref)
     if (isLoggedIn) {
         return <>{children}</>;
     }
-
-
 
     // 未登录但正在跳转，显示跳转提示
     return (to==null?

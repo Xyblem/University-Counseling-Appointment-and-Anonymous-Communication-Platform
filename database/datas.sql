@@ -81,6 +81,7 @@ INSERT INTO `user` VALUES ('adm201001','','','陈雪峰','Adm2010!',1,340000,'�
 UNLOCK TABLES;
 
 LOCK TABLES `appointment` WRITE;
+DELETE FROM `appointment` WHERE TRUE;
 /*!40000 ALTER TABLE `appointment` DISABLE KEYS */;
 INSERT INTO `appointment` VALUES (1,'stu2021001','tea201501','考试压力大，注意力不集中','2025-10-23 14:00:00','2025-10-23 15:00:00','2025-10-21 09:30:00','CONFIRM'),
                                  (2,'stu2021005','tea201602','宿舍矛盾，沟通无效','2025-10-23 15:30:00','2025-10-23 16:30:00','2025-10-21 10:15:00','CONFIRM'),
@@ -136,6 +137,7 @@ INSERT INTO `appointment` VALUES (1,'stu2021001','tea201501','考试压力大，
 UNLOCK TABLES;
 
 LOCK TABLES `post` WRITE;
+DELETE FROM `post` WHERE TRUE;
 /*!40000 ALTER TABLE `post` DISABLE KEYS */;
 INSERT INTO `post` VALUES (1,'大一新生报道需要带什么？','马上要报道了，除了录取通知书，还有哪些必备物品？求学长学姐支招','stu2021001','2025-10-01 09:15:30',0,1),
                           (2,'高数期末复习重点整理','整理了微积分前5章的重点公式，需要的同学可以私我，免费分享','stu2021005','2025-10-02 16:40:12',0,1),
@@ -161,6 +163,7 @@ INSERT INTO `post` VALUES (1,'大一新生报道需要带什么？','马上要�
 UNLOCK TABLES;
 
 LOCK TABLES `reply` WRITE;
+DELETE FROM `reply` WHERE TRUE;
 /*!40000 ALTER TABLE `reply` DISABLE KEYS */;
 INSERT INTO `reply` VALUES (1,'带录取通知书、身份证、档案，一寸照片多备几张！',1,'stu2021002','2025-10-01 10:00:15'),
                            (2,'被褥可以在学校买，质量还行，不用自己带',1,'stu2022001','2025-10-01 11:30:00'),

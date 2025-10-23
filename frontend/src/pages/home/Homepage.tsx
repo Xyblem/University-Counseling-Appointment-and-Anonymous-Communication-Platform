@@ -39,6 +39,10 @@ export const Homepage: React.FC = () => {
     const navigate = useNavigate();
     const urlLocation = useLocation();
     //状态
+    const [checkLoginLoading,setCheckLoginLoading] = useState<boolean>(false);
+    const [checkLoginReturnObject,setCheckLoginReturnObject] = useState<ReturnObject|null>(null);
+    const [checkLoginNetworkError,setCheckLoginNetworkError] = useState<Error|null>(null);
+    const [checkLoginSuccess,setCheckLoginSuccess] = useState<boolean>(false);
     const [logoutLoading,setLogoutLoading]=useState<boolean>(false);
     const [logoutReturnObject,setLogoutReturnObject]=useState<ReturnObject|null>(null);
     const [logoutNetworkError,setLogoutNetworkError]=useState<Error|null>(null);
@@ -51,6 +55,20 @@ export const Homepage: React.FC = () => {
         if(urlLocation.pathname==='/home'||urlLocation.pathname==='/home/'){
             window.location.href="/home/main";
         }
+        setCheckLoginLoading(true);
+        setCheckLoginReturnObject(null);
+        setCheckLoginNetworkError(null);
+        setCheckLoginSuccess(false);
+        userController.checkLogin().then(response=>{
+            setCheckLoginReturnObject(response);
+            if(response.status===ReturnStatus.SUCCESS&&response.data.isLogin==="true"){
+                setCheckLoginSuccess(true);
+            }
+        }).catch(err=>{
+            setCheckLoginNetworkError(err);
+        }).finally(()=>{
+            setCheckLoginLoading(false);
+        })
     }, []);
 
     const logoutDialog = (<Dialog
@@ -117,26 +135,41 @@ export const Homepage: React.FC = () => {
                 </div>
             </div>}
         >
-        </CheckReturnObject>
-        <div className="layout-flex-column">
-            <p className="text-align-left">{(logoutReturnObject?.status===ReturnStatus.SUCCESS)?"登出成功，即将返回登录界面":logoutReturnObject?.message}</p>
-            <br/>
-            <div className="layout-flex-row justify-content-flex-end">
-                <span style={{flexGrow: 3.1}}></span>
-                <Button type={(logoutReturnObject?.status===ReturnStatus.SUCCESS)? "primary" : "default"}
-                        style={{flexGrow: 1}} onClick={() => {
-                    logoutResultDialogRef.current?.close();
-                }}>{(logoutReturnObject?.status===ReturnStatus.SUCCESS)? "确定" : "返回"}</Button>
+            <div className="layout-flex-column">
+                <p className="text-align-left">{(logoutReturnObject?.status === ReturnStatus.SUCCESS) ? "登出成功，即将返回登录界面" : logoutReturnObject?.message}</p>
+                <br/>
+                <div className="layout-flex-row justify-content-flex-end">
+                    <span style={{flexGrow: 3.1}}></span>
+
+                        <Button type={(logoutReturnObject?.status === ReturnStatus.SUCCESS) ? "primary" : "default"}
+                                style={{flexGrow: 1}} onClick={() => {
+                            logoutResultDialogRef.current?.close();
+                        }}>{(logoutReturnObject?.status === ReturnStatus.SUCCESS) ? "确定" : "返回"}</Button>
+
+                </div>
             </div>
-        </div>
+        </CheckReturnObject>
     </Dialog>);
 
+
+    const checkLoginView=(<CheckReturnObject
+        loading={checkLoginLoading}
+        returnObject={checkLoginReturnObject}
+        networkError={checkLoginNetworkError}
+        loadingComponent={CheckLoginLoading}
+        networkErrorComponent={CheckLoginErrorView}
+
+    >
+        {CheckLoginNotLoginView}
+    </CheckReturnObject>);
+
+
     return (<div className="home-background">
-            {/*<Navigate to="/home/main" replace/>*/}
             {logoutDialog}
             {logoutResultDialog}
-            {logoutLoading&&<Loading type="dots" text='登出中...' color="#2196f3" size="large" fullScreen></Loading>}
-            <div className="home-form">
+            {!checkLoginRef.current?.loading&&logoutLoading&&<Loading type="dots" text='登出中...' color="#2196f3" size="large" fullScreen></Loading>}
+
+                <div className="home-form">
                 {/* 导航栏 */}
                 <header className="home-header">
                     <div className="container">
@@ -158,17 +191,9 @@ export const Homepage: React.FC = () => {
                         </div>
                     </div>
                 </header>
-                <Divider color="Black" spacing="0" />
+                <Divider color="Black" spacing="0"/>
 
-                <CheckLogin
-                    ref={checkLoginRef}
-                    checkLogin={userController.checkLogin}
-                    loadingComponent={CheckLoginLoading}
-                    errorComponent={CheckLoginErrorView(checkLoginRef)}
-                    notLoginComponent={CheckLoginNotLoginView(checkLoginRef)}
-                >
-                    <Outlet></Outlet>
-                </CheckLogin>
+                    {!checkLoginSuccess?(checkLoginView): (<Outlet/>)}
             </div>
         </div>
     )

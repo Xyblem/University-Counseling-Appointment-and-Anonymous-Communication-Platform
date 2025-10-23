@@ -7,7 +7,12 @@ import {Outlet} from "react-router";
 import {CheckLogin, CheckLoginRef} from "../../components/functional/CheckLogin";
 import {UserController} from "../../controller/UserController";
 import {Divider} from "../../components/decoration/Divider";
-import {CheckLoginErrorView, CheckLoginLoading, CheckLoginNotLoginView} from "../../utils/views/CommonViews";
+import {
+    CheckLoginErrorView,
+    CheckLoginErrorViewOld,
+    CheckLoginLoading,
+    CheckLoginNotLoginView, CheckLoginNotLoginViewOld
+} from "../../utils/views/CommonViews";
 
 export const PsychTestEntranceForm: React.FC = () => {
     //控制器
@@ -51,8 +56,8 @@ export const PsychTestEntranceForm: React.FC = () => {
                 ref={checkLoginRef}
                 checkLogin={userController.checkLogin}
                 loadingComponent={CheckLoginLoading}
-                errorComponent={CheckLoginErrorView(checkLoginRef)}
-                notLoginComponent={CheckLoginNotLoginView(checkLoginRef)}
+                errorComponent={CheckLoginErrorViewOld(checkLoginRef)}
+                notLoginComponent={CheckLoginNotLoginViewOld(checkLoginRef)}
             >
                 {error ? <div>
                         <p className="psych-error-detail">{messageDetail}</p>

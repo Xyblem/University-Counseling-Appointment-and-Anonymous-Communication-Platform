@@ -297,6 +297,8 @@ public class UserController {
 
         //执行注销操作
         if(userService.closeAccount(username)!=null){
+            session.removeAttribute("user");
+            session.removeAttribute("password");
             return ReturnObject.success("注销账号成功");
         }else {
             return ReturnObject.fail("注销账号失败");

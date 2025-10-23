@@ -3,7 +3,12 @@ import {UserController} from "../../controller/UserController";
 import {Divider} from "../../components/decoration/Divider";
 import {Button} from "../../components/ui/widget/Button";
 import {CheckLogin, CheckLoginRef} from "../../components/functional/CheckLogin";
-import {CheckLoginErrorView, CheckLoginLoading, CheckLoginNotLoginView} from "../../utils/views/CommonViews";
+import {
+    CheckLoginErrorView,
+    CheckLoginErrorViewOld,
+    CheckLoginLoading,
+    CheckLoginNotLoginView, CheckLoginNotLoginViewOld
+} from "../../utils/views/CommonViews";
 import {useLocation, useNavigate} from "react-router-dom";
 import {PsychOptions, PsychTest, PsychTestController, PsychTestResult} from "../../controller/PsychTestController";
 import {CheckboxGroup, CheckboxOption} from "../../components/ui/widget/Checkbox";
@@ -143,8 +148,8 @@ export const PsychTestForm: React.FC = () => {
                 ref={checkLoginRef}
                 checkLogin={userController.checkLogin}
                 loadingComponent={CheckLoginLoading}
-                errorComponent={CheckLoginErrorView(checkLoginRef)}
-                notLoginComponent={CheckLoginNotLoginView(checkLoginRef)}
+                errorComponent={CheckLoginErrorViewOld(checkLoginRef)}
+                notLoginComponent={CheckLoginNotLoginViewOld(checkLoginRef)}
             >
                 {done?renderResult:renderQuestion}
             </CheckLogin>

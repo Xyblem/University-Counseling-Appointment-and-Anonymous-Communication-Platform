@@ -6,7 +6,7 @@ import {InputField, InputFieldCallback, InputRef} from "../../../components/ui/w
 import {Button} from "../../../components/ui/widget/Button";
 import {Loading} from "../../../components/ui/widget/Loading";
 import {Captcha, CaptchaCallback, CaptchaRef} from "../../../components/ui/combined/Captcha";
-import {ReturnObject, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
+import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
 import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
 
 export const CloseAccount: React.FC = () => {
@@ -17,6 +17,7 @@ export const CloseAccount: React.FC = () => {
     const [userLoading, setUserLoading] = useState<boolean>(false);
     const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
     const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const [userSuccess,setUserSuccess]=useState<boolean>(false);
     const user=userReturnObject?.data;
     const [closeAccountLoading, setCloseAccountLoading] = useState<boolean>(false);
     const [closeAccountReturnObject,setCloseAccountReturnObject]=useState<ReturnObject|null>(null);
@@ -36,8 +37,12 @@ export const CloseAccount: React.FC = () => {
         setUserLoading(true);
         setUserReturnObject(null);
         setUserNetworkError(null);
+        setUserSuccess(false);
         userController.loggedInUser().then(result => {
                 setUserReturnObject(result);
+                if (result.status === ReturnStatus.SUCCESS) {
+                    setUserSuccess(true);
+                }
             }
         ).catch(err => {
             setUserNetworkError(err);
@@ -106,11 +111,14 @@ export const CloseAccount: React.FC = () => {
         <div>
             <h3>注销账号{ReturnStatusNamesCN.get(closeAccountReturnObject?.status)}</h3>
             <p className="home-error-detail">{closeAccountReturnObject?.message}</p>
+            {closeAccountReturnObject?.status==ReturnStatus.SUCCESS && (
+                <Button type="primary" block onChange={()=>{window.location.href="auth/login";}}>返回登录界面</Button>
+            )}
         </div>
     </CheckReturnObject>);
 
     return (<div style={{marginLeft: "25px"}}>
-        {userReturnObject != null ? (checkUserView): (closeAccountReturnObject!=null?(checkCloseAccountView) : (
+        {!userSuccess? (checkUserView): (closeAccountReturnObject!=null?(checkCloseAccountView) : (
                 <div>
                     <h2>注销账号</h2>
                     <p className="home-warning">提示：注销账号后将删除你的所有信息</p>

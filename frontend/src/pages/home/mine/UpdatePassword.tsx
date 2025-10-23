@@ -6,7 +6,7 @@ import {InputField, InputFieldCallback, InputRef} from "../../../components/ui/w
 import {Button} from "../../../components/ui/widget/Button";
 import {Loading} from "../../../components/ui/widget/Loading";
 import {Captcha, CaptchaCallback, CaptchaRef} from "../../../components/ui/combined/Captcha";
-import {ReturnObject, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
+import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
 import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
 
 export const UpdatePassword: React.FC = () => {
@@ -17,6 +17,7 @@ export const UpdatePassword: React.FC = () => {
     const [userLoading, setUserLoading] = useState<boolean>(false);
     const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
     const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const [userSuccess,setUserSuccess]=useState<boolean>(false);
     const user=userReturnObject?.data;
     const [updatePasswordLoading, setUpdatePasswordLoading] = useState<boolean>(false);
     const [updatePasswordReturnObject,setUpdatePasswordReturnObject]=useState<ReturnObject|null>(null);
@@ -41,8 +42,12 @@ export const UpdatePassword: React.FC = () => {
         setUserLoading(true);
         setUserReturnObject(null);
         setUserNetworkError(null);
+        setUserSuccess(false);
         userController.loggedInUser().then(result => {
                 setUserReturnObject(result);
+                if (result.status === ReturnStatus.SUCCESS) {
+                    setUserSuccess(true);
+                }
             }
         ).catch(err => {
             setUserNetworkError(err);
@@ -118,7 +123,7 @@ export const UpdatePassword: React.FC = () => {
     </CheckReturnObject>);
 
     return (<div style={{marginLeft: "25px"}}>
-        {userReturnObject != null ? (checkUserView): (updatePasswordReturnObject!=null?(checkUpdatePasswordView) : (
+        {!userSuccess? (checkUserView): (updatePasswordReturnObject!=null?(checkUpdatePasswordView) : (
             <div>
                 <h2>修改密码</h2>
                 <form onSubmit={handleSubmit}>

@@ -33,6 +33,7 @@ export const CommunityForm: React.FC = () => {
             setMode(keyword);
         }else{
             navigate("?mode=browse");
+            window.location.reload();
         }
     }, []);
 
@@ -72,6 +73,7 @@ export const CommunityForm: React.FC = () => {
                 }else if(mode==='post'){
                     navigate("?mode=browse");
                 }
+                window.location.reload();
             }}>{mode==='browse'&&"发布倾述"}{mode==='post'&&"社区浏览"}</Button>
             <span style={{flexGrow: 20}}></span>
         </div>

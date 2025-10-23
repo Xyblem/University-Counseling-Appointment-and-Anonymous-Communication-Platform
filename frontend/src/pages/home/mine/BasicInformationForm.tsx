@@ -7,7 +7,7 @@ import {User} from "../../../entity/User";
 import {UserController} from "../../../controller/UserController";
 import {TextView} from "../../../components/ui/widget/TextView"
 import {GenderNamesCN, ProvinceCN_NamesCN, UserPositionNamesCN, UserRoleNamesCN} from "../../../entity/enums/enums";
-import {ReturnObject, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
+import {ReturnObject, ReturnStatus, ReturnStatusNamesCN} from "../../../utils/api/ReturnObject";
 import {CheckReturnObject} from "../../../components/functional/CheckReturnObject";
 import {Loading} from "../../../components/ui/widget/Loading";
 
@@ -18,6 +18,7 @@ export const BasicInformationForm: React.FC = () => {
     const [userLoading, setUserLoading] = useState<boolean>(false);
     const [userReturnObject,setUserReturnObject]=useState<ReturnObject<User>|null>(null);
     const [userNetworkError, setUserNetworkError]=useState<Error|null>(null);
+    const [userSuccess,setUserSuccess]=useState<boolean>(false);
     const user=userReturnObject?.data;
 
     //钩子
@@ -26,8 +27,12 @@ export const BasicInformationForm: React.FC = () => {
         setUserLoading(true);
         setUserReturnObject(null);
         setUserNetworkError(null);
+        setUserSuccess(false);
         userController.loggedInUser().then(result => {
                 setUserReturnObject(result);
+                if (result.status === ReturnStatus.SUCCESS) {
+                    setUserSuccess(true);
+                }
             }
         ).catch(err => {
             setUserNetworkError(err);
@@ -59,7 +64,7 @@ export const BasicInformationForm: React.FC = () => {
 
     return (<div className="layout-flex-column">
         <h2>基本信息</h2>
-        {userReturnObject!=null?(checkUserView): (
+        {!userSuccess?(checkUserView): (
             <div className="layout-flex-column" style={{marginLeft: "25px"}}>
                 <TextView label="用户名：" text={user == null ? "null" : user.username} copyable/>
                 <TextView label="昵称：" text={user == null ? "null" : "" + user.nickname} copyable/>
