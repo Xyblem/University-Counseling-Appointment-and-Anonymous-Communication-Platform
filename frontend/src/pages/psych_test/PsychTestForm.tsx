@@ -8,7 +8,7 @@ import {
     CheckLoginLoading,
  CheckLoginNotLoginViewOld
 } from "../../utils/views/CommonViews";
-import {useLocation, useNavigate} from "react-router-dom";
+import {useLocation} from "react-router-dom";
 import {PsychOptions, PsychTest, PsychTestController, PsychTestResult} from "../../controller/PsychTestController";
 import {CheckboxGroup, CheckboxOption} from "../../components/ui/widget/Checkbox";
 import {RadioGroup} from "../../components/ui/widget/Radio";

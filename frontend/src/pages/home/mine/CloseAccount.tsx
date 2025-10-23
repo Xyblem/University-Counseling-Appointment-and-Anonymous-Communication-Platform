@@ -111,7 +111,7 @@ export const CloseAccount: React.FC = () => {
         <div>
             <h3>注销账号{ReturnStatusNamesCN.get(closeAccountReturnObject?.status)}</h3>
             <p className="home-error-detail">{closeAccountReturnObject?.message}</p>
-            {closeAccountReturnObject?.status==ReturnStatus.SUCCESS && (
+            {closeAccountReturnObject?.status===ReturnStatus.SUCCESS && (
                 <Button type="primary" block onChange={()=>{window.location.href="auth/login";}}>返回登录界面</Button>
             )}
         </div>

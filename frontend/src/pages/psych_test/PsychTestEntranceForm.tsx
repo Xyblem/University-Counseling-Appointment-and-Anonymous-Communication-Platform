@@ -35,7 +35,7 @@ export const PsychTestEntranceForm: React.FC = () => {
     }, []);
 
 
-    const buttonList=psychTestList?.map((value:PsychTestQueryListItem,index:number)=>
+    const buttonList=psychTestList?.map((value:PsychTestQueryListItem)=>
     <div>
         <div className="psych-test-entry-box">
             <h2>{value.title}</h2>
