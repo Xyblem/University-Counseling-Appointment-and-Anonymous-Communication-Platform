@@ -2,19 +2,16 @@ import React, {useEffect, useRef, useState} from "react";
 import {UpdateUserRequest, UserController} from "../../../controller/UserController";
 import {CaptchaController} from "../../../controller/CaptchaController";
 import {
-    confirmedPasswordValidationRules,
     descriptionValidationRules,
     emailValidationRules,
     majorValidationRules,
     nameValidationRules,
     nicknameValidationRules,
-    passwordValidationRules,
     phoneNumberValidationRules,
     qqValidationRules,
     schoolValidationRules,
     secondaryUnitValidationRules,
     User,
-    usernameValidationRules,
     wechatValidationRules
 } from "../../../entity/User";
 import {InputField, InputFieldCallback, InputRef} from "../../../components/ui/widget/InputField";

@@ -1,7 +1,5 @@
 import React, {useState, useEffect, ReactNode, forwardRef, useImperativeHandle} from 'react';
-import api from "../../utils/api/api_config";
-import {AxiosError, AxiosResponse} from "axios";
-import ReactDOM from "react-dom/client";
+import {AxiosError} from "axios";
 import {ReturnObject} from "../../utils/api/ReturnObject";
 
 // 组件Props类型
