@@ -246,26 +246,134 @@
 /*}*/
 
 
+/*.vertical-menu {*/
+/*    width: 200px;*/
+/*    height: 100%;*/
+/*}*/
+
+/*.vertical-menu a {*/
+/*    background-color: #eee;*/
+/*    color: black;*/
+/*    display: block;*/
+/*    padding: 12px;*/
+/*    text-decoration: none;*/
+/*}*/
+
+/*.vertical-menu a:hover {*/
+/*    background-color: #ccc;*/
+/*}*/
+
+/*.vertical-menu a.active {*/
+/*    color: black;*/
+/*    font-weight: bold;*/
+/*    font-size: 20px;*/
+/*    align-items: stretch;*/
+/*}*/
+
+
+
 .vertical-menu {
-    width: 200px;
+    width: 240px; /* 稍微增加宽度 */
     height: 100%;
+    background: #ffffff; /* 添加白色背景 */
+    border-radius: 12px; /* 圆角容器 */
+    padding: 16px 0; /* 上下内边距 */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* 柔和阴影 */
+    border: 1px solid #f0f0f0; /* 细边框 */
 }
 
 .vertical-menu a {
-    background-color: #eee;
-    color: black;
-    display: block;
-    padding: 12px;
+    background-color: transparent; /* 透明背景 */
+    color: #333; /* 深灰色文字 */
+    display: flex; /* 使用flex布局 */
+    align-items: center; /* 垂直居中 */
+    padding: 14px 20px; /* 调整内边距 */
     text-decoration: none;
+    transition: all 0.3s ease; /* 平滑过渡 */
+    border-left: 3px solid transparent; /* 左侧边框 */
+    margin: 4px 12px; /* 外边距 */
+    border-radius: 8px; /* 圆角 */
+    font-size: 15px; /* 字体大小 */
+    font-weight: 500; /* 中等字重 */
 }
 
 .vertical-menu a:hover {
-    background-color: #ccc;
+    background-color: #f8f9ff; /* 浅蓝色悬停背景 */
+    color: #4361ee; /* 主题蓝色 */
+    border-left-color: #4361ee; /* 左侧边框颜色 */
+    transform: translateX(4px); /* 轻微右移 */
+    box-shadow: 0 2px 8px rgba(67, 97, 238, 0.15); /* 悬停阴影 */
 }
 
 .vertical-menu a.active {
+    background-color: #4361ee; /* 主题蓝色背景 */
+    color: white; /* 白色文字 */
+    font-weight: 600; /* 加粗 */
+    font-size: 15px; /* 保持字体大小一致 */
+    border-left-color: #4361ee; /* 左侧边框 */
+    box-shadow: 0 4px 12px rgba(67, 97, 238, 0.25); /* 活动状态阴影 */
+    transform: translateX(0); /* 重置变换 */
+}
+
+/*!* 可选：添加图标支持 *!*/
+/*.vertical-menu a::before {*/
+/*    content: "";*/
+/*    display: inline-block;*/
+/*    width: 20px;*/
+/*    height: 20px;*/
+/*    margin-right: 12px;*/
+/*    background-color: currentColor;*/
+/*    mask-size: cover;*/
+/*    -webkit-mask-size: cover;*/
+/*}*/
+
+/*!* 为不同菜单项设置不同图标（示例） *!*/
+/*.vertical-menu a:nth-child(1)::before {*/
+/*    mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>');*/
+/*}*/
+
+/*.vertical-menu a:nth-child(2)::before {*/
+/*    mask-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.18 5 4.05 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>');*/
+/*}*/
+
+
+
+
+.horizontal-menu {
+    width: auto; /* 改为自适应宽度 */
+    height: auto; /* 改为自适应高度 */
+    display: flex;
+    flex-direction: row; /* 保持水平排列 */
+    gap: 10px; /* 添加卡片间距 */
+    padding: 10px; /* 添加容器内边距 */
+    flex-wrap: wrap; /* 允许换行 */
+}
+
+.horizontal-menu a {
+    background-color: transparent; /* 改为透明背景 */
     color: black;
+    display: block;
+    padding: 12px 16px; /* 调整内边距 */
+    text-decoration: none;
+    border: 1px solid #ddd; /* 添加边框 */
+    border-radius: 6px; /* 添加圆角 */
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05); /* 添加轻微阴影 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+    min-width: 80px; /* 设置最小宽度 */
+    text-align: center; /* 文字居中 */
+}
+
+.horizontal-menu a:hover {
+    background-color: #f8f9fa; /* 悬停时浅灰色背景 */
+    border-color: #007bff; /* 悬停时改变边框颜色 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 悬停时阴影加深 */
+    transform: translateY(-2px); /* 悬停时轻微上浮效果 */
+}
+
+.horizontal-menu a.active {
+    color: #007bff; /* 活动状态使用主题色 */
     font-weight: bold;
-    font-size: 20px;
-    align-items: stretch;
+    font-size: 16px; /* 调整字体大小 */
+    border-color: #007bff; /* 活动状态边框颜色 */
+    background-color: #f0f8ff; /* 活动状态背景色 */
 }

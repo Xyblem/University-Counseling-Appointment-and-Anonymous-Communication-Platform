@@ -185,4 +185,17 @@ export class UserController {
         })
         return result;
     }
+
+    /**
+     * 根据学校所在省份和学校获取教师
+     * @param request 请求体
+     */
+    getAllTeachers=async(request:{schoolProvince:number,school:string}):Promise<ReturnObject<User[]>> => {
+        let result:ReturnObject={code:0,status:"",timestamp:0};
+        await api.get<ReturnObject>("api/user/all_teachers",{params:request}).then(response=>{
+            //@ts-ignore
+            result=response;
+        });
+        return result;
+    }
 }

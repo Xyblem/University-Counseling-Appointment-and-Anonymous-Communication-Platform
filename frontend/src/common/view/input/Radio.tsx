@@ -238,6 +238,27 @@ export const RadioGroup = forwardRef<RadioGroupRef, RadioGroupProps>((props, ref
 RadioGroup.displayName = 'RadioGroup';
 
 export namespace RadioGroupCallback{
+
+    export const handleArrayChange = (set: React.Dispatch<React.SetStateAction<string[]|undefined>>, emptyValue: string|null =null) => (value: string) => {
+        if (value == null || value.length === 0) {
+            if(emptyValue==null){
+                set([]);
+            }else{
+                set([emptyValue]);
+            }
+
+        } else {
+            set([value]);
+        }
+    }
+
+    export const handleChange = (set: React.Dispatch<React.SetStateAction<string|undefined>>, emptyValue: string = "") => (value: string) => {
+        if (value == null || value.length === 0) {
+            set(emptyValue);
+        } else {
+            set(value);
+        }
+    }
     /**
      * 处理单选框输入变化
      * @param field 字段名

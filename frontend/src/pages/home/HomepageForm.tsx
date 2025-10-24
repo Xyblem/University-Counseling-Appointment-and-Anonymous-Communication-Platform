@@ -12,7 +12,7 @@ import '../../css/Decoration.css'
 import {MineForm, MineForm_Children} from "./MineForm";
 import {MainForm} from "./MainForm";
 import {AppointmentForm} from "./AppointmentForm";
-import {CommunityForm} from "./CommunityForm";
+import {CommunityForm,Community_Children} from "./CommunityForm";
 import {UserController} from "../../controller/UserController";
 import {ResponseHandler, ResponseHandlerRef} from "../../common/response/ResponseHandler";
 import {Button} from "../../common/view/controller/Button";
@@ -21,17 +21,19 @@ import {Loading} from "../../common/view/display/Loading";
 import {ReturnObject} from "../../common/response/ReturnObject";
 import {Divider} from "../../common/view/decoration/Divider";
 import {User} from "../../entity/User";
-import OutletContext = Homepage.OutletContext;
+import {ResponseState} from "../../common/response/ResponseState";
+import {CheckLoginComponent} from "../../component/CheckLoginComponent";
+import {FetchUserComponent} from "../../component/FetchUserComponent";
 
 
 export namespace Homepage{
 
     //子路由
     export const Children=[
-        {path:"/home/main",element:<MainForm/>},
-        {path:"/home/appointment",element:<AppointmentForm/>},
-        {path:"/home/community",element:<CommunityForm/>},
-        {path:"/home/mine",element:<MineForm/>,children:MineForm_Children},
+        {path:"main",element:<MainForm/>},
+        {path:"appointment",element:<AppointmentForm/>},
+        {path:"community",element:<CommunityForm/>,children:Community_Children},
+        {path:"mine",element:<MineForm/>,children:MineForm_Children},
     ];
 
     export interface OutletContext{
@@ -40,10 +42,6 @@ export namespace Homepage{
     }
 }
 
-
-
-
-
 //主页
 export const HomepageForm: React.FC = () => {
     //控制器
@@ -51,9 +49,11 @@ export const HomepageForm: React.FC = () => {
     //路由
     const navigate = useNavigate();
     const urlLocation = useLocation();
+
+    const [logoutState,setLogoutState] = useState<ResponseState>();
     //引用
-    const checkLoginHandlerRef=useRef<ResponseHandlerRef<null,any>>(null);
-    const userHandler=useRef<ResponseHandlerRef<null,User>>(null);
+
+
     const logoutHandlerRef=useRef<ResponseHandlerRef<null,any>>(null);
     const logoutDialogRef = useRef<DialogRef>(null);
     const logoutResultDialogRef = useRef<DialogRef>(null);
@@ -61,10 +61,8 @@ export const HomepageForm: React.FC = () => {
 
     useEffect(() => {
         if(urlLocation.pathname==='/home'||urlLocation.pathname==='/home/'){
-            window.location.href="/home/main";
+            navigate("/home/main");
         }
-        checkLoginHandlerRef.current?.request(null);
-        userHandler.current?.request(null);
     }, []);
 
     const logoutDialog = (<Dialog
@@ -95,10 +93,12 @@ export const HomepageForm: React.FC = () => {
     const logoutResultDialog=(<ResponseHandler<null,any>
         ref={logoutHandlerRef}
         request={userController.logout}
+        setResponseState={setLogoutState}
         idleComponent={<></>}
         loadingComponent={<Loading type="dots" text='登出中...' color="#2196f3" size="large" fullScreen></Loading>}
         handlingReturnObjectComponent={<Loading type="dots" text='处理登出结果中...' color="#2196f3" size="large" fullScreen></Loading>}
         networkErrorComponent={<Dialog
+            autoOpen
             ref={logoutResultDialogRef}
             type="modal"
             title="网络错误"
@@ -107,7 +107,7 @@ export const HomepageForm: React.FC = () => {
             closeOnEscape
         >
             <div className="layout-flex-column">
-                <p className="text-align-left">{logoutHandlerRef.current?.returnObject?.message}</p>
+                <p className="text-align-left">详情：{logoutState?.networkError?.message}</p>
                 <br/>
                 <div className="layout-flex-row justify-content-flex-end">
                     <span style={{flexGrow: 3.1}}></span>
@@ -122,37 +122,34 @@ export const HomepageForm: React.FC = () => {
         }
         finishedComponent={
             <Dialog
+                autoOpen
                 ref={logoutResultDialogRef}
                 type="modal"
-                title={"退出登录" + ReturnObject.Status.ChineseName.get(logoutHandlerRef.current?.returnObject?.status)}
+                title={"退出登录" + ReturnObject.Status.ChineseName.get(logoutState?.returnObject?.status)}
                 showCloseButton
                 closeOnBackdropClick
                 closeOnEscape
                 onClose={() => {
-                    if (logoutHandlerRef.current?.returnObject?.status === ReturnObject.Status.SUCCESS) {
-                        window.location.href = "/auth/login";
+                    if (logoutState?.returnObject?.status === ReturnObject.Status.SUCCESS) {
+                        navigate("/auth/login");
                     }
                 }}
             >
                 <div className="layout-flex-column">
-                    <p className="text-align-left">{logoutHandlerRef.current?.returnObject?.status === ReturnObject.Status.SUCCESS ? "登出成功，即将返回登录界面" : logoutHandlerRef.current?.returnObject?.message}</p>
+                    <p className="text-align-left">{logoutState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "登出成功，即将返回登录界面" : logoutState?.returnObject?.message}</p>
                     <br/>
                     <div className="layout-flex-row justify-content-flex-end">
                         <span style={{flexGrow: 3.1}}></span>
-                        <Button type={logoutHandlerRef.current?.returnObject?.status === ReturnObject.Status.SUCCESS ? "primary" : "default"}
+                        <Button type={logoutState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "primary" : "default"}
                                 style={{flexGrow: 1}} onClick={() => {
                             logoutResultDialogRef.current?.close();
-                        }}>{logoutHandlerRef.current?.returnObject?.status === ReturnObject.Status.SUCCESS ? "确定" : "返回"}</Button>
+                        }}>{logoutState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "确定" : "返回"}</Button>
 
                     </div>
                 </div>
 
             </Dialog>
         }
-
-        onRequestEnd={() => {
-            logoutResultDialogRef.current?.open();
-        }}
     />);
 
 
@@ -182,78 +179,17 @@ export const HomepageForm: React.FC = () => {
                     </div>
                 </header>
                 <Divider color="Black" spacing="0"/>
-
-                <ResponseHandler<null,any>
-                    ref={checkLoginHandlerRef}
-                    request={userController.checkLogin}
-                    idleComponent={<div>
-                        <div className="layout-flex">
-                            <h2>好奇怪哦，这个页面似乎没有启动登录检查</h2>
-                        </div>
-                        <div className="layout-flex">
-                            <Button type="default" onClick={() => {
-                                window.location.reload();
-                            }}>重新加载</Button>
-                        </div>
-                    </div>}
-
-                    loadingComponent={<Loading type="dots" text='页面加载中...' color="#2196f3" size="large" fullScreen></Loading>}
-
-                    handlingReturnObjectComponent={<Loading type="dots" text='页面加载中...' color="#2196f3" size="large" fullScreen></Loading>}
-
-                    networkErrorComponent={<div>
-                        <div className="layout-flex">
-                            <h2 style={{color: 'red'}}>验证登录状态失败，请检查网络连接</h2>
-                        </div>
-                        <div className="layout-flex">
-                            <Button type="default" onClick={() => {
-                                window.location.reload();
-                            }}>重新加载</Button>
-                        </div>
-                    </div>}
-
-                    finishedComponent={
-                        (!(checkLoginHandlerRef.current?.returnObject?.code === ReturnObject.Code.SUCCESS))?(
-                            <div>
-                                <div className="layout-flex">
-                                    <h2>您还未登录，请登录</h2>
-                                </div>
-                                <div className="layout-flex">
-                                    <Button type="default" onClick={()=>{window.location.reload();}}>重新加载</Button>
-                                    &nbsp;
-                                    <Button type="default" onClick={() => {
-                                        window.location.href = "/auth/login";
-                                    }}>去登录</Button>
-                                </div>
-                            </div>
-                        ):(
-                            <ResponseHandler<null,User>
-                                request={userController.loggedInUser}
-                                loadingComponent={<Loading type="dots" text='页面加载中...' color="#2196f3" size="large"
-                                                           fullScreen></Loading>}
-                                handlingReturnObjectComponent={<Loading type="dots" text='页面加载中...' color="#2196f3"
-                                                                        size="large" fullScreen></Loading>}
-                                networkErrorComponent={
-                                    <div>
-                                        <h3>网络错误</h3>
-                                        <p className="home-error-detail">请检查网络连接{userHandler.current?.networkError?.message}</p>
-                                    </div>
-                                }
-                                finishedComponent={<Outlet context={outletContext}/>}
-
-                                onRequestEnd={()=>{
-                                    outletContext.user=userHandler.current?.returnObject?.data?userHandler.current?.returnObject?.data:null;
-                                }
-                                }
-                            />
-                        )
-                    }
-
-                    onRequestEnd={()=>{
-                        outletContext.isLoggedIn=checkLoginHandlerRef.current?.returnObject?.code === ReturnObject.Code.SUCCESS;
+                <CheckLoginComponent
+                    resultCallback={(result )=>{
+                        outletContext.isLoggedIn=result===true;
                     }}
-                />
-
+                >
+                    <FetchUserComponent resultCallback={(result)=>{
+                        outletContext.user = result?result:null;
+                    }}>
+                        <Outlet context={outletContext}/>
+                    </FetchUserComponent>
+                </CheckLoginComponent>
             </div>
         </div>
     )

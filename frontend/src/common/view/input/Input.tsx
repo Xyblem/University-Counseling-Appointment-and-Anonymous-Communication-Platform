@@ -163,6 +163,7 @@ export const Input = forwardRef<InputRef, InputProps>((props, ref) => {
     // 处理值变化
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value;
+        //const newValue = internalValue;
 
         // 更新内部状态（如果是非受控组件）
         if (controlledValue === undefined) {

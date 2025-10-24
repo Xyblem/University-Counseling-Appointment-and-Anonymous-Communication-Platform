@@ -42,6 +42,7 @@ export interface DialogProps {
     minHeight?: number;
     maxWidth?: number;
     maxHeight?: number;
+    autoOpen?:boolean;
 }
 
 // 对话框引用接口
@@ -73,7 +74,8 @@ export const Dialog = forwardRef<DialogRef, DialogProps>((props, ref) => {
         minWidth = 200,
         minHeight = 150,
         maxWidth = 1200,
-        maxHeight = 800
+        maxHeight = 800,
+        autoOpen= false,
     } = props;
 
     const [isOpen, setIsOpen] = useState(false);
@@ -97,6 +99,14 @@ export const Dialog = forwardRef<DialogRef, DialogProps>((props, ref) => {
         },
         isOpen
     }));
+
+
+    useEffect(() => {
+        if(autoOpen){
+            setIsOpen(true);
+        }
+    }, []);
+
 
     // 处理ESC键关闭
     useEffect(() => {

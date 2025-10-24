@@ -1,6 +1,7 @@
 // 组件Props类型
-import React, {forwardRef, ReactNode, useCallback, useImperativeHandle, useRef, useState} from "react";
+import React, {forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState} from "react";
 import {ReturnObject} from "./ReturnObject";
+import {ResponseState} from "./ResponseState";
 
 
 export interface ResponseHandlerProps<RequestBody=any,ReturnType=any> {
@@ -21,9 +22,13 @@ export interface ResponseHandlerProps<RequestBody=any,ReturnType=any> {
     /*处理返回对象时执行(request(...).then中)*/
     onHandlingReturnObject?: (requestBody:RequestBody,returnObject:ReturnObject<ReturnType>) => void;
     /*请求结束时(request(...).finally中)执行*/
-    onRequestEnd?: (requestBody:RequestBody) => void;
+    onRequestEnd?: (requestBody:RequestBody,returnObject:ReturnObject<ReturnType>) => void;
     /*请求出错时(request(...).catch中)执行*/
     onRequestError?: (requestBody:RequestBody,err:Error) => void;
+    /*设置状态的方式*/
+    setResponseState?:React.Dispatch<React.SetStateAction<ResponseState<ReturnType> | undefined>>
+    /*自动请求*/
+    autoRequest?:RequestBody;
 }
 
 
@@ -54,7 +59,9 @@ export const ResponseHandler = forwardRef(<RequestBody, ReturnType>(
         onRequestBegin,
         onHandlingReturnObject,
         onRequestEnd,
-        onRequestError
+        onRequestError,
+        setResponseState,
+        autoRequest
     } = props;
 
     const [currentState, setCurrentState] = useState<ComponentState>('idle');
@@ -62,46 +69,35 @@ export const ResponseHandler = forwardRef(<RequestBody, ReturnType>(
     const [networkError, setNetworkError] = useState<Error|null>(null);
     const requestBodyRef = useRef<RequestBody | null>(null);
 
+    useEffect(() => {
+        if(autoRequest!==undefined){
+            handleRequest(autoRequest);
+        }
+    }, []);
 
     const handleRequest = useCallback(async (requestBody: RequestBody): Promise<ReturnObject<ReturnType>> => {
-        // requestBodyRef.current = requestBody;
-        // let returnObject =null;
-        //     setCurrentState('loading');
-        // onRequestBegin?.(requestBody);
-        // await request(requestBody).then(returnObject=>{
-        //     setCurrentState('handling');
-        //     onHandlingReturnObject?.(requestBody, returnObject);
-        //     }
-        // ).catch(err=>{
-        //         setCurrentState('networkError');
-        //         onRequestError?.(requestBody, err as Error);
-        //     }
-        // ).finally(()=>{
-        //     setCurrentState('finished');
-        //     onRequestEnd?.(requestBody);
-        //     }
-        //
-        // );
-        try {
-            setCurrentState('loading');
-            onRequestBegin?.(requestBody);
-
-            const returnObject = await request(requestBody);
-
+        setCurrentState('loading');
+        setResponseState?.((prev: any) => ({...prev, loading: true}));
+        onRequestBegin?.(requestBody);
+        let result:ReturnObject={status:"null",code:0,timestamp:0};
+        request(requestBody).then(response=>{
             setCurrentState('handling');
-            onHandlingReturnObject?.(requestBody, returnObject);
-
+            setReturnObject(response);
+            setResponseState?.((prev: any) => ({...prev, returnObject: response}));
+            result=response;
+            onHandlingReturnObject?.(requestBody, response);
             setCurrentState('finished');
-            setReturnObject(returnObject);
-            return returnObject;
-        } catch (err) {
+        }).catch(err=>{
             setCurrentState('networkError');
             setNetworkError(err as Error);
+            setResponseState?.((prev: any) => ({...prev, networkError: err}));
             onRequestError?.(requestBody, err as Error);
-            throw err;
-        } finally {
-            onRequestEnd?.(requestBody);
-        }
+            //throw err;
+        }).finally(()=>{
+            setResponseState?.((prev: any) => ({...prev, loading: false}));
+            onRequestEnd?.(requestBody,result);
+        });
+        return result;
     }, [request, onRequestBegin, onHandlingReturnObject, onRequestEnd, onRequestError]);
 
     const recover = useCallback(() => {
@@ -114,8 +110,8 @@ export const ResponseHandler = forwardRef(<RequestBody, ReturnType>(
     useImperativeHandle(ref, () => ({
         request: handleRequest,
         recover:recover,
-        returnObject:returnObject,
-        networkError:networkError
+        get returnObject(){return returnObject},
+        get networkError(){return networkError}
     }), [handleRequest, recover]);
 
     const renderComponent = () => {

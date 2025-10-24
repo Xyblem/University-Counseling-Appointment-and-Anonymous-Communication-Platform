@@ -2,12 +2,10 @@ package com.ucaacp.backend.annotation;
 
 import java.lang.annotation.*;
 
-/**
- * 忽略Token验证
- */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface IgnoreAuth {
-
+public @interface CheckLogin {
+    // 可以添加其他参数，比如需要的权限等
+    boolean required() default true;
 }

@@ -2,6 +2,7 @@
 //心理题目选项
 import {ReturnObject} from "../common/response/ReturnObject";
 import api from "../utils/api/api_config";
+import {Controller} from "./Controller";
 
 export interface PsychOptions{
     key: string;
@@ -45,71 +46,27 @@ export interface PsychTestQueryListItem {
     questionsNumber:number;
 }
 
+export interface PsychAssessmentRecordDTO {
+    assessmentId: number;
+    assessmentClass: string;
+    assessmentName: string;
+    testUsername: string;
+    testName: string;
+    assessmentReport: string;
+    assessmentTime: Date;
+}
 
+export class PsychTestController extends Controller{
 
-export class PsychTestController{
+    //根据名称获取测试问卷
+    getTest=this._get<{test:string},PsychTest>("api/psych_test/get");
 
-    /**
-     * 根据名称获取测试问卷
-     * @param test 心理测试问卷类名
-     */
-    getTest=async (test:string): Promise<PsychTest|null> => {
-        let result:PsychTest|null = null;
-        await api.get<ReturnObject<PsychTest>>("api/psych_test/get",{params:{test:test}}).then(response => {
-            //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                //@ts-ignore
-                result = response.data;
-                //@ts-ignore
-            }else if(response.code===ReturnCode.UNAUTHORIZED){
-                result=null;
-            }else{
-                result=null;
-                //@ts-ignore
-                throw Error(response.message)
-            }
-        })
-        return result;
-    }
+    //列出所有心理测试问卷类名
+    listAll=this._get<null,PsychTestQueryListItem[]>("api/psych_test/list_all");
 
-    /**
-     * 列出所有心理测试问卷类名
-     */
-    listAll=async (): Promise<PsychTestQueryListItem[]|null> => {
-        let result:PsychTestQueryListItem[]|null = null;
-        await api.get<ReturnObject<PsychTestQueryListItem[]>>("api/psych_test/list_all").then(response => {
-            //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                //@ts-ignore
-                result = response.data;
-                //@ts-ignore
-            }else{
-                result=null;
-                //@ts-ignore
-                throw Error(response.message)
-            }
-        })
-        return result;
-    }
+    //回答测试题
+    answer=this._post<PsychTestAnswer,PsychTestResult>("api/psych_test/answer");
 
-
-    /**
-     * 回答测试题
-     */
-    answer=async (psychTestAnswer:PsychTestAnswer): Promise<PsychTestResult|null> => {
-        let result:PsychTestResult|null=null;
-        await api.post<ReturnObject<PsychTestResult>>("api/psych_test/answer",psychTestAnswer).then(response => {
-            //@ts-ignore
-            if (response.code === ReturnCode.SUCCESS) {
-                //@ts-ignore
-                result = response.data;
-                //@ts-ignore
-            }else{
-                result=null;
-                //@ts-ignore
-                throw Error(response.message)
-            }
-        })
-        return result;
-    }
+    //列出我的测评记录
+    listMine=this._get<null,PsychAssessmentRecordDTO[]>("api/psych_test/record/list_mine");
 }

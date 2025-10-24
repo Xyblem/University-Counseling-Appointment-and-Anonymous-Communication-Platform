@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useId, forwardRef, useImperativeHandle, useMemo } from 'react';
-import './Checkbox.css';
+import './CheckBox.css';
 
 // 复选框选项类型
 export interface CheckboxOption {
@@ -370,6 +370,30 @@ CheckboxGroup.displayName = 'CheckboxGroup';
 
 
 
-export namespace CheckBoxCallback{
-    
+export namespace CheckBoxCallback {
+
+
+    export const handleChange = (set: React.Dispatch<React.SetStateAction<string[] | undefined>>, emptyValue: string[] = []) => (value: string[]) => {
+        if (value == null || value.length === 0) {
+            set(emptyValue);
+        } else {
+            set(value);
+        }
+
+    }
+
+
+    /**
+     * 处理多选框输入变化
+     * @param field 字段名
+     * @param setData 设置数据状态的方法
+     * @param emptyValue  输入为空时的值
+     */
+    export const handleDataChange = <T = any>(field: string, setData: React.Dispatch<React.SetStateAction<T>>, emptyValue: string[] | null = null) => (value: string[]) => {
+        if (value == null || value.length === 0) {
+            setData((prev: any) => ({...prev, [field]: emptyValue}));
+        } else {
+            setData((prev: any) => ({...prev, [field]: value}));
+        }
+    }
 }

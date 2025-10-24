@@ -130,12 +130,6 @@ nav a.active {
     font-size:12px;
 }
 
-
-.home-community-header{
-    display: flex;
-    padding: 15px 0;
-}
-
 .home-community-box{
     border: 1px solid #c1bfbf;
     outline: 1px solid #eae8e8;
@@ -148,4 +142,214 @@ nav a.active {
     width: 1360px;
     min-height: 540px;
     margin-left: -10px;
+}
+
+.post-container {
+    width: 100%;
+    /*max-width: 500px;*/
+    margin: 0 auto;
+}
+
+.post-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin-bottom: 25px;
+}
+
+.post-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+}
+
+.post-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #2c3e50;
+    margin-bottom: 15px;
+    line-height: 1.3;
+    border-left: 5px solid #3498db;
+    padding-left: 15px;
+    text-align: left;
+}
+
+.post-content {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #34495e;
+    margin-bottom: 25px;
+    padding: 20px 0;
+    border-top: 1px solid #ecf0f1;
+    border-bottom: 1px solid #ecf0f1;
+}
+
+.post-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #7f8c8d;
+    font-size: 14px;
+}
+
+.author-info {
+    display: flex;
+    align-items: center;
+}
+
+.author-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #3498db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    margin-right: 12px;
+}
+
+.author-name {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.publish-time {
+    display: flex;
+    align-items: center;
+}
+
+.time-icon {
+    margin-right: 6px;
+    font-size: 16px;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .post-card {
+        padding: 20px;
+    }
+
+    .post-title {
+        font-size: 24px;
+    }
+
+    .post-meta {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .publish-time {
+        margin-top: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .post-title {
+        font-size: 20px;
+    }
+
+    .post-content {
+        font-size: 15px;
+    }
+}
+
+.replies-section {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.section-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #ecf0f1;
+    display: flex;
+    align-items: center;
+}
+
+.section-title i {
+    margin-right: 10px;
+    color: #3498db;
+}
+
+.reply-card {
+    background-color: #f8fafc;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    border-left: 4px solid #a0d2f7;
+    transition: all 0.3s ease;
+}
+
+.reply-card:hover {
+    background-color: #f0f7ff;
+    transform: translateX(5px);
+}
+
+.reply-content {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #34495e;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.reply-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: #7f8c8d;
+}
+
+.reply-author {
+    display: flex;
+    align-items: center;
+}
+
+.reply-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    margin-right: 10px;
+}
+
+.reply-form {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    padding: 25px;
+}
+
+.form-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+}
+
+.form-title i {
+    margin-right: 10px;
+    color: #3498db;
+}
+
+.form-group {
+    margin-bottom: 20px;
 }

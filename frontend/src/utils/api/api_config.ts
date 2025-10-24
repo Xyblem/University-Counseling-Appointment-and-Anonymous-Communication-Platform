@@ -43,7 +43,7 @@ api.interceptors.response.use(
         if (error.response?.status === 401) {
             // 处理未授权
             localStorage.removeItem('token');
-            window.location.href = '/login';
+            window.location.href = '#/auth/login';
         }
         return Promise.reject(error);
     }

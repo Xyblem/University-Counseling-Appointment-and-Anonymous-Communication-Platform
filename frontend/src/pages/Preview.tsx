@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import './Preview.css';
+import {Link} from "react-router";
 
 // 首页组件
 export const Preview: React.FC = () => {
@@ -22,7 +23,7 @@ export const Preview: React.FC = () => {
                             <li><a href="#features">功能特色</a></li>
                             <li><a href="#services">服务内容</a></li>
                             <li><a href="#about">关于我们</a></li>
-                            <li className="login-btn"><a href="auth/login">登录/注册</a></li>
+                            <li className="login-btn"><Link to="/auth/login">登录/注册</Link></li>
                         </ul>
                     </nav>
                 </div>

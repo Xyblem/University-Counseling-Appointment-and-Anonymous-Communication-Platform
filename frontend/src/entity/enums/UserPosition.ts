@@ -20,6 +20,11 @@ export namespace UserPosition {
         [UserPosition.STUDENT,"学生"],
         [UserPosition.PSYCHOLOGICAL_COUNSELING_STAFF,"心理部咨询员"],
         [UserPosition.HEAD_OF_THE_PSYCHOLOGICAL_DEPARTMENT,"心理部负责人"],
-        [UserPosition.NON_PSYCHOLOGICAL_DEPARTMENT_STAFF,"非心理部教职工"]
+        [UserPosition.NON_PSYCHOLOGICAL_DEPARTMENT_STAFF,"非心理部教职工"],
+        ["UNKNOWN","未指定"],
+        ["STUDENT","学生"],
+        ["PSYCHOLOGICAL_COUNSELING_STAFF","心理部咨询员"],
+        ["HEAD_OF_THE_PSYCHOLOGICAL_DEPARTMENT","心理部负责人"],
+        ["NON_PSYCHOLOGICAL_DEPARTMENT_STAFF","非心理部教职工"]
     ]);
 }

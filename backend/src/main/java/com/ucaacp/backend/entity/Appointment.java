@@ -36,8 +36,8 @@ public class Appointment {
     private LocalDateTime applyTime = LocalDateTime.now();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "ENUM('CONFIRM','REJECT','RESCHEDULE')")
-    private AppointmentStatus status = AppointmentStatus.RESCHEDULE;
+    @Column(name = "status", nullable = false, columnDefinition = "ENUM('PENDING','CONFIRM','REJECT','RESCHEDULE')")
+    private AppointmentStatus status = AppointmentStatus.PENDING;
 
     // 构造方法
     public Appointment() {}

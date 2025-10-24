@@ -1,10 +1,13 @@
 package com.ucaacp.backend.controller;
 
+import com.ucaacp.backend.annotation.CheckLogin;
+import com.ucaacp.backend.entity.DTO.PsychAssessmentRecordDTO;
+import com.ucaacp.backend.entity.User;
 import com.ucaacp.backend.service.PsychTestService;
-import com.ucaacp.backend.utils.package_scan.PackageScanner;
+import com.ucaacp.backend.service.UserService;
 import com.ucaacp.backend.utils.psychtest.classes.PsychTest;
 import com.ucaacp.backend.utils.psychtest.classes.PsychTestAnswer;
-import com.ucaacp.backend.utils.psychtest.test.ExampleTest;
+import com.ucaacp.backend.utils.psychtest.classes.PsychTestResult;
 import com.ucaacp.backend.utils.return_object.ReturnCode;
 import com.ucaacp.backend.utils.return_object.ReturnObject;
 import jakarta.servlet.http.HttpSession;
@@ -14,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,12 +28,13 @@ public class PsychTestController {
     @Autowired
     private PsychTestService psychTestService;
 
+    @Autowired
+    private UserService userService;
+
+    @CheckLogin
     @GetMapping("/get")
     public ReturnObject get(@RequestParam Map<String,Object> params, HttpSession session) throws Exception {
-        boolean isLogin=session.getAttribute("user") != null;
-        if(!isLogin){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
+
         String test=params.get("test").toString();
         try {
             return ReturnObject.success(psychTestService.getPsychTestByClassName(test));
@@ -43,25 +46,19 @@ public class PsychTestController {
         return ReturnObject.fail();
     }
 
+    @CheckLogin
     @GetMapping("/list_all")
     public ReturnObject list_all(@RequestParam Map<String,Object> params, HttpSession session) throws Exception {
-        boolean isLogin=session.getAttribute("user") != null;
-        if(!isLogin){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
-
         List<QueryListItem> testList=new ArrayList<QueryListItem>();
         testList.add(new QueryListItem("ExampleTest"));
         return ReturnObject.success(testList);
     }
 
 
+    @CheckLogin
     @PostMapping("/answer")
     public ReturnObject answer(@RequestBody Map<String,Object> params, HttpSession session) throws Exception {
-        boolean isLogin=session.getAttribute("user") != null;
-        if(!isLogin){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
+
         String test=params.get("test").toString();
 
         List<List<String>> answer= params.get("answer")==null?new ArrayList<>():(List<List<String>>) params.get("answer");
@@ -70,10 +67,25 @@ public class PsychTestController {
             ReturnObject.fail("回答为空");
         }
         PsychTestAnswer psychTestAnswer=new PsychTestAnswer(answer);
-        return ReturnObject.success(psychTest.answer(psychTestAnswer));
+        PsychTestResult psychTestResult=psychTest.answer(psychTestAnswer);
+        psychTestService.record(test,psychTest.getTitle(),((User)session.getAttribute("user")).getUsername(),psychTestResult.getMessage());
+        return ReturnObject.success(psychTestResult);
     }
 
+    @CheckLogin
+    @GetMapping("record/list_mine")
+    public ReturnObject listMine(HttpSession session) throws Exception {
 
+        String username=((User)session.getAttribute("user")).getUsername();
+
+        List<PsychAssessmentRecordDTO> psychAssessmentRecordDTOList=psychTestService.findDTOByTestUsername(username);
+
+        if(psychAssessmentRecordDTOList!=null){
+            return ReturnObject.success(psychAssessmentRecordDTOList);
+        }else{
+            return ReturnObject.fail("获取失败");
+        }
+    }
 
 
 

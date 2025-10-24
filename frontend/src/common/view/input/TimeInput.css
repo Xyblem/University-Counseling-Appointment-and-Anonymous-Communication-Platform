@@ -1,0 +1,236 @@
+.time-input-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.time-input-label {
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.time-input-required {
+    color: #ff4d4f;
+    margin-left: 4px;
+}
+
+.time-input-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    background-color: #fff;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.time-input-trigger:hover:not(.time-input-container--disabled):not(.time-input-container--readonly) {
+    border-color: #40a9ff;
+}
+
+.time-input-container--focused .time-input-trigger {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.time-input-container--error .time-input-trigger {
+    border-color: #ff4d4f;
+}
+
+.time-input-container--error .time-input-trigger:hover {
+    border-color: #ff7875;
+}
+
+.time-input-container--error.time-input-container--focused .time-input-trigger {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+.time-input-container--disabled .time-input-trigger {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    cursor: not-allowed;
+}
+
+.time-input-container--disabled .time-input-trigger:hover {
+    border-color: #d9d9d9;
+}
+
+.time-input-container--readonly .time-input-trigger {
+    background-color: #fafafa;
+    border-color: #e8e8e8;
+    cursor: default;
+}
+
+.time-input-element {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+}
+
+.time-input-element::placeholder {
+    color: #bfbfbf;
+}
+
+.time-input-container--disabled .time-input-element {
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.time-input-container--readonly .time-input-element {
+    color: #666;
+    cursor: default;
+}
+
+.time-input-suffix {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    color: #8c8c8c;
+}
+
+.time-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.time-input-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.time-input-panel {
+    padding: 16px;
+}
+
+.time-input-columns {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.time-input-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.time-input-column-header {
+    padding: 8px 0;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8c8c8c;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 8px;
+}
+
+.time-input-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 4px;
+}
+
+.time-input-option {
+    padding: 8px 12px;
+    text-align: center;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 4px;
+}
+
+.time-input-option:hover:not(.time-input-option--disabled) {
+    background-color: #f5f5f5;
+}
+
+.time-input-option--selected {
+    background-color: #e6f7ff;
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.time-input-option--selected:hover {
+    background-color: #bae7ff;
+}
+
+.time-input-option--disabled {
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.time-input-actions {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+}
+
+.time-input-now,
+.time-input-clear {
+    padding: 6px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.time-input-now:hover,
+.time-input-clear:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.time-input-now:active,
+.time-input-clear:active {
+    border-color: #096dd9;
+    color: #096dd9;
+}
+
+.time-input-error {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ff4d4f;
+    line-height: 1.5;
+}
+
+/* 自定义滚动条 */
+.time-input-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.time-input-list::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.time-input-list::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 3px;
+}
+
+.time-input-list::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}

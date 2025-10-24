@@ -1,155 +1,164 @@
 import React, {useEffect, useRef, useState} from "react";
-import {UserController} from "../../controller/UserController";
-import {Divider} from "../../components/decoration/Divider";
-import {Button} from "../../components/ui/widget/Button";
-import {CheckLogin, CheckLoginRef} from "../../components/functional/CheckLogin";
+import {Divider} from "../../common/view/decoration/Divider";
+import {CheckLoginComponent} from "../../component/CheckLoginComponent";
 import {
-    CheckLoginErrorViewOld,
-    CheckLoginLoading,
- CheckLoginNotLoginViewOld
-} from "../../utils/views/CommonViews";
-import {useLocation} from "react-router-dom";
-import {PsychOptions, PsychTest, PsychTestController, PsychTestResult} from "../../controller/PsychTestController";
-import {CheckboxGroup, CheckboxOption} from "../../components/ui/widget/Checkbox";
-import {RadioGroup} from "../../components/ui/widget/Radio";
+    PsychOptions,
+    PsychTest,
+    PsychTestAnswer,
+    PsychTestController,
+    PsychTestResult
+} from "../../controller/PsychTestController";
+import {useLocation, useNavigate} from "react-router-dom";
+import {ResponseHandler, ResponseHandlerRef} from "../../common/response/ResponseHandler";
+import {Loading} from "../../common/view/display/Loading";
+import {ResponseState} from "../../common/response/ResponseState";
+import {ReturnObject} from "../../common/response/ReturnObject";
+import {Button} from "../../common/view/controller/Button";
+import {PsychTestQuestionView, PsychTestQuestionViewRef} from "./PsychTestQuestionView";
+
 
 export const PsychTestForm: React.FC = () => {
-    //控制器
-    const userController = new UserController();
-    const psychTestController:PsychTestController=new PsychTestController();
-    //状态
-    const [psychTest,setPsychTest] = useState<PsychTest|null>(null);
-    const [error, setError] = useState<boolean>(false);
-    const [messageDetail, setMessageDetail] = useState<string | null>(null);
-    const [done,setDone]=useState<boolean>(false);
-    const [questionIndex, setQuestionIndex] = useState<number>(0);
-    const [answerList,setAnswerList]=useState<string[][]>();
-    const [psychTestResult,setPsychTestResult]=useState<PsychTestResult | null>(null);
 
-    //引用
-    const checkLoginRef = useRef<CheckLoginRef>(null);
-    //路由
+    const navigate = useNavigate();
+    const psychTestController=new PsychTestController();
+    const [psychTestState,setPsychTestState]=useState<ResponseState<PsychTest>>();
+    const psychQuestionRefList=useRef<PsychTestQuestionViewRef[]>([]);
+    function getRef(dom:any) {
+        psychQuestionRefList.current.push(dom)
+    }
+    const [done,setDone]=useState<boolean>(false);
+    const [answerList,setAnswerList]=useState<string[][]>();
+    const [psychTestAnswerState,setPsychTestAnswerState]=useState<ResponseState<PsychTestResult>>();
+    const psychTestHandlerRef=useRef<ResponseHandlerRef<{test:string},PsychTest>>(null);
+    const psychTestAnswerHandlerRef=useRef<ResponseHandlerRef<PsychTestAnswer,PsychTestResult>>(null);
     const urlLocation = useLocation();
     const searchParams = new URLSearchParams(urlLocation.search);
     const paramTest = searchParams.get('test');
 
-    useEffect(() => {
-        document.title = "高校心理咨询预约与匿名交流平台-心理测评";
-        setError(false);
-        setMessageDetail(null);
-        psychTestController.getTest(paramTest==null?"null":paramTest).then(
-            response=>{
-                document.title = "高校心理咨询预约与匿名交流平台-心理测评-"+response?.title;
-                setPsychTest(response);
-                if(response!=null){
-                    setAnswerList(new Array(response.questions.length).fill([]));
-                }
+    //处理表单提交
+    const handleSubmit = (event: { preventDefault: () => void; }) => {
+        // 手动验证所有字段
+
+        let isQuestionValid=true;
+        for(let i=0;i<psychQuestionRefList.current?.length;++i){
+            if(psychQuestionRefList.current?.at(i)!=null&&psychQuestionRefList.current?.at(i)?.validate()!==true){
+                isQuestionValid=false;
             }
-        ).catch(
-            err=>{
-                setError(true);
-                setMessageDetail(err.message);
-            }
-        );
-    }, []);
-
-
-    const getOptions=psychTest?.questions?.at(questionIndex)?.options?.map(
-        (value0: PsychOptions):CheckboxOption =>({label:value0.key+":"+value0.text,value:""+value0.key}));
-
-    //处理输入变化
-    const handleSelectionChange = (index:number) => (value: string | string[])=>{
-        if(typeof value === "string"){
-            answerList?.splice(index,1,[value]);
-        }else{
-            answerList?.splice(index,1,value);
         }
-    }
 
-    const summitAnswer=()=>{
-        setError(false);
-        setMessageDetail(null);
-        setDone(false);
-        psychTestController.answer({answer:answerList,test:paramTest==null?"null":paramTest}).then(response=>{
-            setPsychTestResult(response);
-        }).catch(err=>{
-            setError(true);
-            setMessageDetail(err.message);
-        }).finally(()=>{
+
+        // 阻止默认提交
+        event.preventDefault();
+        if (isQuestionValid) {
             setDone(true);
-        });
-    }
-
-
-    const renderQuestion= (<div>
-        <p className="psych-test-description">{psychTest?.description}</p>
-        <div style={{display: "flex", justifyContent: "center"}}>
-            <div className="psych-test-question-box">
-                <div className="layout-flex-row">
-                    <p className="psych-test-question-key">{psychTest?.questions.at(questionIndex)?.title}:</p>
-                    <p>{psychTest?.questions.at(questionIndex)?.content}</p>
-                </div>
-                <br/>
-                {psychTest?.questions.at(questionIndex)?.multiOptional ?
-                    <CheckboxGroup options={getOptions ? getOptions : []}
-                                   onChange={handleSelectionChange(questionIndex)} value={answerList?.at(questionIndex)}
-                    ></CheckboxGroup> :
-                    <RadioGroup options={getOptions ? getOptions : []} layout="vertical"
-                                onChange={handleSelectionChange(questionIndex)}
-                                value={answerList?.at(questionIndex)?.at(0)}
-                    ></RadioGroup>
-                }
-                <span style={{flexGrow: 1}}></span>
-                <div className="layout-flex-row">
-                    <Button style={{flexGrow: 1}} type="default" disabled={questionIndex === 0}
-                            onClick={() => {
-                                if (questionIndex > 0) {
-                                    setQuestionIndex(questionIndex - 1);
-                                }
-                            }}>上一题</Button>
-                    <span style={{flexGrow: 1}}></span>
-                    {questionIndex === ((psychTest == null ? 0 : psychTest?.questions.length) - 1) ?
-                        <Button style={{flexGrow: 1}} type="primary" onClick={() => {
-                            summitAnswer();
-                        }}>提交</Button>
-                        :
-                        <Button style={{flexGrow: 1}} type="default" onClick={() => {
-                            if (questionIndex < (psychTest == null ? 0 : psychTest?.questions.length) - 1) {
-                                setQuestionIndex(questionIndex + 1);
-                            }
-                        }}>下一题</Button>
-                    }
-                </div>
+        } else {
+            alert('请检查表单错误!');
+        }
+    };
+    const renderResult=(<ResponseHandler<PsychTestAnswer,PsychTestResult>
+            ref={psychTestAnswerHandlerRef}
+            request={psychTestController.answer}
+            setResponseState={setPsychTestAnswerState}
+            autoRequest={{answer:answerList,test:paramTest==null?"null":paramTest}}
+            idleComponent={<div>
+                <h2>未提交</h2>
             </div>
-        </div>
-    </div>);
+            }
 
-
-    const renderResult=(
-        <div>
-            <h2>测评提交{error?"出错":(messageDetail==null?"成功":"失败")}</h2>
-            {messageDetail!=null&&<div>
-                <p>{messageDetail}</p>
+            loadingComponent={<Loading type="dots"
+                                       text='提交测评问卷中...'
+                                       color="#2196f3"
+                                       size="large"
+                                       fullScreen/>}
+            handlingReturnObjectComponent={<Loading type="dots"
+                                                    text='处理提交测评问卷结果中...'
+                                                    color="#2196f3"
+                                                    size="large"
+                                                    fullScreen/>}
+            networkErrorComponent={<div>
+                <h2>网络错误</h2>
+                <p className=".auth-error-detail">详情：{psychTestAnswerState?.networkError?.message}</p>
             </div>}
-            {psychTestResult==null?null:<p>{psychTestResult.message}</p>}
-            <Button block type="default" onClick={()=>{
-                window.location.href="/home/main";
-            }}>返回主界面</Button>
-        </div>
+
+            finishedComponent={<div>
+                <h2>测评提交{ReturnObject.Status.ChineseName.get(psychTestAnswerState?.returnObject?.status)}</h2>
+                {psychTestAnswerState?.returnObject?.status !== ReturnObject.Status.SUCCESS && <div>
+                    <p>{psychTestAnswerState?.returnObject?.message}</p>
+                </div>}
+                {psychTestAnswerState?.returnObject?.data?.message == null ? null : <p>{psychTestAnswerState?.returnObject?.data?.message}</p>}
+                <Button block type="default" onClick={() => {
+                    navigate("/home/main");
+                }}>返回主界面</Button>
+            </div>}
+        />
     );
+
+
+
+    const renderQuestion=(
+        <ResponseHandler<{test:string},PsychTest>
+            ref={psychTestHandlerRef}
+            request={psychTestController.getTest}
+            setResponseState={setPsychTestState}
+            autoRequest={{test:paramTest==null?"null":paramTest}}
+            loadingComponent={<Loading type="dots"
+                                       text='获取心理测评问卷中...'
+                                       color="#2196f3"
+                                       size="large"
+                                       fullScreen/>}
+            handlingReturnObjectComponent={<Loading type="dots"
+                                                    text='处理获取心理测评问卷结果中...'
+                                                    color="#2196f3"
+                                                    size="large"
+                                                    fullScreen/>}
+
+            onHandlingReturnObject={(requestBody,returnObject)=>{
+                setAnswerList(new Array(returnObject.data?.questions.length).fill([]));
+            }}
+
+
+            networkErrorComponent={<div>
+                <h2>网络错误</h2>
+                <p className=".auth-error-detail">详情：{psychTestState?.networkError?.message}</p>
+            </div>}
+            finishedComponent={(!(psychTestState?.returnObject?.status===ReturnObject.Status.SUCCESS))?(
+                <div>
+                    <h2>获取问卷{ReturnObject.Status.ChineseName.get(psychTestState?.returnObject?.status)}</h2>
+                    <p className=".auth-error-detail">详情：{psychTestState?.returnObject?.message}</p>
+                </div>
+            ): (
+                <div>
+                    <p className="psych-test-description">{psychTestState?.returnObject?.data?.description}</p>
+                    <div style={{display: "flex", justifyContent: "center"}}>
+                        <div className="psych-test-question-box">
+                            <form onSubmit={handleSubmit}>
+                                {psychTestState?.returnObject?.data?.questions.map((q,i)=><PsychTestQuestionView
+                                    ref={getRef}
+                                    style={{marginBottom:"50px"}}
+                                    question={q}
+                                    onChange={(a)=>{
+                                        answerList?.splice(i,1,a);
+                                    }}
+                                />)}
+                                <Button type="primary" block summit>提交测评</Button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+        />
+    );
+
+
 
     return (
         <div className="layout-flex-column">
-            <h2>{psychTest == null ? "心理测评" : psychTest.title}</h2>
+            <h2>{psychTestState?.returnObject?.data == null ? "心理测评" : psychTestState?.returnObject?.data.title}</h2>
             <Divider color="Black" spacing="0"/>
-            <CheckLogin
-                ref={checkLoginRef}
-                checkLogin={userController.checkLogin}
-                loadingComponent={CheckLoginLoading}
-                errorComponent={CheckLoginErrorViewOld(checkLoginRef)}
-                notLoginComponent={CheckLoginNotLoginViewOld(checkLoginRef)}
-            >
-                {done?renderResult:renderQuestion}
-            </CheckLogin>
+            <CheckLoginComponent>
+                {!done&&renderQuestion}
+                {done&&renderResult}
+            </CheckLoginComponent>
         </div>)
+
 }

@@ -12,7 +12,7 @@ export class CaptchaController {
         }
         await api.get<ReturnObject<{captchaKey: string; base64Image: string;}>>("api/captcha").then(response=>{
             // @ts-ignore
-            if (response.code === ReturnCode.SUCCESS && response.data) {
+            if (response.code === ReturnObject.Code.SUCCESS && response.data) {
                 //@ts-ignore
                 result = response.data;
             }else{

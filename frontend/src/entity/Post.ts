@@ -13,19 +13,20 @@ export interface Post {
 }
 
 
-export namespace PostValidationRules{
-    //发帖标题输入验证规则
-    export const title: ValidationRule[] = [
-        {required: true, message: '标题不能为空'},
-        {maxLength: 255, message: '标题长度长度不能超过255个字符'}
-    ];
+export namespace Post{
+    export namespace ValidationRules{
+        //发帖标题输入验证规则
+        export const title: ValidationRule[] = [
+            {required: true, message: '标题不能为空'},
+            {maxLength: 255, message: '标题长度长度不能超过255个字符'}
+        ];
 
-    export const content: ValidationRule[] = [
-        {required: true, message: '内容不能为空'}
-    ];
+        export const content: ValidationRule[] = [
+            {required: true, message: '内容不能为空'}
+        ];
 
-    export const username: ValidationRule[] = User.ValidationRules.username;
-    
+        export const username: ValidationRule[] = User.ValidationRules.username;
+    }
 }
 
 

@@ -81,7 +81,7 @@ CREATE TABLE `appointment` (
                                `start_time` datetime NOT NULL COMMENT '预约开始时间',
                                `end_time` datetime NOT NULL COMMENT '预约结束时间',
                                `apply_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '预约申请时间',
-                               `status` enum('CONFIRM','REJECT','RESCHEDULE') NOT NULL DEFAULT 'RESCHEDULE' COMMENT '处理状态',
+                               `status` enum('PENDING','CONFIRM','REJECT','RESCHEDULE') NOT NULL DEFAULT 'RESCHEDULE' COMMENT '处理状态',
                                PRIMARY KEY (`appointment_id`),
                                KEY `fk_appointment_student` (`student_username`),
                                KEY `fk_appointment_teacher` (`teacher_username`),
@@ -136,6 +136,78 @@ CREATE TABLE `reply` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 
+DROP TABLE IF EXISTS `post_report`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `post_report` (
+                               `report_id` int NOT NULL AUTO_INCREMENT COMMENT '举报记录ID（主键），自增唯一',
+                               `post_id` int NOT NULL COMMENT '被举报的帖子ID，关联post表的post_id',
+                               `report_reason` text NOT NULL COMMENT '举报理由（非空，需详细说明原因）',
+                               `reporter_username` varchar(50) DEFAULT NULL COMMENT '举报者用户名，关联user表的username',
+                               `report_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '举报提交时间，默认当前时间',
+                               PRIMARY KEY (`report_id`),
+                               KEY `fk_report_post` (`post_id`),
+                               KEY `fk_report_post_reporter` (`reporter_username`),
+                               CONSTRAINT `fk_report_post` FOREIGN KEY (`post_id`) REFERENCES `post` (`post_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                               CONSTRAINT `fk_report_post_reporter` FOREIGN KEY (`reporter_username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=101 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='举报帖子表：存储用户对论坛/社区帖子内容的举报记录';
+
+
+
+DROP TABLE IF EXISTS `psych_assessment_record`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `psych_assessment_record` (
+                                           `assessment_id` int NOT NULL AUTO_INCREMENT COMMENT '测评记录ID（主键），自增唯一',
+                                           `assessment_class` varchar(50) NOT NULL COMMENT '测评类名（程序标识，如DISCTest）',
+                                           `assessment_name` varchar(100) NOT NULL COMMENT '测评中文名称（用户可见）',
+                                           `test_username` varchar(50) DEFAULT NULL COMMENT '测试用户名称（关联user表username）',
+                                           `assessment_report` text NOT NULL COMMENT '测评报告（含得分、分析、建议）',
+                                           `assessment_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '测评完成时间',
+                                           PRIMARY KEY (`assessment_id`),
+                                           KEY `fk_assessment_user` (`test_username`),
+                                           KEY `idx_assessment_class` (`assessment_class`),
+                                           KEY `idx_assessment_time` (`assessment_time`),
+                                           CONSTRAINT `fk_assessment_user` FOREIGN KEY (`test_username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='心理测评记录表（含测试用户外键，关联user表）';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+DROP TABLE IF EXISTS `psych_knowledge`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `psych_knowledge` (
+                                   `knowledge_id` int NOT NULL AUTO_INCREMENT COMMENT '科普ID（主键），自增唯一',
+                                   `title` varchar(255) NOT NULL COMMENT '科普标题（非空，如“大学生常见焦虑应对方法”）',
+                                   `content` text NOT NULL COMMENT '科普详细内容（非空，含心理知识、案例、建议等）',
+                                   `teacher_publisher_username` varchar(45) NOT NULL COMMENT '发布者（心理咨询教师）用户名，关联user表',
+                                   `publish_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '科普发布时间，默认当前系统时间',
+                                   `admin_reviewer_username` varchar(45) DEFAULT NULL COMMENT '审核者（心理中心管理员）用户名，关联user表',
+                                   `review_time` datetime DEFAULT NULL COMMENT '审核完成时间，未审核时为NULL',
+                                   `review_status` enum('PENDING','PASSED','BANNED','REVOKED') NOT NULL DEFAULT 'PENDING' COMMENT '审核状态：PENDING(待审核)、PASSED(审核通过)、BANNED(审核驳回)、REVOKED(已撤销)',
+                                   PRIMARY KEY (`knowledge_id`),
+                                   KEY `fk_knowledge_teacher` (`teacher_publisher_username`),
+                                   KEY `fk_knowledge_admin` (`admin_reviewer_username`),
+                                   CONSTRAINT `fk_knowledge_admin` FOREIGN KEY (`admin_reviewer_username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE CASCADE,
+                                   CONSTRAINT `fk_knowledge_teacher` FOREIGN KEY (`teacher_publisher_username`) REFERENCES `user` (`username`) ON DELETE RESTRICT ON UPDATE CASCADE,
+                                   CONSTRAINT `chk_review_time` CHECK ((((`review_status` in (_utf8mb3'PENDING',_utf8mb3'REVOKED')) and (`review_time` is null)) or ((`review_status` in (_utf8mb3'PASSED',_utf8mb3'BANNED')) and (`review_time` is not null))))
+) ENGINE=InnoDB AUTO_INCREMENT=198 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='心理知识科普表：存储心理咨询教师发布、心理中心管理员审核的科普内容';
+
+
+DROP TABLE IF EXISTS `psych_knowledge_report`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `psych_knowledge_report` (
+                                          `report_id` int NOT NULL AUTO_INCREMENT COMMENT '举报记录ID（主键），自增唯一',
+                                          `knowledge_id` int NOT NULL COMMENT '被举报的科普ID，关联psych_knowledge表的knowledge_id',
+                                          `report_reason` text NOT NULL COMMENT '举报理由（非空，需详细说明原因）',
+                                          `reporter_username` varchar(50) DEFAULT NULL COMMENT '举报者用户名，关联user表的username（主键），允许为NULL',
+                                          `report_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '举报提交时间，默认当前时间',
+                                          PRIMARY KEY (`report_id`),
+                                          KEY `fk_report_knowledge` (`knowledge_id`),
+                                          KEY `fk_report_reporter` (`reporter_username`),
+                                          CONSTRAINT `fk_report_knowledge` FOREIGN KEY (`knowledge_id`) REFERENCES `psych_knowledge` (`knowledge_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+                                          CONSTRAINT `fk_report_reporter` FOREIGN KEY (`reporter_username`) REFERENCES `user` (`username`) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=296 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='心理知识科普举报表（解决1830错误：允许reporter_username为NULL以适配ON DELETE SET NULL）';
 
 
 

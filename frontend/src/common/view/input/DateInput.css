@@ -1,0 +1,322 @@
+.date-input-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 16px;
+}
+
+.date-input-label {
+    display: flex;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #333;
+}
+
+.date-input-required {
+    color: #ff4d4f;
+    margin-left: 4px;
+}
+
+.date-input-trigger {
+    position: relative;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    background-color: #fff;
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.date-input-trigger:hover:not(.date-input-container--disabled):not(.date-input-container--readonly) {
+    border-color: #40a9ff;
+}
+
+.date-input-container--focused .date-input-trigger {
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.date-input-container--error .date-input-trigger {
+    border-color: #ff4d4f;
+}
+
+.date-input-container--error .date-input-trigger:hover {
+    border-color: #ff7875;
+}
+
+.date-input-container--error.date-input-container--focused .date-input-trigger {
+    border-color: #ff4d4f;
+    box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2);
+}
+
+.date-input-container--disabled .date-input-trigger {
+    background-color: #f5f5f5;
+    border-color: #d9d9d9;
+    cursor: not-allowed;
+}
+
+.date-input-container--disabled .date-input-trigger:hover {
+    border-color: #d9d9d9;
+}
+
+.date-input-container--readonly .date-input-trigger {
+    background-color: #fafafa;
+    border-color: #e8e8e8;
+    cursor: default;
+}
+
+.date-input-element {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    outline: none;
+    font-size: 14px;
+    background: transparent;
+    color: #333;
+    cursor: pointer;
+}
+
+.date-input-element::placeholder {
+    color: #bfbfbf;
+}
+
+.date-input-container--disabled .date-input-element {
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.date-input-container--readonly .date-input-element {
+    color: #666;
+    cursor: default;
+}
+
+.date-input-suffix {
+    display: flex;
+    align-items: center;
+    padding: 0 12px;
+    color: #8c8c8c;
+}
+
+.date-input-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.date-input-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 280px;
+    margin-top: 4px;
+    background: #fff;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.date-input-panel {
+    padding: 16px;
+}
+
+.date-input-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.date-input-nav {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: #333;
+    transition: background-color 0.2s;
+}
+
+.date-input-nav:hover {
+    background-color: #f5f5f5;
+}
+
+.date-input-title {
+    display: flex;
+    gap: 8px;
+}
+
+.date-input-title-button {
+    background: none;
+    border: none;
+    font-weight: 500;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.date-input-title-button:hover {
+    background-color: #f5f5f5;
+}
+
+.date-input-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 8px;
+}
+
+.date-input-weekday {
+    text-align: center;
+    font-size: 12px;
+    color: #8c8c8c;
+    padding: 4px;
+}
+
+.date-input-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin-bottom: 16px;
+}
+
+.date-input-day {
+    height: 32px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.date-input-day:hover:not(.date-input-day--disabled) {
+    background-color: #f5f5f5;
+}
+
+.date-input-day--today {
+    color: #1890ff;
+    font-weight: 500;
+}
+
+.date-input-day--selected {
+    background-color: #1890ff;
+    color: #fff;
+}
+
+.date-input-day--selected:hover {
+    background-color: #40a9ff;
+}
+
+.date-input-day--other-month {
+    color: #bfbfbf;
+}
+
+.date-input-day--disabled {
+    color: #bfbfbf;
+    cursor: not-allowed;
+}
+
+.date-input-day--disabled:hover {
+    background: none;
+}
+
+.date-input-months {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.date-input-month {
+    padding: 12px 8px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.date-input-month:hover {
+    background-color: #f5f5f5;
+}
+
+.date-input-month--selected {
+    background-color: #1890ff;
+    color: #fff;
+}
+
+.date-input-month--selected:hover {
+    background-color: #40a9ff;
+}
+
+.date-input-years {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+}
+
+.date-input-year {
+    padding: 12px 8px;
+    border: none;
+    background: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.date-input-year:hover {
+    background-color: #f5f5f5;
+}
+
+.date-input-year--selected {
+    background-color: #1890ff;
+    color: #fff;
+}
+
+.date-input-year--selected:hover {
+    background-color: #40a9ff;
+}
+
+.date-input-actions {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+}
+
+.date-input-today,
+.date-input-clear {
+    padding: 6px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    background: #fff;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.date-input-today:hover,
+.date-input-clear:hover {
+    border-color: #1890ff;
+    color: #1890ff;
+}
+
+.date-input-today:active,
+.date-input-clear:active {
+    border-color: #096dd9;
+    color: #096dd9;
+}
+
+.date-input-error {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #ff4d4f;
+    line-height: 1.5;
+}

@@ -1,6 +1,6 @@
 //React框架
 import React, {useEffect} from "react";
-import {NavLink, useLocation} from "react-router-dom";
+import {NavLink, useLocation, useNavigate} from "react-router-dom";
 import {Outlet, useOutletContext} from "react-router";
 //样式
 import './Home.css'
@@ -16,33 +16,40 @@ import {UpdateUserForm} from "./mine/UpdateUserForm";
 import {Homepage} from "./HomepageForm";
 //子路由
 export const MineForm_Children=[
-    {path:"/home/mine/appointment_manage",element:<AppointmentManage/>},
-    {path:"/home/mine/basic_information",element:<BasicInformationForm/>},
-    {path:"/home/mine/close_account",element:<CloseAccount/>},
-    {path:"/home/mine/evaluation_record",element:<EvaluationRecordForm/>},
-    {path:"/home/mine/system_setting",element:<SystemSetting/>},
-    {path:"/home/mine/update_password",element:<UpdatePassword/>},
-    {path: "/home/mine/update_user",element: <UpdateUserForm/>}
+    {path:"appointment_manage",element:<AppointmentManage/>},
+    {path:"basic_information",element:<BasicInformationForm/>},
+    {path:"close_account",element:<CloseAccount/>},
+    {path:"evaluation_record",element:<EvaluationRecordForm/>},
+    {path:"system_setting",element:<SystemSetting/>},
+    {path:"update_password",element:<UpdatePassword/>},
+    {path:"update_user",element: <UpdateUserForm/>}
 ];
 //我的
 export const MineForm: React.FC = () => {
     const urlLocation = useLocation();
     const context=useOutletContext<Homepage.OutletContext>();
+    const navigate = useNavigate();
     //钩子
     useEffect(() => {
         document.title = "高校心理咨询预约与匿名交流平台-我的";
         if(urlLocation.pathname==='/home/mine'||urlLocation.pathname==='/home/mine/'){
-            window.location.href="/home/mine/basic_information";
+            navigate("/home/mine/basic_information");
         }
     });
     return (
         <div className="layout-flex-row">
             <div className="vertical-menu">
-                    <NavLink to="basic_information">基本信息</NavLink>
+                    <NavLink to="basic_information" onClick={()=>{
+                        navigate("basic_information");
+                        window.location.reload();
+                    }}>基本信息</NavLink>
                     <NavLink to="appointment_manage">预约管理</NavLink>
                     <NavLink to="evaluation_record">测评记录</NavLink>
                     <NavLink to="update_password">修改密码</NavLink>
-                    <NavLink to="update_user">修改信息</NavLink>
+                    <NavLink to="update_user" onClick={()=>{
+                        navigate("update_user");
+                        window.location.reload();
+                    }}>修改信息</NavLink>
                     <NavLink to="system_setting">系统设置</NavLink>
                     <NavLink to="close_account">注销账号</NavLink>
                 </div>

@@ -1,6 +1,9 @@
 package com.ucaacp.backend.controller;
 
 
+import com.ucaacp.backend.annotation.CheckCaptcha;
+import com.ucaacp.backend.annotation.CheckLogin;
+import com.ucaacp.backend.entity.DTO.UserDTO;
 import com.ucaacp.backend.entity.attribute_converter.GenderConverter;
 import com.ucaacp.backend.entity.attribute_converter.ProvinceCN_Converter;
 import com.ucaacp.backend.entity.attribute_converter.UserPositionConverter;
@@ -34,6 +37,7 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckCaptcha(captchaKeyField = "captchaKey", captchaField = "captcha")
     @PostMapping("/login")
     public ReturnObject login(@RequestBody Map<String,Object> loginRequestBody, HttpSession session ) {
         UserRoleConverter userRoleConverter = new UserRoleConverter();
@@ -42,17 +46,8 @@ public class UserController {
         String password=loginRequestBody.get("password")==null?null:loginRequestBody.get("password").toString();
         String role=loginRequestBody.get("role")==null?null:loginRequestBody.get("role").toString();
         Integer roleCode = role==null?null:Integer.parseInt(role);
-        String captchaKey=loginRequestBody.get("captchaKey")==null?null:loginRequestBody.get("captchaKey").toString();
-        String captcha=loginRequestBody.get("captcha")==null?null:loginRequestBody.get("captcha").toString();
-
-        //校验验证码
-        if (!captchaService.validate(session, captchaKey, captcha)) {
-            return ReturnObject.fail("验证码错误");
-        }
-
         //执行登录
         Optional<User> userOptional = userService.login(username, password);
-
         //校验登录
         if (userOptional.isEmpty()) {
             return ReturnObject.fail("用户名或密码错误");
@@ -73,6 +68,7 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckCaptcha(captchaKeyField = "captchaKey", captchaField = "captcha")
     @PostMapping("/signup")
     public ReturnObject signup(@RequestBody Map<String,Object> signupRequestBody,HttpSession session) {
         GenderConverter genderConverter=new GenderConverter();
@@ -95,13 +91,6 @@ public class UserController {
         String phoneNumber=signupRequestBody.get("phoneNumber")==null?null:signupRequestBody.get("phoneNumber").toString();
         String qq=signupRequestBody.get("qq")==null?null:signupRequestBody.get("qq").toString();
         String wechat=signupRequestBody.get("wechat")==null?null:signupRequestBody.get("wechat").toString();
-        String captchaKey=signupRequestBody.get("captchaKey")==null?null:signupRequestBody.get("captchaKey").toString();
-        String captcha=signupRequestBody.get("captcha")==null?null:signupRequestBody.get("captcha").toString();
-
-        //校验验证码
-        if (!captchaService.validate(session, captchaKey, captcha)) {
-            return ReturnObject.fail("验证码错误");
-        }
 
         //确认密码
         if(!Objects.equals(password, confirmedPassword)) {
@@ -164,12 +153,9 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckLogin
     @GetMapping("/logged-in_user")
     public ReturnObject loggedInUser(HttpSession session){
-        boolean isLogin=session.getAttribute("user") != null;
-        if(!isLogin){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
         return ReturnObject.success(((User)session.getAttribute("user")).getReturnData());
     }
 
@@ -178,12 +164,9 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckLogin
     @PostMapping("/logout")
     public ReturnObject logout(HttpSession session){
-        boolean isLogin=session.getAttribute("user") != null;
-        if(!isLogin){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
         session.removeAttribute("user");
         session.removeAttribute("password");
         return ReturnObject.success("用户已登出");
@@ -196,6 +179,8 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckLogin
+    @CheckCaptcha(captchaKeyField = "captchaKey", captchaField = "captcha")
     @PostMapping("/update_password")
     public ReturnObject updatePassword(@RequestBody Map<String,Object> updatePasswordRequestBody,HttpSession session){
         //获取参数
@@ -203,13 +188,6 @@ public class UserController {
         String oldPassword=updatePasswordRequestBody.get("oldPassword")==null?null:updatePasswordRequestBody.get("oldPassword").toString();
         String newPassword=updatePasswordRequestBody.get("newPassword")==null?null:updatePasswordRequestBody.get("newPassword").toString();
         String confirmedNewPassword=updatePasswordRequestBody.get("confirmedNewPassword")==null?null:updatePasswordRequestBody.get("confirmedNewPassword").toString();
-        String captchaKey=updatePasswordRequestBody.get("captchaKey")==null?null:updatePasswordRequestBody.get("captchaKey").toString();
-        String captcha=updatePasswordRequestBody.get("captcha")==null?null:updatePasswordRequestBody.get("captcha").toString();
-
-        //校验验证码
-        if (!captchaService.validate(session, captchaKey, captcha)) {
-            return ReturnObject.fail("验证码错误");
-        }
 
         //确认新密码
         if(!Objects.equals(newPassword, confirmedNewPassword)) {
@@ -219,11 +197,6 @@ public class UserController {
         //检查新旧密码是否相同
         if(Objects.equals(oldPassword,newPassword)){
             return ReturnObject.fail("新密码不能与旧密码相同");
-        }
-
-        //检查是否登录
-        if(session.getAttribute("user") == null){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
         }
 
         //检查用户名是否匹配
@@ -255,23 +228,13 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckLogin
+    @CheckCaptcha(captchaKeyField = "captchaKey", captchaField = "captcha")
     @PostMapping("/close_account")
     public ReturnObject closeAccount(@RequestBody Map<String,Object> closeAccountRequestBody,HttpSession session){
         //获取参数
         String username=closeAccountRequestBody.get("username")==null?null:closeAccountRequestBody.get("username").toString();
         String password=closeAccountRequestBody.get("password")==null?null:closeAccountRequestBody.get("password").toString();
-        String captchaKey=closeAccountRequestBody.get("captchaKey")==null?null:closeAccountRequestBody.get("captchaKey").toString();
-        String captcha=closeAccountRequestBody.get("captcha")==null?null:closeAccountRequestBody.get("captcha").toString();
-
-        //校验验证码
-        if (!captchaService.validate(session, captchaKey, captcha)) {
-            return ReturnObject.fail("验证码错误");
-        }
-
-        //检查是否登录
-        if(session.getAttribute("user") == null){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
 
         //检查用户名是否匹配
         if(!((User)session.getAttribute("user")).getUsername().equals(username)){
@@ -306,6 +269,8 @@ public class UserController {
      * @param session 会话
      * @return 返回对象
      */
+    @CheckLogin
+    @CheckCaptcha(captchaKeyField = "captchaKey", captchaField = "captcha")
     @PostMapping("update_user")
     public ReturnObject updateIndividualInformation(@RequestBody Map<String,Object> updateUserRequestBody,HttpSession session){
         GenderConverter genderConverter=new GenderConverter();
@@ -326,18 +291,6 @@ public class UserController {
         String phoneNumber=updateUserRequestBody.get("phoneNumber")==null?null:updateUserRequestBody.get("phoneNumber").toString();
         String qq=updateUserRequestBody.get("qq")==null?null:updateUserRequestBody.get("qq").toString();
         String wechat=updateUserRequestBody.get("wechat")==null?null:updateUserRequestBody.get("wechat").toString();
-        String captchaKey=updateUserRequestBody.get("captchaKey")==null?null:updateUserRequestBody.get("captchaKey").toString();
-        String captcha=updateUserRequestBody.get("captcha")==null?null:updateUserRequestBody.get("captcha").toString();
-
-        //校验验证码
-        if (!captchaService.validate(session, captchaKey, captcha)) {
-            return ReturnObject.fail("验证码错误");
-        }
-
-        //检查是否登录
-        if(session.getAttribute("user") == null){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
 
         String password=session.getAttribute("password").toString();
 
@@ -379,22 +332,30 @@ public class UserController {
     }
 
 
+    @CheckLogin
+    @GetMapping("all_teachers")
+    public ReturnObject getAllTeachers(@RequestParam Map<String,String> params,HttpSession session) {
+
+        ProvinceCN_Converter provinceCN_Converter=new ProvinceCN_Converter();
+        String schoolProvince=params.get("schoolProvince");
+        String school=params.get("school");
 
 
+        if(schoolProvince==null||schoolProvince.isEmpty()){
+            return ReturnObject.fail("请选择学校所在省份");
+        }
 
-//    @GetMapping
-//    public ResponseEntity<Page<User>> getUsers(
-//            @RequestParam(defaultValue = "0") int page,
-//            @RequestParam(defaultValue = "10") int size) {
-//        Pageable pageable = PageRequest.of(page, size);
-//        Page<User> users = userService.getUsersByPage(pageable);
-//        return ResponseEntity.ok(users);
-//    }
-//
-//    @DeleteMapping("/{username}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable String username) {
-//        userService.deleteUser(username);
-//        return ResponseEntity.ok().build();
-//    }
+        if(school==null||school.isEmpty()){
+            return ReturnObject.fail("请填写学校名称");
+        }
 
+
+        List<UserDTO> teachers=userService.findAllTeachersBySchoolProvinceAndSchool(provinceCN_Converter.convertToEntityAttribute(Long.valueOf(schoolProvince)),school);
+
+        if(teachers!=null){
+            return ReturnObject.success(teachers);
+        }else{
+            return ReturnObject.fail("学校所在省份或学校错误");
+        }
+    }
 }

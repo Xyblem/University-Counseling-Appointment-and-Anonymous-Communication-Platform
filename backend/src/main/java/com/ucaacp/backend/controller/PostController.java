@@ -1,8 +1,10 @@
 package com.ucaacp.backend.controller;
 
 
-import com.ucaacp.backend.entity.Post;
-import com.ucaacp.backend.entity.User;
+import com.ucaacp.backend.annotation.CheckLogin;
+import com.ucaacp.backend.entity.*;
+import com.ucaacp.backend.entity.DTO.PostDTO;
+import com.ucaacp.backend.entity.DTO.ReplyDTO;
 import com.ucaacp.backend.service.PostService;
 import com.ucaacp.backend.service.UserService;
 import com.ucaacp.backend.utils.return_object.ReturnCode;
@@ -11,6 +13,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -24,19 +27,16 @@ public class PostController {
     @Autowired
     private UserService userService;
 
+
+    @CheckLogin
     @PostMapping("/post")
     public ReturnObject post(@RequestBody Map<String,Object> postRequestBody, HttpSession session){
-        //检查是否登录
-        boolean isLogin=session.getAttribute("user") != null;
-        if(!isLogin){
-            return ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户未登录");
-        }
 
         String title=(String)postRequestBody.get("title");
         String content=(String)postRequestBody.get("content");
         String username=(String)postRequestBody.get("username");
-        String isAnonymous=(String)postRequestBody.get("isAnonymous");
-        String isPublic=(String)postRequestBody.get("isPublic");
+        Boolean isAnonymous=(Boolean)postRequestBody.get("isAnonymous");
+        Boolean isPublic=(Boolean)postRequestBody.get("isPublic");
         
         String password=session.getAttribute("password").toString();
 
@@ -55,13 +55,73 @@ public class PostController {
         post.setTitle(title);
         post.setContent(content);
         post.setUsername(username);
-        post.setIsAnonymous(Boolean.valueOf(isAnonymous));
-        post.setIsPublic(Boolean.valueOf(isPublic));
+        post.setIsAnonymous(isAnonymous);
+        post.setIsPublic(isPublic);
 
         if(postService.post(post)!=null){
             return ReturnObject.success();
         }else{
             return ReturnObject.fail("发布失败");
+        }
+    }
+
+    @CheckLogin
+    @PostMapping("reply")
+    public ReturnObject reply(@RequestBody Map<String,Object> replyRequestBody, HttpSession session){
+
+        Integer postId=(Integer)replyRequestBody.get("postId");
+        String username=(String)replyRequestBody.get("username");
+        String content=(String)replyRequestBody.get("content");
+
+        String password=session.getAttribute("password").toString();
+
+        //检查用户是否存在
+        if(!userService.exits(username)){
+            return ReturnObject.fail("用户名\""+username+"\"不存在");
+        }
+
+        Optional<User> optionalUser=userService.login(username,password);
+        //检查存储的密码是否匹配
+        if(optionalUser.isEmpty()){
+            return ReturnObject.fail("用户名密码错误");
+        }
+
+        Reply reply=new Reply();
+        reply.setPostId(postId);
+        reply.setUsername(username);
+        reply.setContent(content);
+
+        if(postService.reply(reply)!=null){
+            return ReturnObject.success();
+        }else{
+            return ReturnObject.fail("发布失败");
+        }
+
+    }
+
+
+    @CheckLogin
+    @GetMapping("/all_public_post")
+    public ReturnObject getAllPublicPost(HttpSession session){
+
+        List<PostDTO> postDTOList=postService.allPublicPosts();
+        if(postDTOList!=null&&!postDTOList.isEmpty()){
+            return ReturnObject.success(postDTOList);
+        }else {
+            return ReturnObject.fail("获取社区倾述列表失败");
+        }
+    }
+
+    @CheckLogin
+    @GetMapping("/all_replies")
+    public ReturnObject getAllReplies(@RequestParam Map<String,Object> params,HttpSession session){
+
+        String postId=(String)params.get("postId");
+        List<ReplyDTO> replyDTOList=postService.allRepliesByPostId(Integer.valueOf(postId));
+        if(replyDTOList!=null){
+            return ReturnObject.success(replyDTOList);
+        }else{
+            return ReturnObject.fail("获取回复列表失败");
         }
     }
 }
