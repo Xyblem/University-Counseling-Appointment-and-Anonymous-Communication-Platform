@@ -2,9 +2,11 @@ package com.ucaacp.backend.controller;
 
 
 import com.ucaacp.backend.annotation.CheckLogin;
+import com.ucaacp.backend.annotation.CheckUserRole;
 import com.ucaacp.backend.entity.*;
 import com.ucaacp.backend.entity.DTO.PostDTO;
 import com.ucaacp.backend.entity.DTO.ReplyDTO;
+import com.ucaacp.backend.entity.enums.UserRole;
 import com.ucaacp.backend.service.PostService;
 import com.ucaacp.backend.service.UserService;
 import com.ucaacp.backend.utils.return_object.ReturnCode;
@@ -186,5 +188,45 @@ public class PostController {
             return ReturnObject.fail("获取举报列表失败");
         }
     }
+
+
+
+    @CheckUserRole(UserRole.ADMIN)
+    @CheckLogin
+    @PostMapping("delete_post")
+    public ReturnObject deletePost(@RequestBody Map<String,Object> params,HttpSession session){
+        Integer postId=(Integer)params.get("postId");
+        if(!postService.existPost(postId)){
+            return ReturnObject.fail("帖子不存在");
+        }
+        postService.deletePost(postId);
+        return ReturnObject.success("已删除帖子");
+    }
+
+    @CheckUserRole(UserRole.ADMIN)
+    @CheckLogin
+    @PostMapping("delete_reply")
+    public ReturnObject deleteReply(@RequestBody Map<String,Object> params,HttpSession session){
+        Integer replyId=(Integer)params.get("replyId");
+        if(!postService.existReply(replyId)){
+            return ReturnObject.fail("回复不存在");
+        }
+        postService.deleteReply(replyId);
+        return ReturnObject.success("已删除回复");
+    }
+
+    @CheckUserRole(UserRole.ADMIN)
+    @CheckLogin
+    @PostMapping("delete_report")
+    public ReturnObject deleteReport(@RequestBody Map<String,Object> params,HttpSession session){
+        Integer postId=(Integer)params.get("reportId");
+        if(!postService.existPostReport(postId)){
+            return ReturnObject.fail("举报不存在");
+        }
+        postService.deletePostReport(postId);
+        return ReturnObject.success("已删除举报");
+    }
+
+
 
 }

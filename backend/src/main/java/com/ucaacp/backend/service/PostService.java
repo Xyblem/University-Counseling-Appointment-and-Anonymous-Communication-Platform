@@ -56,4 +56,29 @@ public class PostService {
     }
 
 
+    public boolean existPost(Integer postId) {
+        return postRepository.existsById(postId);
+    }
+
+    public void deletePost(Integer postId) {
+        postRepository.deleteById(postId);
+    }
+
+    public boolean existReply(Integer replyId) {
+        return replyRepository.existsById(replyId);
+    }
+
+    public void deleteReply(Integer replyId) {
+        replyRepository.deleteById(replyId);
+    }
+
+    public boolean existPostReport(Integer reportId) {
+        return postReportRepository.existsById(reportId);
+    }
+
+    public void deletePostReport(Integer reportId) {
+        postReportRepository.deleteById(reportId);
+    }
+
+
 }

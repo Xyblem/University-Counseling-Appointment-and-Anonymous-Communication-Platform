@@ -19,7 +19,10 @@ export const ReportForm:React.FC = () => {
 
     const publicPostList = publicPostState?.returnObject?.data?.map((value: PostDTO) =>
         <PostCard mode="report" username={context.user == null ? "" : context.user.username} key={value.postId}
-                  postDTO={value}/>
+                  postDTO={value} onDeletePost={()=>{
+            publicPostHandler.current?.recover();
+            publicPostHandler.current?.request(null);
+        }}/>
     );
 
 

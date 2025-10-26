@@ -1,6 +1,5 @@
 package com.ucaacp.backend.service;
 
-import com.ucaacp.backend.utils.return_object.ReturnObject;
 import com.wf.captcha.ArithmeticCaptcha;
 import com.wf.captcha.GifCaptcha;
 import com.wf.captcha.SpecCaptcha;

@@ -64,13 +64,15 @@
             <systemPath>${basedir}/src/main/resources/libs/easy-captcha-1.6.2.jar</systemPath>
             <groupId>com.github.whvcse</groupId>
             <artifactId>easy-captcha</artifactId>
-            <version>1.6.1</version>
+            <version>1.6.2</version>
+            <scope>system</scope>
         </dependency>
         <dependency>
             <systemPath>${basedir}/src/main/resources/libs/fastjson-1.2.83.jar</systemPath>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
-            <version>1.2.62</version>
+            <version>1.2.83</version>
+            <scope>system</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.validation</groupId>
@@ -107,6 +109,13 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <excludes>
                         <exclude>
@@ -114,6 +123,7 @@
                             <artifactId>lombok</artifactId>
                         </exclude>
                     </excludes>
+                    <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
         </plugins>

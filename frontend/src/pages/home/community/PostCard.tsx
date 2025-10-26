@@ -12,20 +12,28 @@ import {Reply} from "../../../entity/Reply";
 import {Dialog, DialogRef} from "../../../common/view/container/Dialog";
 import {ReportHandler} from "web-vitals";
 import {ReplyView} from "../../../component/view/ReplyView";
+import {PostReport} from "../../../entity/PostReport";
+import {ReportView} from "../../../component/view/ReportView";
 
 export interface PostCardProps {
     username:string;
     mode:'browse'|'report';
     postDTO: PostDTO;
+    onDeletePost:(post:PostDTO) => void;
 }
 
 
-export const PostCard:React.FC<PostCardProps>=({username,postDTO,mode}) => {
+export const PostCard:React.FC<PostCardProps>=({username,postDTO,mode,onDeletePost}) => {
 
     //控制器
     const postController = new PostController();
     const [repliesState, setRepliesState] = React.useState<ResponseState<ReplyDTO[]>>();
     const repliesHandlerRef = useRef<ResponseHandlerRef<{ postId: number }, ReplyDTO[]>>(null);
+
+    const [reportsState,setReportsState]=useState<ResponseState<PostReport[]>>();
+    const reportsHandlerRef = useRef<ResponseHandlerRef<{postId:number},PostReport[]>>(null);
+
+
 
     const [replyState, setReplyState] = React.useState<ResponseState<any>>();
     const replyHandlerRef = useRef<ResponseHandlerRef<ReplyRequest, any>>(null);
@@ -43,10 +51,111 @@ export const PostCard:React.FC<PostCardProps>=({username,postDTO,mode}) => {
     const reportHandlerRef = useRef<ResponseHandlerRef<PostReportRequest, any>>(null);
     const [reportState, setReportState] = useState<ResponseState>();
 
+    const [deletePostState,setDeletePostState] = useState<ResponseState>();
+    const deletePostHandlerRef=useRef<ResponseHandlerRef<{postId:number},null>>(null);
+    const deletePostResultDialogRef=useRef<DialogRef>(null);
 
     const replayCardList = repliesState?.returnObject?.data?.map((value: ReplyDTO) =>
-        <ReplyView replyDTO={value}/>
+        <ReplyView replyDTO={value} mode={mode} onDeleteReply={()=>{
+            repliesHandlerRef.current?.recover();
+            repliesHandlerRef.current?.request({postId: postDTO.postId});
+        }}/>
     )
+
+    const reportCardList=reportsState?.returnObject?.data?.map((value:PostReport)=>
+        <ReportView postReport={value} onDeleteReport={()=>{
+            reportsHandlerRef.current?.recover();
+            reportsHandlerRef.current?.request({postId: postDTO.postId});
+        }}/>
+    )
+
+    const confirmDeletePostDialogRef = useRef<DialogRef>(null);
+
+    const confirmDeletePostDialog = (<Dialog
+        ref={confirmDeletePostDialogRef}
+        type="modal"
+        title="删除倾述"
+        showCloseButton
+        closeOnBackdropClick
+        closeOnEscape
+    >
+        <div className="layout-flex-column">
+            <p className="text-align-left">确定要删除该贴吗？</p>
+            <br/>
+            <div className="layout-flex-row justify-content-flex-end">
+                <span style={{flexGrow: 2}}></span>
+                <Button type="default" style={{flexGrow: 1}} onClick={() => {
+                    confirmDeletePostDialogRef.current?.close();
+                }}>返回</Button>
+                <span style={{flexGrow: 0.1}}></span>
+                <Button type="primary" style={{flexGrow: 1}} onClick={() => {
+                    confirmDeletePostDialogRef.current?.close();
+                    deletePostHandlerRef.current?.request({postId:postDTO.postId});
+                }}>确定</Button>
+            </div>
+        </div>
+    </Dialog>);
+
+
+    const deletePostResultDialog=(<ResponseHandler<{postId:number},null>
+        ref={deletePostHandlerRef}
+        request={postController.deletePost}
+        setResponseState={setDeletePostState}
+        idleComponent={<></>}
+        loadingComponent={<Loading type="dots" text='删除中...' color="#2196f3" size="large" fullScreen></Loading>}
+        handlingReturnObjectComponent={<Loading type="dots" text='处理删除结果中...' color="#2196f3" size="large" fullScreen></Loading>}
+        networkErrorComponent={<Dialog
+            autoOpen
+            ref={deletePostResultDialogRef}
+            type="modal"
+            title="网络错误"
+            showCloseButton
+            closeOnBackdropClick
+            closeOnEscape
+        >
+            <div className="layout-flex-column">
+                <p className="text-align-left">详情：{deletePostState?.networkError?.message}</p>
+                <br/>
+                <div className="layout-flex-row justify-content-flex-end">
+                    <span style={{flexGrow: 3.1}}></span>
+                    <Button type="default"
+                            style={{flexGrow: 1}} onClick={() => {
+                        deletePostResultDialogRef.current?.close();
+                    }}>返回</Button>
+                </div>
+            </div>
+
+        </Dialog>}
+        finishedComponent={<Dialog
+            autoOpen
+            ref={deletePostResultDialogRef}
+            type="modal"
+            title={"删除帖子" + ReturnObject.Status.ChineseName.get(deletePostState?.returnObject?.status)}
+            showCloseButton
+            closeOnBackdropClick
+            closeOnEscape
+            onClose={() => {
+                if (deletePostState?.returnObject?.status === ReturnObject.Status.SUCCESS) {
+                    onDeletePost?.(postDTO);
+                }
+            }}
+        >
+            <div className="layout-flex-column">
+                <p className="text-align-left">{deletePostState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "删除帖子成功" : deletePostState?.returnObject?.message}</p>
+                <br/>
+                <div className="layout-flex-row justify-content-flex-end">
+                    <span style={{flexGrow: 3.1}}></span>
+                    <Button type={deletePostState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "primary" : "default"}
+                            style={{flexGrow: 1}} onClick={() => {
+                        deletePostResultDialogRef.current?.close();
+                    }}>{deletePostState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "确定" : "返回"}</Button>
+
+                </div>
+            </div>
+
+        </Dialog>}
+    />);
+
 
     const summitReplay = (event: { preventDefault: () => void; }) => {
         // 手动验证所有字段
@@ -264,7 +373,8 @@ export const PostCard:React.FC<PostCardProps>=({username,postDTO,mode}) => {
             {ReportResultDialog}
             {ReplyResultDialog}
             {ReportDialog}
-
+            {confirmDeletePostDialog}
+            {deletePostResultDialog}
             <div className="post-card">
 
                 <h1 className="post-title">{postDTO.title}</h1>
@@ -338,7 +448,7 @@ export const PostCard:React.FC<PostCardProps>=({username,postDTO,mode}) => {
                                 {replayCardList}
                                 <div className="reply-form">
                                     <h2 className="form-title">
-                                        <i className="far fa-edit"></i> {mode === 'report' ? "审核操作" : "发表回复"}
+                                        <i className="far fa-edit"></i> {mode === 'report' ? "" : "发表回复"}
                                     </h2>
                                     {mode === 'browse' &&
                                         <form id="replyForm" onSubmit={summitReplay}>
@@ -356,11 +466,54 @@ export const PostCard:React.FC<PostCardProps>=({username,postDTO,mode}) => {
                                         </form>
                                     }
                                     {mode === 'report' &&
-                                        <form>
-                                            <div className="layout-flex-row">
-                                                <Button type="primary" summit block>删除该贴</Button>
-                                            </div>
-                                        </form>
+                                        <div>
+                                            <h2 className="section-title">
+                                                <i className="far fa-comments"></i> 举报
+                                                <span
+                                                    className="replies-count">{reportsState?.returnObject?.data?.length}</span>
+                                            </h2>
+                                            <ResponseHandler<{postId:number},PostReport[]>
+                                                ref={reportsHandlerRef}
+                                                request={postController.getAllReports}
+                                                setResponseState={setReportsState}
+                                                autoRequest={{postId: postDTO.postId}}
+                                                idleComponent={<h2 className="section-title">
+                                                    <i className="far fa-comments"></i> 未获取举报列表
+                                                </h2>}
+                                                loadingComponent={<h2 className="section-title">
+                                                    <i className="far fa-comments"></i>
+                                                    <Loading type="dots" text='加载举报列表中...' color="#2196f3"
+                                                             size="large"/>
+                                                </h2>}
+                                                handlingReturnObjectComponent={<h2 className="section-title">
+                                                    <i className="far fa-comments"></i>
+                                                    <Loading type="dots" text='处理举报列表中...' color="#2196f3"
+                                                             size="large"/>
+                                                </h2>}
+                                                networkErrorComponent={<div>
+                                                    <h2 className="section-title">
+                                                        <i className="far fa-comments"></i> 网络错误
+                                                    </h2>
+                                                    <div className="reply-card">
+                                                        <div
+                                                            className="reply-content">详情：{reportsState?.networkError?.message}</div>
+                                                    </div>
+                                                </div>}
+                                                finishedComponent={(!(reportsState?.returnObject?.status === ReturnObject.Status.SUCCESS)) ?(
+                                                    <div>
+                                                        <h2 className="section-title">
+                                                            <i className="far fa-comments"></i> 获取举报列表{ReturnObject.Status.ChineseName.get(reportsState?.returnObject?.status)}
+                                                        </h2>
+                                                        <div className="reply-card">
+                                                            <div className="reply-content">详情：{reportsState?.returnObject?.message}</div>
+                                                        </div>
+                                                    </div>
+                                                ):(reportCardList)}
+                                            />
+                                                <div className="layout-flex-row">
+                                                    <Button type="primary" summit block onClick={()=>{confirmDeletePostDialogRef.current?.open();}}>删除该贴</Button>
+                                                </div>
+                                        </div>
                                     }
                                 </div>
                             </div>

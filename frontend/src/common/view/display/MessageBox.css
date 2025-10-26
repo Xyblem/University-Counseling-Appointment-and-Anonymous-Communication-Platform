@@ -1,0 +1,205 @@
+.messagebox-global-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+.messagebox .dialog-content {
+    padding: 0;
+}
+
+.messagebox-content {
+    display: flex;
+    flex-direction: column;
+    min-height: 120px;
+}
+
+.messagebox-message {
+    padding: 24px 24px 16px;
+    font-size: 14px;
+    line-height: 1.5;
+    color: #333;
+    flex: 1;
+    text-align: center;
+}
+
+.messagebox.alert .messagebox-message,
+.messagebox.confirm .messagebox-message {
+    text-align: left;
+}
+
+.messagebox-input-container {
+    padding: 0 24px 16px;
+}
+
+.messagebox-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s;
+    box-sizing: border-box;
+}
+
+.messagebox-input:focus {
+    outline: none;
+    border-color: #1890ff;
+    box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+
+.messagebox-input:hover {
+    border-color: #40a9ff;
+}
+
+.messagebox-buttons {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 24px 24px;
+    gap: 8px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.messagebox-button {
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s;
+    min-width: 60px;
+    position: relative;
+}
+
+.messagebox-button.default {
+    background-color: #fff;
+    border-color: #d9d9d9;
+    color: #333;
+}
+
+.messagebox-button.default:hover {
+    color: #1890ff;
+    border-color: #1890ff;
+}
+
+.messagebox-button.primary {
+    background-color: #1890ff;
+    border-color: #1890ff;
+    color: #fff;
+}
+
+.messagebox-button.primary:hover {
+    background-color: #40a9ff;
+    border-color: #40a9ff;
+}
+
+.messagebox-button.danger {
+    background-color: #ff4d4f;
+    border-color: #ff4d4f;
+    color: #fff;
+}
+
+.messagebox-button.danger:hover {
+    background-color: #ff7875;
+    border-color: #ff7875;
+}
+
+.messagebox-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.messagebox-button.loading {
+    cursor: not-allowed;
+}
+
+.messagebox-button-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.messagebox-button-spinner {
+    width: 12px;
+    height: 12px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: messagebox-spin 1s linear infinite;
+}
+
+@keyframes messagebox-spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 图标样式 */
+.messagebox.with-icon .messagebox-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.messagebox-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.messagebox-icon.info {
+    color: #1890ff;
+}
+
+.messagebox-icon.success {
+    color: #52c41a;
+}
+
+.messagebox-icon.warning {
+    color: #faad14;
+}
+
+.messagebox-icon.error {
+    color: #ff4d4f;
+}
+
+/* 动画效果 */
+.messagebox .dialog {
+    animation: messagebox-scale-in 0.2s ease-out;
+}
+
+@keyframes messagebox-scale-in {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .messagebox-buttons {
+        flex-direction: column-reverse;
+    }
+
+    .messagebox-button {
+        width: 100%;
+    }
+
+    .messagebox-message {
+        padding: 20px 20px 12px;
+        font-size: 16px;
+    }
+
+    .messagebox-input-container {
+        padding: 0 20px 12px;
+    }
+
+    .messagebox-buttons {
+        padding: 12px 20px 20px;
+    }
+}

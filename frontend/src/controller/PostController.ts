@@ -4,6 +4,7 @@ import {PostDTO} from "../entity/PostDTO";
 import {ReplyDTO} from "../entity/ReplyDTO";
 import {as} from "react-router/dist/production/routeModules-BmVo7q9e";
 import {Controller} from "./Controller";
+import {PostReport} from "../entity/PostReport";
 
 export interface PostRequest {
     title: string;
@@ -41,5 +42,12 @@ export class PostController extends Controller{
     getAllReplies=this._get<{postId:number},ReplyDTO[]>("api/post/all_replies");
     //举报帖子
     report=this._post<PostReportRequest,any>("api/post/report");
-
+    //所有举报
+    getAllReports=this._get<{postId:number},PostReport[]>("api/post/all_reports");
+    //删除帖子
+    deletePost=this._post<{postId:number},any>("api/post/delete_post");
+    //删除回复
+    deleteReply=this._post<{replyId:number},any>("api/post/delete_reply");
+    //删除举报
+    deleteReport=this._post<{reportId:number},any>("api/post/delete_report");
 }

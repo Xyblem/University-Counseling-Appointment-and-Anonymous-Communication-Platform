@@ -24,6 +24,7 @@ import {User} from "../../entity/User";
 import {ResponseState} from "../../common/response/ResponseState";
 import {CheckLoginComponent} from "../../component/CheckLoginComponent";
 import {FetchUserComponent} from "../../component/FetchUserComponent";
+import {MessageBox, MessageBoxManager, MessageBoxRef} from "../../common/view/display/MessageBox";
 
 
 export namespace Homepage{
@@ -49,7 +50,7 @@ export const HomepageForm: React.FC = () => {
     //路由
     const navigate = useNavigate();
     const urlLocation = useLocation();
-
+    const messageBoxRef=useRef<MessageBoxRef>(null);
     const [logoutState,setLogoutState] = useState<ResponseState>();
     //引用
 
@@ -155,6 +156,7 @@ export const HomepageForm: React.FC = () => {
 
     return (<div className="home-background">
             {logoutDialog}
+            <MessageBox ref={messageBoxRef} />
             {logoutResultDialog}
             <div className="home-form">
                 {/* 导航栏 */}

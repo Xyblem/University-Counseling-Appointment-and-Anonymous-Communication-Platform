@@ -18,7 +18,12 @@ export const BrowseForm:React.FC = () => {
 
 
     const publicPostList = publicPostState?.returnObject?.data?.map((value: PostDTO) =>
-        <PostCard mode="browse" username={context.user==null?"":context.user.username} key={value.postId} postDTO={value}/>
+        <PostCard mode="browse" username={context.user==null?"":context.user.username} key={value.postId} postDTO={value}
+                  onDeletePost={()=>{
+                      publicPostHandler.current?.recover();
+                      publicPostHandler.current?.request(null);
+                  }}
+        />
     );
 
 
