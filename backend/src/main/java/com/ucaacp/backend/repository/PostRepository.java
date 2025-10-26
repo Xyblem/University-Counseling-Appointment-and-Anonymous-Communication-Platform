@@ -31,6 +31,27 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     List<PostDTO> findPublicPosts();
 
 
+    @Query("SELECT new com.ucaacp.backend.entity.DTO.PostDTO(" +
+            "p.postId, p.title, p.content, " +
+            "CASE " +
+            "   WHEN p.isAnonymous = true THEN '匿名用户' " +
+            "   WHEN u.nickname IS NOT NULL AND u.nickname != '' THEN u.nickname " +
+            "   ELSE u.username " +
+            "END, " +
+            "CASE " +
+            "   WHEN p.isAnonymous = true THEN NULL " +
+            "   ELSE u.username " +
+            "END, " +
+            "p.isAnonymous, p.isPublic,p.publishTime)  " +
+            "FROM Post p " +
+            "JOIN User u ON u.username=p.username " +
+            "JOIN PostReport pr ON pr.postId=p.postId " +
+            "WHERE p.isPublic = true " +
+            "ORDER BY p.publishTime DESC")
+    List<PostDTO> findReportedPosts();
+
+
+
 
     @Query("SELECT new com.ucaacp.backend.entity.DTO.ReplyDTO(r.replyId, r.content, r.postId, " +
             "       CASE WHEN u.nickname IS NOT NULL AND u.nickname != '' THEN u.nickname " +

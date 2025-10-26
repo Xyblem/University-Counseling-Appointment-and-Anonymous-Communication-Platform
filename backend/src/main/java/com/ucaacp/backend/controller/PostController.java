@@ -9,6 +9,7 @@ import com.ucaacp.backend.service.PostService;
 import com.ucaacp.backend.service.UserService;
 import com.ucaacp.backend.utils.return_object.ReturnCode;
 import com.ucaacp.backend.utils.return_object.ReturnObject;
+import jakarta.persistence.Column;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -113,6 +114,18 @@ public class PostController {
     }
 
     @CheckLogin
+    @GetMapping("/all_reported_post")
+    public ReturnObject getAllReportedPost(HttpSession session){
+
+        List<PostDTO> postDTOList=postService.allReportedPosts();
+        if(postDTOList!=null&&!postDTOList.isEmpty()){
+            return ReturnObject.success(postDTOList);
+        }else {
+            return ReturnObject.fail("获取社区倾述列表失败");
+        }
+    }
+
+    @CheckLogin
     @GetMapping("/all_replies")
     public ReturnObject getAllReplies(@RequestParam Map<String,Object> params,HttpSession session){
 
@@ -124,4 +137,54 @@ public class PostController {
             return ReturnObject.fail("获取回复列表失败");
         }
     }
+
+
+
+    @CheckLogin
+    @PostMapping("/report")
+    public ReturnObject report(@RequestBody Map<String,Object> reportRequestBody, HttpSession session){
+
+        String postId=reportRequestBody.get("postId").toString();
+        String reportReason=reportRequestBody.get("reportReason").toString();
+        String reporterUsername=reportRequestBody.get("reporterUsername").toString();
+
+
+        String password=session.getAttribute("password").toString();
+
+        //检查用户是否存在
+        if(!userService.exits(reporterUsername)){
+            return ReturnObject.fail("用户名\""+reporterUsername+"\"不存在");
+        }
+
+        Optional<User> optionalUser=userService.login(reporterUsername,password);
+        //检查存储的密码是否匹配
+        if(optionalUser.isEmpty()){
+            return ReturnObject.fail("用户名密码错误");
+        }
+
+        PostReport postReport=new PostReport();
+        postReport.setPostId(Integer.valueOf(postId));
+        postReport.setReportReason(reportReason);
+        postReport.setReporterUsername(reporterUsername);
+
+        if(postService.report(postReport)!=null){
+            return ReturnObject.success();
+        }else{
+            return ReturnObject.fail("举报失败");
+        }
+    }
+
+
+    @CheckLogin
+    @GetMapping("/all_reports")
+    public ReturnObject getAllReports(@RequestParam Map<String,Object> params,HttpSession session) {
+        String postId = (String) params.get("postId");
+        List<PostReport> postReportList=postService.allPostReportsByPostId(Integer.valueOf(postId));
+        if(postReportList!=null){
+            return ReturnObject.success(postReportList);
+        }else{
+            return ReturnObject.fail("获取举报列表失败");
+        }
+    }
+
 }

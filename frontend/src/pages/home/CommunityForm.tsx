@@ -9,10 +9,13 @@ import {Homepage} from "./HomepageForm";
 import {Button} from "../../common/view/controller/Button";
 import {BrowseForm} from "./community/BrowseForm";
 import {PostForm} from "./community/PostForm";
+import {UserRole} from "../../entity/enums/UserRole";
+import {ReportForm} from "./community/ReportForm";
 
 export const Community_Children=[
     {path:"browse/",element:<BrowseForm/>},
     {path:"post/",element:<PostForm/>},
+    {path:"report/",element:<ReportForm/>},
 ];
 
 //主页
@@ -33,6 +36,9 @@ export const CommunityForm: React.FC = () => {
                 <div className="horizontal-menu">
                     <NavLink to="browse">社区倾述</NavLink>
                     <NavLink to="post">发布倾述</NavLink>
+                    {Number(context.user?.role)===UserRole.ADMIN&&(
+                        <NavLink to="report">社区审核</NavLink>
+                    )}
                 </div>
                 <Outlet context={context}/>
             </div>

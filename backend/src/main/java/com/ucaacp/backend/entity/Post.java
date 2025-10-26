@@ -29,9 +29,6 @@ public class Post {
     @Column(name = "username", nullable = false, length = 45)
     private String username;
 
-//    @ManyToOne
-//    @JoinColumn(name = "username", referencedColumnName = "username")
-//    private User user;
 
     @NotNull
     @Column(name = "publish_time", nullable = false, updatable = false)

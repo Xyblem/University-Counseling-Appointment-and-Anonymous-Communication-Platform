@@ -61,3 +61,7 @@ SELECT `assessment_id`,`assessment_class`,`assessment_name`,`test_username`,
 FROM `psych_assessment_record`
 JOIN `user` ON `psych_assessment_record`.`test_username` = `user`.`username`
 WHERE `test_username`='stu2022007';
+
+SELECT * FROM `post_report` WHERE `reporter_username`='stu2022007';
+
+SELECT * FROM `post_report` WHERE `post_id`=11;
