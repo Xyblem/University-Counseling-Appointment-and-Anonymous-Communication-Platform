@@ -8,6 +8,7 @@ import {Homepage} from "./HomepageForm";
 import {UserRole} from "../../entity/enums/UserRole";
 import {AppointmentStudentForm} from "./appointment/AppointmentStudentForm";
 import {AppointmentTeacherForm} from "./appointment/AppointmentTeacherForm";
+import {AppointmentAdminForm} from "./appointment/AppointmentAdminForm";
 //自定义组件
 
 //主页
@@ -29,10 +30,19 @@ export const AppointmentForm: React.FC = () => {
         mainForm=(<AppointmentTeacherForm teacherUser={context.user}/>);
     }
 
+    if(Number(context.user?.role)===UserRole.ADMIN){
+        mainForm=(<AppointmentAdminForm adminUser={context.user}/>);
+    }
+
 
     return (<div className="layout-flex-column">
         <div >
-            <h2>{UserRole.ChineseName.get(Number(context.user?.role))}预约</h2>
+            {Number(context.user?.role)===UserRole.ADMIN?(<h2>
+                所有的预约概览
+            </h2>):(<h2>
+                {UserRole.ChineseName.get(Number(context.user?.role))}预约
+            </h2>)}
+
         </div>
         {mainForm}
     </div>);

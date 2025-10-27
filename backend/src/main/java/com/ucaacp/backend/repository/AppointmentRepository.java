@@ -68,5 +68,14 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Intege
     @Query("UPDATE Appointment a SET a.status=:appointmentStatus WHERE a.appointmentId=:appointmentId")
     int handle(@Param("appointmentId") Integer appointmentId,@Param("appointmentStatus") AppointmentStatus appointmentStatus);
 
-
+    @Query("SELECT new com.ucaacp.backend.entity.DTO.AppointmentDTO(a.appointmentId," +
+            "       a.studentUsername," +
+            "       stu.name ," +
+            "       a.teacherUsername," +
+            "       tea.name ," +
+            "       a.description,a.startTime,a.endTime,a.applyTime,a.status) " +
+            "FROM Appointment a " +
+            "         LEFT JOIN User stu ON a.studentUsername = stu.username " +
+            "         LEFT JOIN User tea ON a.teacherUsername = tea.username ")
+    List<AppointmentDTO> findAllAppointmentDTO();
 }

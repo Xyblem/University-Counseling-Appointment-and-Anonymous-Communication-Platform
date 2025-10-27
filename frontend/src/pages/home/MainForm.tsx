@@ -38,10 +38,10 @@ export const MainForm: React.FC = () => {
 
     const appointmentController=new AppointmentController();
 
-    const findPendingAppointmentsHandler=useRef<ResponseHandlerRef<string,AppointmentDTO[]>>(null);
+    const findPendingAppointmentsHandler=useRef<ResponseHandlerRef<{teacherUsername:string},AppointmentDTO[]>>(null);
     const [findPendingAppointmentsStates,setFindPendingAppointmentsStates] = useState<ResponseState<AppointmentDTO[]>>();
 
-    const findNonPendingAppointmentsHandler=useRef<ResponseHandlerRef<string,AppointmentDTO[]>>(null);
+    const findNonPendingAppointmentsHandler=useRef<ResponseHandlerRef<{teacherUsername:string},AppointmentDTO[]>>(null);
     const [findNonPendingAppointmentsStates,setFindNonPendingAppointmentsStates] = useState<ResponseState<AppointmentDTO[]>>();
 
     //钩子
@@ -130,8 +130,8 @@ export const MainForm: React.FC = () => {
                         }}>立即处理</Button>
                     </div>
 
-                    <ResponseHandler<string, AppointmentDTO[]>
-                        autoRequest={context.user?.username}
+                    <ResponseHandler<{teacherUsername:string}, AppointmentDTO[]>
+                        autoRequest={{teacherUsername:context.user==null?"null":context.user?.username}}
                         ref={findPendingAppointmentsHandler}
                         request={appointmentController.findTeacherPending}
                         setResponseState={setFindPendingAppointmentsStates}
@@ -171,8 +171,8 @@ export const MainForm: React.FC = () => {
                     <div className="layout-flex-row">
                         <p>已完成的预约</p>
                     </div>
-                    <ResponseHandler<string, AppointmentDTO[]>
-                        autoRequest={context.user?.username}
+                    <ResponseHandler<{teacherUsername:string}, AppointmentDTO[]>
+                        autoRequest={{teacherUsername:context.user==null?"null":context.user?.username}}
                         ref={findNonPendingAppointmentsHandler}
                         request={appointmentController.findTeacherNonPending}
                         setResponseState={setFindNonPendingAppointmentsStates}
@@ -211,11 +211,15 @@ export const MainForm: React.FC = () => {
 
                 </div>
                 <div className="layout-flex-column" style={{marginLeft: "50px"}}>
-                    <Button type="primary">预约管理</Button>
+                    <Button type="primary" onClick={()=>{
+                        navigate("/home/mine/appointment_manage");
+                    }}>预约管理</Button>
                     <br/>
                     <Button type="primary">发表科普</Button>
                     <br/>
-                    <Button type="primary">测评分析</Button>
+                    <Button type="primary" onClick={()=>{
+                        navigate("/home/mine/evaluation_record");
+                    }}>测评分析</Button>
                 </div>
             </div>
             );

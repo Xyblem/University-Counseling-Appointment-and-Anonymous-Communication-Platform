@@ -2,6 +2,7 @@ import {ReturnObject} from "../common/response/ReturnObject";
 import api from "../utils/api/api_config";
 import {AppointmentDTO} from "../entity/AppointmentDTO";
 import {AppointmentStatus} from "../entity/enums/AppointmentStatus";
+import {Controller} from "./Controller";
 
 
 export interface AppointmentRequest {
@@ -22,76 +23,25 @@ export interface AppointmentHandingRequest {
     status:AppointmentStatus;
 }
 
-export class AppointmentController {
+export class AppointmentController extends Controller{
 
-    /**
-     * 添加预约
-     * @param appointmentRequest 预约请求体
-     */
-    addAppointment=async (appointmentRequest:AppointmentRequest):Promise<ReturnObject> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/appointment/add",appointmentRequest).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
+    //添加预约
+    addAppointment=this._post<AppointmentRequest,any>("api/appointment/add");
 
-    /**
-     * 查询预约
-     * @param findAppointmentRequest
-     */
-    findById=async (findAppointmentRequest:FindAppointmentRequest):Promise<ReturnObject<AppointmentDTO[]>> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.get("api/appointment/find_by",{params:findAppointmentRequest}).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
+    //查询预约
+    findById=this._get<FindAppointmentRequest,AppointmentDTO[]>("api/appointment/find_by");
 
-    /**
-     * 获取教师未处理的预约
-     * @param teacherUsername 教师用户名
-     */
-    findTeacherPending=async(teacherUsername:string):Promise<ReturnObject<AppointmentDTO[]>> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.get("api/appointment/teacher/pending",{params:{teacherUsername:teacherUsername}}).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
+    //获取教师未处理的预约
+    findTeacherPending=this._get<{teacherUsername:string},AppointmentDTO[]>("api/appointment/teacher/pending")
 
-    /**
-     * 获取教师未处理的预约
-     * @param teacherUsername 教师用户名
-     */
-    findTeacherNonPending=async(teacherUsername:string):Promise<ReturnObject<AppointmentDTO[]>> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.get("api/appointment/teacher/non-pending",{params:{teacherUsername:teacherUsername}}).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
+    //获取教师未处理的预约
+    findTeacherNonPending=this._get<{teacherUsername:string},AppointmentDTO[]>("api/appointment/teacher/non-pending")
 
+    //处理预约
+    handle=this._post<AppointmentHandingRequest,any>("api/appointment/handle");
 
-    /**
-     * 处理预约
-     * @param appointmentHandingRequest 处理请求体
-     */
-    handle=async (appointmentHandingRequest:AppointmentHandingRequest):Promise<ReturnObject> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post("api/appointment/handle",appointmentHandingRequest).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
-
-
-
+    //列出所有预约
+    listAll=this._get<any,AppointmentDTO[]>("api/appointment/list_all");
 
 
 }

@@ -166,7 +166,9 @@ export const HomepageForm: React.FC = () => {
                             <ul>
                                 <li><NavLink to="main">首页</NavLink></li>
                                 {/*<Divider color="Black" spacing="0" orientation="vertical" length="32px"/>*/}
+
                                 <li><NavLink to="appointment">预约</NavLink></li>
+
                                 {/*<Divider color="Black" spacing="0" orientation="vertical" length="32px"/>*/}
                                 <li><NavLink to="community">社区</NavLink></li>
                                 {/*<Divider color="Black" spacing="0" orientation="vertical" length="32px"/>*/}

@@ -51,6 +51,7 @@ public class CheckUserRoleInterceptor implements HandlerInterceptor {
         if(!user.getRole().equals(checkUserRole.value())){
             response.setContentType("application/json;charset=utf-8");
             response.getWriter().write(JSON.toJSONString(ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户角色错误，需要角色："+checkUserRole.value().getName())));
+            return false;
         }
 
         return true;

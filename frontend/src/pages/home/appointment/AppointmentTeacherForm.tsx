@@ -22,7 +22,7 @@ export const AppointmentTeacherForm: React.FC<AppointmentTeacherFormProps> = ({t
     const context=useOutletContext<Homepage.OutletContext>();
     const appointmentController=new AppointmentController();
 
-    const findAppointmentsHandler=useRef<ResponseHandlerRef<string,AppointmentDTO[]>>(null);
+    const findAppointmentsHandler=useRef<ResponseHandlerRef<{teacherUsername:string},AppointmentDTO[]>>(null);
     const [findAppointmentsStates,setFindAppointmentsStates] = useState<ResponseState<AppointmentDTO[]>>();
 
     const handleAppointmentsHandler=useRef<ResponseHandlerRef<AppointmentHandingRequest,any>>(null);
@@ -31,7 +31,7 @@ export const AppointmentTeacherForm: React.FC<AppointmentTeacherFormProps> = ({t
     const handlingResultDialogRef=useRef<DialogRef>(null);
 
     useEffect(() => {
-        findAppointmentsHandler.current?.request(context.user?.username==null?"null":context.user.username);
+        findAppointmentsHandler.current?.request({teacherUsername:context.user?.username==null?"null":context.user.username});
     }, []);
 
     const tableColumns=[{
@@ -152,7 +152,7 @@ export const AppointmentTeacherForm: React.FC<AppointmentTeacherFormProps> = ({t
                 closeOnEscape
                 onClose={() => {
                     findAppointmentsHandler.current?.recover();
-                    findAppointmentsHandler.current?.request(context.user?.username==null?"null":context.user.username);
+                    findAppointmentsHandler.current?.request({teacherUsername:context.user?.username==null?"null":context.user.username});
                 }}
             >
                 <div className="layout-flex-column">
@@ -174,7 +174,7 @@ export const AppointmentTeacherForm: React.FC<AppointmentTeacherFormProps> = ({t
 
     return (<div>
         {handlingResultDialog}
-        <ResponseHandler<string,AppointmentDTO[]>
+        <ResponseHandler<{teacherUsername:string},AppointmentDTO[]>
             ref={findAppointmentsHandler}
             request={appointmentController.findTeacherPending}
             setResponseState={setFindAppointmentsStates}

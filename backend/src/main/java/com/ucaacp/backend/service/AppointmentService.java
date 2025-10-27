@@ -41,6 +41,9 @@ public class AppointmentService {
         return appointmentRepository.handle(appointmentId, appointmentStatus);
     }
 
+    public List<AppointmentDTO> findAllAppointmentDTO(){
+        return appointmentRepository.findAllAppointmentDTO();
+    }
 
 
 }

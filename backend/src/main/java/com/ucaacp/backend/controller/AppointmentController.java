@@ -1,6 +1,7 @@
 package com.ucaacp.backend.controller;
 
 import com.ucaacp.backend.annotation.CheckLogin;
+import com.ucaacp.backend.annotation.CheckUserRole;
 import com.ucaacp.backend.entity.Appointment;
 import com.ucaacp.backend.entity.DTO.AppointmentDTO;
 import com.ucaacp.backend.entity.User;
@@ -174,21 +175,29 @@ public class AppointmentController {
 
     @CheckLogin
     @PostMapping("handle")
+    @CheckUserRole(UserRole.TEACHER)
     public ReturnObject handle(@RequestBody Map<String,Object> handleRequest, HttpSession session) {
 
 
         String appointmentId=handleRequest.get("appointmentId")==null?"":handleRequest.get("appointmentId").toString();
         String status=handleRequest.get("status")==null?"":handleRequest.get("status").toString();
 
-        if(!((User)session.getAttribute("user")).getRole().equals(UserRole.TEACHER)){
-            return ReturnObject.fail("用户角色错误");
-        }
-
-
         if(appointmentService.handle(Integer.valueOf(appointmentId), AppointmentStatus.valueOf(status))>=0){
             return ReturnObject.success();
         }else{
             return ReturnObject.fail("处理失败");
+        }
+    }
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @GetMapping("list_all")
+    public ReturnObject listAll(@RequestParam Map<String,Object> params, HttpSession session) {
+        List<AppointmentDTO> appointmentDTOList=appointmentService.findAllAppointmentDTO();
+        if(appointmentDTOList!=null){
+            return ReturnObject.success(appointmentDTOList);
+        }else{
+            return ReturnObject.fail("查询失败");
         }
     }
 
