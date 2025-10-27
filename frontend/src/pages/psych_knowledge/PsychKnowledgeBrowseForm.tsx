@@ -11,7 +11,7 @@ import {Button} from "../../common/view/controller/Button";
 import {useNavigate} from "react-router-dom";
 import {useOutletContext} from "react-router"
 import {PsychKnowledgeRoot} from "./PsychKnowledgeRootPage";
-import {User} from "../../entity/User";
+import {UserRole} from "../../entity/enums/UserRole";
 
 
 export const PsychKnowledgeBrowseForm:React.FC = () => {
@@ -25,6 +25,7 @@ export const PsychKnowledgeBrowseForm:React.FC = () => {
         username={context.user==null?"":context.user.username}
         mode="browse"
         data={value}
+        role={context.user==null?UserRole.UNKNOWN:context.user.role}
     />);
 
 

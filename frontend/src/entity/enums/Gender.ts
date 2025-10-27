@@ -13,11 +13,15 @@ export namespace Gender {
     /**
      * 根据性别枚举(性别编码获取性别名称)
      */
-    export const ChineseName:Map<number,string>=new Map<number,string>([
+    export const ChineseName:Map<number|string,string>=new Map<number|string,string>([
         [Gender.UNKNOWN,"未知"],
         [Gender.MALE,"男"],
         [Gender.FEMALE,"女"],
-        [Gender.OTHER,"其他"]
+        [Gender.OTHER,"其他"],
+        ["UNKNOWN","未知"],
+        ["MALE","男"],
+        ["FEMALE","女"],
+        ["OTHER","其他"]
     ]);
 }
 

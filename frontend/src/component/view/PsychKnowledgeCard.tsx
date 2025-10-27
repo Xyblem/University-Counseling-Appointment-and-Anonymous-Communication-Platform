@@ -8,24 +8,28 @@ import {ResponseHandler, ResponseHandlerRef} from "../../common/response/Respons
 import {ResponseState} from "../../common/response/ResponseState";
 import {Textarea, TextareaCallback, TextareaRef} from "../../common/view/input/Textarea";
 import {
-    PsychKnowledgeController,
-    PsychKnowledgePostRequest,
+    PsychKnowledgeBanRequest,
+    PsychKnowledgeController, PsychKnowledgePassRequest,
     PsychKnowledgeReportRequest
 } from "../../controller/PsychKnowledgeController";
 import {Loading} from "../../common/view/display/Loading";
 import {ReturnObject} from "../../common/response/ReturnObject";
+import {UserRole} from "../../entity/enums/UserRole";
+import {PsychKnowledgeReport} from "../../entity/PsychKnowledgeReport";
+import {PsychKnowledgeReportView} from "./PsychKnowledgeReportView";
 
 interface PsychKnowledgeCardProps {
+    role:UserRole;
     username: string;
-    mode:'browse'|'mine'|'audit'
+    mode:'browse'|'mine'|'audit'|'audit_report'
     data: PsychKnowledgeDTO;
     onExpand?: (knowledgeId: number) => void;
     onEdit?: (knowledgeId: number) => void;
-    onInvoke?: (knowledgeId: number) => void;
+    onRefresh?: (knowledgeId: number) => void;
 }
 
 export const PsychKnowledgeCard: React.FC<PsychKnowledgeCardProps> = ({
-    mode,username,onInvoke,
+    mode,username,onRefresh,role,
                                                                    data,
                                                                    onExpand,
                                                                    onEdit
@@ -55,6 +59,52 @@ export const PsychKnowledgeCard: React.FC<PsychKnowledgeCardProps> = ({
             alert('请检查表单错误!');
         }
     };
+    const reportListHandlerRef=useRef<ResponseHandlerRef<{knowledgeId:number},PsychKnowledgeReport[]>>(null);
+    const [reportListState,setReportListState] = useState<ResponseState<PsychKnowledgeReport[]>>();
+    const reportList=(<ResponseHandler<{knowledgeId:number},PsychKnowledgeReport[]>
+        ref={reportListHandlerRef}
+        request={psychKnowledgeController.listReport}
+        setResponseState={setReportListState}
+        autoRequest={{knowledgeId:data.knowledgeId}}
+        idleComponent={<h2 className="section-title">
+            <i className="far fa-comments"></i> 未获取举报列表
+        </h2>}
+        loadingComponent={<h2 className="section-title">
+            <i className="far fa-comments"></i>
+            <Loading type="dots" text='加载举报列表中...' color="#2196f3" size="large"/>
+        </h2>}
+        handlingReturnObjectComponent={<h2 className="section-title">
+            <i className="far fa-comments"></i>
+            <Loading type="dots" text='处理举报列表中...' color="#2196f3" size="large"/>
+        </h2>}
+        networkErrorComponent={<div>
+            <h2 className="section-title">
+                <i className="far fa-comments"></i> 网络错误
+            </h2>
+            <div className="reply-card">
+                <div className="reply-content">详情：{reportListState?.networkError?.message}</div>
+            </div>
+        </div>}
+        finishedComponent={(!(reportListState?.returnObject?.status === ReturnObject.Status.SUCCESS)) ? (
+            <div>
+                <h2 className="section-title">
+                    <i className="far fa-comments"></i> 获取举报列表{ReturnObject.Status.ChineseName.get(reportListState?.returnObject?.status)}
+                </h2>
+                <div className="reply-card">
+                    <div className="reply-content">详情：{reportListState?.returnObject?.message}</div>
+                </div>
+            </div>
+        ) : (<div>
+            <h2 className="section-title">
+                <i className="far fa-comments"></i> 举报
+                <span className="replies-count">{reportListState?.returnObject?.data?.length}</span>
+            </h2>
+            {reportListState?.returnObject?.data?.map(value=><PsychKnowledgeReportView psychKnowledgeReport={value} onDeleteReport={()=>{
+                reportListHandlerRef.current?.recover();
+                reportListHandlerRef.current?.request({knowledgeId:data.knowledgeId});
+            }}/>)}</div>
+        )}
+    />);
 
     const ReportResultDialog = (<ResponseHandler<PsychKnowledgeReportRequest, any>
         ref={reportHandlerRef}
@@ -241,7 +291,7 @@ export const PsychKnowledgeCard: React.FC<PsychKnowledgeCardProps> = ({
                 closeOnEscape
                 onClose={() => {
                     if (invokeState?.returnObject?.status === ReturnObject.Status.SUCCESS) {
-                        onInvoke?.(data.knowledgeId);
+                        onRefresh?.(data.knowledgeId);
                     }
                 }}
             >
@@ -289,16 +339,205 @@ export const PsychKnowledgeCard: React.FC<PsychKnowledgeCardProps> = ({
     </Dialog>);
 
 
+    const passConfirmDialogRef=useRef<DialogRef>(null);
+    const PassConfirmDialog = (<Dialog
+        ref={passConfirmDialogRef}
+        type="modal"
+        title="通过"
+        showCloseButton
+        closeOnBackdropClick
+        closeOnEscape
+    >
+        <div className="layout-flex-column">
+            <p className="text-align-left">确定要通过吗？</p>
+            <br/>
+            <div className="layout-flex-row justify-content-flex-end">
+                <span style={{flexGrow: 2}}></span>
+                <Button type="default" style={{flexGrow: 1}} onClick={() => {
+                    passConfirmDialogRef.current?.close();
+                }}>返回</Button>
+                <span style={{flexGrow: 0.1}}></span>
+                <Button type="primary" style={{flexGrow: 1}} onClick={() => {
+                    passConfirmDialogRef.current?.close();
+                    passHandlerRef.current?.request({knowledgeId:data.knowledgeId,adminReviewerUsername:username});
+                }}>确定</Button>
+            </div>
+        </div>
+    </Dialog>);
+
+    const passResultDialogRef=useRef<DialogRef>(null);
+    const passHandlerRef=useRef<ResponseHandlerRef<PsychKnowledgePassRequest,any>>(null);
+    const [passResultState,setPassResultState]=useState<ResponseState>();
+    const PassResultDialog=(<ResponseHandler<PsychKnowledgePassRequest,any>
+        ref={passHandlerRef}
+        request={psychKnowledgeController.adminPass}
+        setResponseState={setPassResultState}
+        idleComponent={<></>}
+        loadingComponent={<Loading type="dots" text='通过中...' color="#2196f3" size="large" fullScreen/>}
+        handlingReturnObjectComponent={<Loading type="dots" text='处理通过结果中...' color="#2196f3" size="large" fullScreen></Loading>}
+        networkErrorComponent={<Dialog
+            autoOpen
+            ref={passResultDialogRef}
+            type="modal"
+            title="网络错误"
+            showCloseButton
+            closeOnBackdropClick
+            closeOnEscape
+        >
+            <div className="layout-flex-column">
+                <p className="text-align-left">详情：{passResultState?.networkError?.message}</p>
+                <br/>
+                <div className="layout-flex-row justify-content-flex-end">
+                    <span style={{flexGrow: 3.1}}></span>
+                    <Button type="default"
+                            style={{flexGrow: 1}} onClick={() => {
+                        passResultDialogRef.current?.close();
+                    }}>返回</Button>
+                </div>
+            </div>
+
+        </Dialog>
+        }
+        finishedComponent={
+            <Dialog
+                autoOpen
+                ref={passResultDialogRef}
+                type="modal"
+                title={"通过" + ReturnObject.Status.ChineseName.get(passResultState?.returnObject?.status)}
+                showCloseButton
+                closeOnBackdropClick
+                closeOnEscape
+                onClose={() => {
+                    if (passResultState?.returnObject?.status === ReturnObject.Status.SUCCESS) {
+                        onRefresh?.(data.knowledgeId);
+                    }
+                }}
+            >
+                <div className="layout-flex-column">
+                    <p className="text-align-left">{passResultState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "通过成功" : passResultState?.returnObject?.message}</p>
+                    <br/>
+                    <div className="layout-flex-row justify-content-flex-end">
+                        <span style={{flexGrow: 3.1}}></span>
+                        <Button type={passResultState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "primary" : "default"}
+                                style={{flexGrow: 1}} onClick={() => {
+                            passResultDialogRef.current?.close();
+                        }}>{passResultState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "确定" : "返回"}</Button>
+
+                    </div>
+                </div>
+
+            </Dialog>
+        }
+    />);
+
+    const banConfirmDialogRef=useRef<DialogRef>(null);
+    const BanConfirmDialog = (<Dialog
+        ref={banConfirmDialogRef}
+        type="modal"
+        title="驳回"
+        showCloseButton
+        closeOnBackdropClick
+        closeOnEscape
+    >
+        <div className="layout-flex-column">
+            <p className="text-align-left">确定要驳回吗？</p>
+            <br/>
+            <div className="layout-flex-row justify-content-flex-end">
+                <span style={{flexGrow: 2}}></span>
+                <Button type="default" style={{flexGrow: 1}} onClick={() => {
+                    banConfirmDialogRef.current?.close();
+                }}>返回</Button>
+                <span style={{flexGrow: 0.1}}></span>
+                <Button type="primary" style={{flexGrow: 1}} onClick={() => {
+                    banConfirmDialogRef.current?.close();
+                    banHandlerRef.current?.request({knowledgeId:data.knowledgeId,adminReviewerUsername:username});
+                }}>确定</Button>
+            </div>
+        </div>
+    </Dialog>);
+
+    const banResultDialogRef=useRef<DialogRef>(null);
+    const banHandlerRef=useRef<ResponseHandlerRef<PsychKnowledgeBanRequest,any>>(null);
+    const [banResultState,setBanResultState]=useState<ResponseState>();
+    const BanResultDialog=(<ResponseHandler<PsychKnowledgeBanRequest,any>
+        ref={banHandlerRef}
+        request={psychKnowledgeController.adminBan}
+        setResponseState={setBanResultState}
+        idleComponent={<></>}
+        loadingComponent={<Loading type="dots" text='驳回中...' color="#2196f3" size="large" fullScreen/>}
+        handlingReturnObjectComponent={<Loading type="dots" text='处理驳回结果中...' color="#2196f3" size="large" fullScreen></Loading>}
+        networkErrorComponent={<Dialog
+            autoOpen
+            ref={banResultDialogRef}
+            type="modal"
+            title="网络错误"
+            showCloseButton
+            closeOnBackdropClick
+            closeOnEscape
+        >
+            <div className="layout-flex-column">
+                <p className="text-align-left">详情：{banResultState?.networkError?.message}</p>
+                <br/>
+                <div className="layout-flex-row justify-content-flex-end">
+                    <span style={{flexGrow: 3.1}}></span>
+                    <Button type="default"
+                            style={{flexGrow: 1}} onClick={() => {
+                        banResultDialogRef.current?.close();
+                    }}>返回</Button>
+                </div>
+            </div>
+
+        </Dialog>
+        }
+        finishedComponent={
+            <Dialog
+                autoOpen
+                ref={banResultDialogRef}
+                type="modal"
+                title={"驳回" + ReturnObject.Status.ChineseName.get(banResultState?.returnObject?.status)}
+                showCloseButton
+                closeOnBackdropClick
+                closeOnEscape
+                onClose={() => {
+                    if (banResultState?.returnObject?.status === ReturnObject.Status.SUCCESS) {
+                        onRefresh?.(data.knowledgeId);
+                    }
+                }}
+            >
+                <div className="layout-flex-column">
+                    <p className="text-align-left">{banResultState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "驳回成功" : banResultState?.returnObject?.message}</p>
+                    <br/>
+                    <div className="layout-flex-row justify-content-flex-end">
+                        <span style={{flexGrow: 3.1}}></span>
+                        <Button type={banResultState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "primary" : "default"}
+                                style={{flexGrow: 1}} onClick={() => {
+                            banResultDialogRef.current?.close();
+                        }}>{banResultState?.returnObject?.status === ReturnObject.Status.SUCCESS ? "确定" : "返回"}</Button>
+
+                    </div>
+                </div>
+
+            </Dialog>
+        }
+    />);
     return (<>
             {ReportDialog}
             {ReportResultDialog}
             {InvokeConfirmDialog}
             {InvokeResultDialog}
+                {PassConfirmDialog}{BanConfirmDialog}{BanResultDialog}{PassResultDialog}
             <div className="psych-knowledge-card">
                 {/* 卡片头部 */}
                 <div className="card-header">
                     <h3 className="card-title">{data.title}</h3>
-                    {mode === "mine"&&data.reviewStatus!==ReviewStatus.REVOKED&& <Button type="default" onClick={()=>{invokeConfirmDialogRef.current?.open()}}>撤回</Button>}
+                    {mode === "mine"&&data.reviewStatus!==ReviewStatus.REVOKED&&Number(role)===UserRole.TEACHER&& <Button type="default" onClick={()=>{invokeConfirmDialogRef.current?.open()}}>撤回</Button>}
+                    {(mode === "audit"||mode==='audit_report')&&Number(role)===UserRole.ADMIN&&
+                        <>
+                            <Button type="default" onClick={()=>{passConfirmDialogRef.current?.open();}}>通过</Button>
+                            <span> </span>
+                            <Button type="default" onClick={()=>{banConfirmDialogRef.current?.open();}}>驳回</Button>
+                        </>
+                    }
                     {(mode === "mine" || mode === "audit") && <div className={`status-badge ${statusInfo.className}`}>
                         {statusInfo.text}
                     </div>}
@@ -344,6 +583,7 @@ export const PsychKnowledgeCard: React.FC<PsychKnowledgeCardProps> = ({
                         )}
                     </div>
                 )}
+                {mode === "audit_report"&&Number(role)===UserRole.ADMIN&&reportList}
             </div>
         </>
     );

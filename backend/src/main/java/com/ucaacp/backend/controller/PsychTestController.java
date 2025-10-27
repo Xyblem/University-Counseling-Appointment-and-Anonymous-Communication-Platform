@@ -51,6 +51,23 @@ public class PsychTestController {
     public ReturnObject list_all(@RequestParam Map<String,Object> params, HttpSession session) throws Exception {
         List<QueryListItem> testList=new ArrayList<QueryListItem>();
         testList.add(new QueryListItem("ExampleTest"));
+        testList.add(new QueryListItem("AASTest"));
+        testList.add(new QueryListItem("CBCLTest"));
+        testList.add(new QueryListItem("CCSASTest"));
+        testList.add(new QueryListItem("DISCTest"));
+        testList.add(new QueryListItem("DSQTest"));
+        testList.add(new QueryListItem("ECRTest"));
+        testList.add(new QueryListItem("EMBUTest"));
+        testList.add(new QueryListItem("EPQTest"));
+        testList.add(new QueryListItem("FESCVTest"));
+        testList.add(new QueryListItem("IPPATest"));
+        testList.add(new QueryListItem("MMPITest"));
+        testList.add(new QueryListItem("RutterTest"));
+        testList.add(new QueryListItem("SarasonTest"));
+        testList.add(new QueryListItem("SASTest"));
+        testList.add(new QueryListItem("SCL90Test"));
+        testList.add(new QueryListItem("UPITest"));
+
         return ReturnObject.success(testList);
     }
 

@@ -8,7 +8,7 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface CheckUserRole {
-    UserRole value();
+    UserRole[] value();
     // 可以添加其他参数，比如需要的权限等
     boolean required() default true;
 }

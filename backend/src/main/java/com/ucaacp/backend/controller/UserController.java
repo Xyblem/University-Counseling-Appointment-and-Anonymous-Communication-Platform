@@ -3,11 +3,13 @@ package com.ucaacp.backend.controller;
 
 import com.ucaacp.backend.annotation.CheckCaptcha;
 import com.ucaacp.backend.annotation.CheckLogin;
+import com.ucaacp.backend.annotation.CheckUserRole;
 import com.ucaacp.backend.entity.DTO.UserDTO;
 import com.ucaacp.backend.entity.attribute_converter.GenderConverter;
 import com.ucaacp.backend.entity.attribute_converter.ProvinceCN_Converter;
 import com.ucaacp.backend.entity.attribute_converter.UserPositionConverter;
 import com.ucaacp.backend.entity.attribute_converter.UserRoleConverter;
+import com.ucaacp.backend.entity.enums.UserRole;
 import com.ucaacp.backend.service.CaptchaService;
 import com.ucaacp.backend.utils.return_object.ReturnCode;
 import com.ucaacp.backend.utils.return_object.ReturnObject;
@@ -356,6 +358,19 @@ public class UserController {
             return ReturnObject.success(teachers);
         }else{
             return ReturnObject.fail("学校所在省份或学校错误");
+        }
+    }
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @GetMapping("list_all")
+    public ReturnObject listAll(HttpSession session){
+        List<UserDTO> userDTOList=userService.findAllUserDTO();
+        if(userDTOList!=null){
+            return ReturnObject.success(userDTOList);
+        }else{
+            return ReturnObject.fail("获取失败");
         }
     }
 }

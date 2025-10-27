@@ -68,7 +68,7 @@ public class CaptchaService {
     public boolean validate(HttpSession session,String captchaKey,String code){
        CaptchaBackendObject captchaBackendObject = (CaptchaBackendObject) session.getAttribute("captcha");
        session.removeAttribute("captcha");
-       return (!enabled)||(captchaBackendObject != null && captchaBackendObject.getCaptchaKey().equals(captchaKey) && captchaBackendObject.getCode().equals(code));
+       return (!enabled)||(captchaBackendObject != null && captchaBackendObject.getCaptchaKey().equals(captchaKey) && captchaBackendObject.getCode().equals(code.toLowerCase()));
     }
 
     @Data

@@ -80,3 +80,11 @@ JOIN `psych_knowledge_report` ON `psych_knowledge_report`.knowledge_id = `psych_
 
 SELECT * FROM `psych_knowledge` WHERE `teacher_publisher_username`='tea200601';
 
+SELECT DISTINCT `psych_knowledge`.`knowledge_id`,`title`,`content`,`teacher_publisher_username`,
+CASE WHEN `nickname` IS NOT NULL AND `nickname` != '' THEN `nickname`
+     ELSE `user`.`username`
+    END AS 'display_name',
+`publish_time`,`admin_reviewer_username`,
+`review_time`,`review_status` FROM `psych_knowledge`
+JOIN `user` ON `psych_knowledge`.`teacher_publisher_username` = `user`.`username`
+WHERE `admin_reviewer_username`='adm201001';

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.ucaacp.backend.annotation.CheckLogin;
 import com.ucaacp.backend.annotation.CheckUserRole;
 import com.ucaacp.backend.entity.User;
+import com.ucaacp.backend.entity.enums.UserRole;
 import com.ucaacp.backend.utils.return_object.ReturnCode;
 import com.ucaacp.backend.utils.return_object.ReturnObject;
 import jakarta.servlet.http.HttpServletRequest;
@@ -47,10 +48,21 @@ public class CheckUserRoleInterceptor implements HandlerInterceptor {
             return false;
         }
 
+        boolean flag = false;
+        for(UserRole userRole : checkUserRole.value()){
+            if(user.getRole().equals(userRole)){
+                flag = true;
+                break;
+            }
+        }
 
-        if(!user.getRole().equals(checkUserRole.value())){
+        if(!flag){
+            String need="";
+            for(UserRole userRole : checkUserRole.value()){
+                need+=userRole.name()+",";
+            }
             response.setContentType("application/json;charset=utf-8");
-            response.getWriter().write(JSON.toJSONString(ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户角色错误，需要角色："+checkUserRole.value().getName())));
+            response.getWriter().write(JSON.toJSONString(ReturnObject.fail(ReturnCode.UNAUTHORIZED.getCode(),"用户角色错误，需要角色："+need)));
             return false;
         }
 

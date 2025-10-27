@@ -16,6 +16,7 @@ import {PsychKnowledgeCard} from "../../component/view/PsychKnowledgeCard";
 import {Loading} from "../../common/view/display/Loading";
 import {ReturnObject} from "../../common/response/ReturnObject";
 import {ResponseHandler, ResponseHandlerRef} from "../../common/response/ResponseHandler";
+import {UserRole} from "../../entity/enums/UserRole";
 
 export const PsychKnowledgeTeacherPostForm:React.FC = () => {
 
@@ -164,6 +165,7 @@ export const PsychKnowledgeTeacherPostForm:React.FC = () => {
                 username={context.user == null ? "" : context.user.username}
                 mode="mine"
                 data={previewData}
+                role={context.user==null?UserRole.UNKNOWN:context.user.role}
             />
             <br/>
             <div className="layout-flex-row justify-content-flex-end">

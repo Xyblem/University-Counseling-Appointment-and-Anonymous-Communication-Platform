@@ -49,4 +49,9 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<UserDTO> findUsersByRoleAnAndSchoolProvinceAndAndSchool(@Param("role")UserRole role, @Param("schoolProvince")ProvinceCN schoolProvince, @Param("school")String school);
 
 
+    @Query("SELECT new com.ucaacp.backend.entity.DTO.UserDTO(u.username,u.nickname,u.description,u.name,u.gender,u.schoolProvince,u.school,u.secondaryUnit,u.major,u.role,u.position,u.email,u.phoneNumber,u.qq,u.wechat,u.registrationTime) FROM User u")
+    List<UserDTO> findAllUserDTO();
+
+
+
 }

@@ -12,8 +12,10 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/api/psych_knowledge")
@@ -29,6 +31,18 @@ public class PsychKnowledgeController {
         List<PsychKnowledgeDTO> knowledgeDTOList=psychKnowledgeService.findAllPassedPsychKnowledgeDTO();
         if(knowledgeDTOList!=null){
             return ReturnObject.success(knowledgeDTOList);
+        }else{
+            return ReturnObject.fail("获取心理知识科普失败");
+        }
+    }
+
+    @CheckLogin
+    @GetMapping("recommend")
+    public ReturnObject recommend(HttpSession session) {
+        List<PsychKnowledgeDTO> knowledgeDTOList=psychKnowledgeService.findAllPassedPsychKnowledgeDTO();
+        if(knowledgeDTOList!=null&&!knowledgeDTOList.isEmpty()){
+            Random rand = new Random(System.currentTimeMillis());
+            return ReturnObject.success(knowledgeDTOList.get(rand.nextInt(0,knowledgeDTOList.size()-1)));
         }else{
             return ReturnObject.fail("获取心理知识科普失败");
         }
@@ -97,6 +111,102 @@ public class PsychKnowledgeController {
         }else{
             return ReturnObject.fail("撤回失败");
         }
+    }
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @PostMapping("/admin/pass")
+    public ReturnObject adminPass(@RequestBody Map<String,Object> passRequest,HttpSession session) {
+        Integer knowledgeId=(Integer)passRequest.get("knowledgeId");
+        String adminReviewerUsername=(String)passRequest.get("adminReviewerUsername");
+
+        if(psychKnowledgeService.pass(knowledgeId,adminReviewerUsername, LocalDateTime.now())>=0){
+            return ReturnObject.success();
+        }else{
+            return ReturnObject.fail("通过失败");
+        }
+
+    }
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @PostMapping("/admin/ban")
+    public ReturnObject adminBan(@RequestBody Map<String,Object> banRequest,HttpSession session) {
+        Integer knowledgeId=(Integer)banRequest.get("knowledgeId");
+        String adminReviewerUsername=(String)banRequest.get("adminReviewerUsername");
+
+        if(psychKnowledgeService.ban(knowledgeId,adminReviewerUsername, LocalDateTime.now())>=0){
+            return ReturnObject.success();
+        }else{
+            return ReturnObject.fail("驳回失败");
+        }
+
+    }
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @GetMapping("/admin/reviewed")
+    public ReturnObject adminReviewed(@RequestParam Map<String,Object> params,HttpSession session) {
+        String adminReviewerUsername=(String)params.get("adminReviewerUsername");
+        List<PsychKnowledgeDTO> psychKnowledgeDTOList=psychKnowledgeService.findAllPsychKnowledgeDTOReviewedByAdmin(adminReviewerUsername);
+        if(psychKnowledgeDTOList!=null){
+            return ReturnObject.success(psychKnowledgeDTOList);
+        }else{
+            return ReturnObject.fail("获取心理知识科普失败");
+        }
+    }
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @GetMapping("/pending")
+    public ReturnObject pending(@RequestParam Map<String,Object> params,HttpSession session) {
+        List<PsychKnowledgeDTO> knowledgeDTOList=psychKnowledgeService.findAllPendingPsychKnowledgeDTO();
+        if(knowledgeDTOList!=null){
+            return ReturnObject.success(knowledgeDTOList);
+        }else{
+            return ReturnObject.fail("获取心理知识科普失败");
+        }
+    }
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @GetMapping("/reported")
+    public ReturnObject reported(@RequestParam Map<String,Object> params,HttpSession session) {
+        List<PsychKnowledgeDTO> knowledgeDTOList=psychKnowledgeService.findAllReportedPsychKnowledgeDTO();
+        if(knowledgeDTOList!=null){
+            return ReturnObject.success(knowledgeDTOList);
+        }else{
+            return ReturnObject.fail("获取心理知识科普失败");
+        }
+    }
+
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @GetMapping("/list_report")
+    public ReturnObject listReport(@RequestParam Map<String,Object> params,HttpSession session) {
+        String knowledgeId=params.get("knowledgeId").toString();
+        List<PsychKnowledgeReport> psychKnowledgeReportList=psychKnowledgeService.findAllReportByKnowledgeId(Integer.valueOf(knowledgeId));
+        if(psychKnowledgeReportList!=null){
+            return ReturnObject.success(psychKnowledgeReportList);
+        }else{
+            return ReturnObject.fail("获取举报列表失败");
+        }
+    }
+
+
+    @CheckLogin
+    @CheckUserRole(UserRole.ADMIN)
+    @PostMapping("/admin/report/delete")
+    public ReturnObject adminReportDelete(@RequestBody Map<String,Object> params,HttpSession session) {
+        Integer reportId=(Integer)params.get("reportId");
+        psychKnowledgeService.deleteReport(reportId);
+            return ReturnObject.success();
     }
 
 }

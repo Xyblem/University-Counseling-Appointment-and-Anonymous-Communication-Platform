@@ -46,7 +46,7 @@ export namespace ProvinceCN{
     /**
      * 根据省级行政区枚举(省级行政区编码获取省级行政区名称)
      */
-    export const ChineseName:Map<number,string>=new Map<number,string>([
+    export const ChineseName:Map<number|string,string>=new Map<number|string,string>([
         [ProvinceCN.BEIJING,"北京市"],
         [ProvinceCN.TIANJIN,"天津市"],
         [ProvinceCN.HEBEI,"河北省"],
@@ -80,7 +80,41 @@ export namespace ProvinceCN{
         [ProvinceCN.XINJIANG,"新疆维吾尔自治区"],
         [ProvinceCN.TAIPEI,"台湾省"],
         [ProvinceCN.HONG_KONG,"香港特别行政区"],
-        [ProvinceCN.MACAO,"澳门特别行政区"]
+        [ProvinceCN.MACAO,"澳门特别行政区"],
+        ["BEIJING","北京市"],
+        ["TIANJIN","天津市"],
+        ["HEBEI","河北省"],
+        ["SHANXI_14","山西省"],
+        ["INNER_MONGOLIA","内蒙古自治区"],
+        ["LIAONING","辽宁省"],
+        ["JILIN","吉林省"],
+        ["HEILONGJIANG","黑龙江省"],
+        ["SHANGHAI","上海市"],
+        ["JIANGSU","江苏省"],
+        ["ZHEJIANG","浙江省"],
+        ["ANHUI","安徽省"],
+        ["FUJIAN","福建省"],
+        ["JIANGXI","江西省"],
+        ["SHANDONG","山东省"],
+        ["HENAN","河南省"],
+        ["HUBEI","湖北省"],
+        ["HUNAN","湖南省"],
+        ["GUANGDONG","广东省"],
+        ["GUANGXI","广西壮族自治区"],
+        ["HAINAN","海南省"],
+        ["CHONGQING","重庆市"],
+        ["SICHUAN","四川省"],
+        ["GUIZHOU","贵州省"],
+        ["YUNNAN","云南省"],
+        ["TIBET","西藏自治区"],
+        ["SHAANXI","陕西省"],
+        ["GANSU","甘肃省"],
+        ["QINGHAI","青海省"],
+        ["NINGXIA","宁夏回族自治区"],
+        ["XINJIANG","新疆维吾尔自治区"],
+        ["TAIPEI","台湾省"],
+        ["HONG_KONG","香港特别行政区"],
+        ["MACAO","澳门特别行政区"]
     ]);
 }
 

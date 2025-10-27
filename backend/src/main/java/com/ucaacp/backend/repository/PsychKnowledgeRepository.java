@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface PsychKnowledgeRepository extends JpaRepository<PsychKnowledge, Integer> {
@@ -44,6 +45,12 @@ public interface PsychKnowledgeRepository extends JpaRepository<PsychKnowledge, 
     @Query("UPDATE PsychKnowledge p SET p.reviewStatus=:reviewStatus WHERE p.knowledgeId=:knowledgeId")
     int updateReviewStatus(@Param("knowledgeId")Integer knowledgeId,@Param("reviewStatus") ReviewStatus reviewStatus);
 
+    @Modifying
+    @Query("UPDATE PsychKnowledge p SET p.reviewStatus=:reviewStatus,p.adminReviewerUsername=:adminReviewerUsername,p.reviewTime=:reviewTime WHERE p.knowledgeId=:knowledgeId")
+    int updateReviewStatusAdmin(@Param("knowledgeId")Integer knowledgeId, @Param("adminReviewerUsername")String adminReviewerUsername, @Param("reviewTime")LocalDateTime reviewTime, @Param("reviewStatus") ReviewStatus reviewStatus);
+
+
+
     //管理员需要看到所有未审核的科普
     @Query("SELECT new com.ucaacp.backend.entity.DTO.PsychKnowledgeDTO(p.knowledgeId,p.title,p.content,p.teacherPublisherUsername," +
             "       CASE WHEN u.nickname IS NOT NULL AND u.nickname != '' THEN u.nickname " +
@@ -69,8 +76,19 @@ public interface PsychKnowledgeRepository extends JpaRepository<PsychKnowledge, 
             "       p.publishTime,p.adminReviewerUsername," +
             "       p.reviewTime,p.reviewStatus) FROM PsychKnowledge p " +
             "JOIN User u ON p.teacherPublisherUsername = u.username " +
-            "JOIN PsychKnowledgeReport pr ON pr.knowledgeId = p.knowledgeId ORDER BY p.publishTime DESC")
+            "JOIN PsychKnowledgeReport pr ON pr.knowledgeId = p.knowledgeId WHERE p.reviewStatus!='REVOKED' ORDER BY p.publishTime DESC")
     List<PsychKnowledgeDTO> findAllReportedPsychKnowledgeDTO();
+
+
+    //管理员自己审核的所有科普
+    @Query("SELECT DISTINCT new com.ucaacp.backend.entity.DTO.PsychKnowledgeDTO(p.knowledgeId,p.title,p.content,p.teacherPublisherUsername," +
+            "       CASE WHEN u.nickname IS NOT NULL AND u.nickname != '' THEN u.nickname " +
+            "            ELSE u.username END , " +
+            "       p.publishTime,p.adminReviewerUsername," +
+            "       p.reviewTime,p.reviewStatus) FROM PsychKnowledge p " +
+            "JOIN User u ON p.teacherPublisherUsername = u.username " +
+            "WHERE p.adminReviewerUsername=:adminReviewerUsername ORDER BY p.publishTime DESC")
+    List<PsychKnowledgeDTO> findAllPsychKnowledgeDTOReviewedByAdmin(@Param("adminReviewerUsername")String adminReviewerUsername);
 
 
 }

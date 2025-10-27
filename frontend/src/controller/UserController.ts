@@ -1,6 +1,7 @@
 import {User} from "../entity/User";
 import {ReturnObject} from "../common/response/ReturnObject";
 import api from "../utils/api/api_config";
+import {Controller} from "./Controller";
 
 
 
@@ -71,131 +72,26 @@ export interface UpdateUserRequest{
     wechat:string|null,
 }
 
-export class UserController {
+export class UserController extends Controller{
 
-    /**
-     * 用户登录
-     * @param loginRequest 登录请求体
-     * @return boolean 若登录成功则返回true，若登录失败(请求参数失败)则返回false
-     */
-    login=async (loginRequest:LoginRequest):Promise<ReturnObject> =>{
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/user/login",loginRequest).then(response=>{
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
-
-    /**
-     * 用户注册
-     * @param signupRequest 注册请求体
-     * @return boolean 若注册成功则返回true，若注册失败(请求参数失败)则返回false
-     */
-    signup=async (signupRequest:SignupRequest):Promise<ReturnObject> =>{
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/user/signup",signupRequest).then(response=>{
-            //@ts-ignore
-            result=response;
-        });
-        return result;
-    }
-
-
-    /**
-     * 检查用户登录
-     * @return boolean 若已登录则返回true，若未登录则返回false
-     */
-    checkLogin=async (): Promise<ReturnObject> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.get<ReturnObject>("api/user/check_login").then(response => {
-                //@ts-ignore
-                result = response;
-            }
-        );
-        return result;
-    }
-
-
-    /**
-     * 获取已经登录的用户信息
-     * @return boolean 若已登录则返回用户信息，若未登录则返回null
-     */
-    loggedInUser=async (): Promise<ReturnObject<User>> => {
-        let result: ReturnObject<User>={code:0,status:"",timestamp:0};
-        await api.get<ReturnObject<User>>("api/user/logged-in_user").then(response => {
-            //@ts-ignore
-            result=response;
-        });
-        return result;
-    }
-
-    /**
-     * 执行登出操作
-     * @return boolean 若已登录则执行登出并返回true，若未登录则返回false
-     */
-    logout=async (): Promise<ReturnObject> => {
-        let result: ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/user/logout").then(response => {
-            //@ts-ignore
-            result=response;
-        });
-        return result;
-    }
-
-
-    /**
-     * 更新密码
-     * @param updatePasswordRequest 更新密码请求体
-     * @return boolean 若更新成功则返回true，更新失败则返回false
-     */
-    updatePassword=async (updatePasswordRequest:UpdatePasswordRequest): Promise<ReturnObject> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/user/update_password",updatePasswordRequest).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
-
-    /**
-     * 注销账号
-     * @param closeAccountRequest 注销账号请求体
-     * @return boolean 若注销成功则返回true，注销失败则返回false
-     */
-    closeAccount=async (closeAccountRequest:CloseAccountRequest):Promise<ReturnObject> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/user/close_account",closeAccountRequest).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
-
-    /**
-     * 更新用户信息
-     * @param updateUserRequest 更新用户请求体
-     * @return boolean 若更新成功则返回true，更新失败则返回false
-     */
-    updateUser=async (updateUserRequest:UpdateUserRequest):Promise<ReturnObject> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.post<ReturnObject>("api/user/update_user",updateUserRequest).then(response => {
-            //@ts-ignore
-            result=response;
-        })
-        return result;
-    }
-
-    /**
-     * 根据学校所在省份和学校获取教师
-     * @param request 请求体
-     */
-    getAllTeachers=async(request:{schoolProvince:number,school:string}):Promise<ReturnObject<User[]>> => {
-        let result:ReturnObject={code:0,status:"",timestamp:0};
-        await api.get<ReturnObject>("api/user/all_teachers",{params:request}).then(response=>{
-            //@ts-ignore
-            result=response;
-        });
-        return result;
-    }
+    //用户登录
+    login=this._post<LoginRequest,any>("api/user/login");
+    //用户注册
+    signup=this._post<SignupRequest,any>("api/user/signup");
+    //检查用户登录
+    checkLogin=this._get<null,any>("api/user/check_login");
+    //获取已经登录的用户信息
+    loggedInUser=this._get<null,User>("api/user/logged-in_user");
+    //执行登出操作
+    logout=this._post<null,any>("api/user/logout");
+    //更新密码
+    updatePassword=this._post<UpdatePasswordRequest,any>("api/user/update_password");
+    //注销账号
+    closeAccount=this._post<CloseAccountRequest,any>("api/user/close_account");
+    //更新用户信息
+    updateUser=this._post<UpdateUserRequest,any>("api/user/update_user");
+    //根据学校所在省份和学校获取教师
+    getAllTeachers=this._get<{schoolProvince:number,school:string},User[]>("api/user/all_teachers");
+    //管理员获取所有用户
+    listAll=this._get<null,User[]>("api/user/list_all");
 }

@@ -12,7 +12,7 @@ public interface PsychAssessmentRepository extends JpaRepository<PsychAssessment
 
 
 
-    @Query("SELECT new com.ucaacp.backend.entity.DTO.PsychAssessmentRecordDTO(p.assessmentId,p.assessmentClass,p.assessmentName,p.testUsername," +
+    @Query("SELECT DISTINCT new com.ucaacp.backend.entity.DTO.PsychAssessmentRecordDTO(p.assessmentId,p.assessmentClass,p.assessmentName,p.testUsername," +
             "       u.name," +
             "       p.assessmentReport,p.assessmentTime) " +
             "FROM PsychAssessmentRecord p " +

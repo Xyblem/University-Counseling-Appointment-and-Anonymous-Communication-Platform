@@ -45,7 +45,7 @@ export const PsychTestEntranceForm: React.FC = () => {
                              <p>请选择心理测评问卷</p>
                              <br/>
                         </div>
-                        <div className="layout-flex-row">
+                        <div className="layout-flex-row flex-warp-warp">
                              <ResponseHandler<any,PsychTestQueryListItem[]>
                                  request={psychTestController.listAll}
                                  autoRequest={null}

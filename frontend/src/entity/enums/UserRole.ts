@@ -14,12 +14,17 @@ export namespace UserRole {
     /**
      * 根据用户角色枚举(用户角色编码获取用户角色名称)
      */
-    export const ChineseName:Map<number|undefined,string>=new Map<number|undefined,string>([
+    export const ChineseName:Map<number|undefined|string,string>=new Map<number|undefined|string,string>([
         [UserRole.UNKNOWN,"未知"],
         [UserRole.STUDENT,"学生"],
         [UserRole.TEACHER,"教师"],
         [UserRole.ADMIN,"管理员"],
         [UserRole.OTHER,"其他"],
+        ["UNKNOWN","未知"],
+        ["STUDENT","学生"],
+        ["TEACHER","教师"],
+        ["ADMIN","管理员"],
+        ["OTHER","其他"],
         [undefined,"未定义"]
     ]);
 

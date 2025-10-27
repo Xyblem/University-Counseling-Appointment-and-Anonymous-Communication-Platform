@@ -11,7 +11,7 @@ public interface PsychKnowledgeReportRepository extends JpaRepository<PsychKnowl
     List<PsychKnowledgeReport> findByKnowledgeId(Integer knowledgeId);
 
     //管理员可以删除某条举报
-    int deleteByReportId(Integer reportId);
+     void deleteByReportId(Integer reportId);
 
     //用户发起举报
     //直接用PsychKnowledgeReportRepository.save(PsychKnowledgeReport psychKnowledgeReport);

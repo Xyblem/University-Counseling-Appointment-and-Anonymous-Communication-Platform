@@ -11,6 +11,7 @@ import {useNavigate} from "react-router-dom";
 import {PsychKnowledgeController} from "../../../controller/PsychKnowledgeController";
 import {ResponseState} from "../../../common/response/ResponseState";
 import {PsychKnowledgeCard} from "../../../component/view/PsychKnowledgeCard";
+import {UserRole} from "../../../entity/enums/UserRole";
 
 export const MyPsychKnowledgeTeacherForm:React.FC = () => {
 
@@ -22,8 +23,9 @@ export const MyPsychKnowledgeTeacherForm:React.FC = () => {
     const PsychKnowledgeCardList=myPsychKnowledgeState?.returnObject?.data?.map(value=><PsychKnowledgeCard
         username={context.user==null?"":context.user.username}
         mode="mine"
+        role={context.user==null?UserRole.UNKNOWN:context.user.role}
         data={value}
-        onInvoke={()=>{
+        onRefresh={()=>{
             MyPsychKnowledgeHandlerRef.current?.recover();
             MyPsychKnowledgeHandlerRef.current?.request({teacherUsername:context.user==null?"":context.user.username});
         }}
