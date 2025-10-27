@@ -65,7 +65,9 @@ export const MainForm: React.FC = () => {
                         navigate("/psych_test_entrance");
                     }}>心理测试</Button>
                     <br/>
-                    <Button type="primary">科普广场</Button>
+                    <Button type="primary" onClick={()=>{
+                        navigate("/psych_knowledge/browse");
+                    }}>科普广场</Button>
                 </div>
             </div>
             <div className="box-popular-science">
@@ -211,24 +213,30 @@ export const MainForm: React.FC = () => {
 
                 </div>
                 <div className="layout-flex-column" style={{marginLeft: "50px"}}>
-                    <Button type="primary" onClick={()=>{
+                    <Button type="primary" onClick={() => {
                         navigate("/home/mine/appointment_manage");
                     }}>预约管理</Button>
                     <br/>
-                    <Button type="primary">发表科普</Button>
+                    <Button type="primary" onClick={() => {
+                        navigate("/psych_knowledge/post");
+                    }}>发表科普</Button>
                     <br/>
-                    <Button type="primary" onClick={()=>{
+                    <Button type="primary" onClick={() => {
+                        navigate("/psych_knowledge/mine/teacher");
+                    }}>我的科普</Button>
+                    <br/>
+                    <Button type="primary" onClick={() => {
                         navigate("/home/mine/evaluation_record");
                     }}>测评分析</Button>
                 </div>
             </div>
-            );
-            }
+        );
+    }
 
-            return (
-            <div className="layout-flex-column">
-                <div>
-                    <div className="home-main-hello-label">
+    return (
+        <div className="layout-flex-column">
+            <div>
+            <div className="home-main-hello-label">
                         <h2>你好{context.user?.name == null ? null : context.user?.name}{UserRole.ChineseNameAppellation.get(Number(context.user?.role))}，现在是{year}年{month}月{date}日</h2>
                     </div>
                     {mainForm}

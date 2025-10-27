@@ -1,0 +1,180 @@
+.psych-knowledge-card {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 16px;
+    transition: all 0.3s ease;
+    border: 1px solid #e8e8e8;
+}
+
+.psych-knowledge-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+}
+
+.card-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    flex: 1;
+    line-height: 1.4;
+}
+
+.status-badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-left: 12px;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background-color: #fff7e6;
+    color: #fa8c16;
+    border: 1px solid #ffd591;
+}
+
+.status-passed {
+    background-color: #f6ffed;
+    color: #52c41a;
+    border: 1px solid #b7eb8f;
+}
+
+.status-banned {
+    background-color: #fff2f0;
+    color: #ff4d4f;
+    border: 1px solid #ffccc7;
+}
+
+.status-revoked {
+    background-color: #f9f0ff;
+    color: #722ed1;
+    border: 1px solid #d3adf7;
+}
+
+.card-content {
+    margin-bottom: 16px;
+}
+
+.content-text {
+    text-align: left;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #595959;
+    margin: 0 0 12px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.expand-btn {
+    background: none;
+    border: none;
+    color: #1890ff;
+    font-size: 14px;
+    cursor: pointer;
+    padding: 0;
+    text-decoration: underline;
+}
+
+.expand-btn:hover {
+    color: #40a9ff;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.publisher-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.publisher-name {
+    font-size: 14px;
+    color: #8c8c8c;
+    font-weight: 500;
+}
+
+.publish-time {
+    font-size: 12px;
+    color: #bfbfbf;
+}
+
+.card-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.edit-btn {
+    padding: 6px 12px;
+    background-color: #1890ff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.edit-btn:hover {
+    background-color: #40a9ff;
+}
+
+.review-info {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px dashed #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+.reviewer, .review-time {
+    font-size: 12px;
+    color: #8c8c8c;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .psych-knowledge-card {
+        padding: 16px;
+    }
+
+    .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .status-badge {
+        margin-left: 0;
+        align-self: flex-start;
+    }
+
+    .card-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .review-info {
+        flex-direction: column;
+        gap: 4px;
+    }
+}

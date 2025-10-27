@@ -65,3 +65,18 @@ WHERE `test_username`='stu2022007';
 SELECT * FROM `post_report` WHERE `reporter_username`='stu2022007';
 
 SELECT * FROM `post_report` WHERE `post_id`=11;
+
+
+SELECT DISTINCT `psych_knowledge`.`knowledge_id`,`title`,`content`,`teacher_publisher_username`,
+       CASE WHEN `nickname` IS NOT NULL AND `nickname` != '' THEN `nickname`
+            ELSE `user`.`username`
+           END AS 'display_name',
+       `publish_time`,`admin_reviewer_username`,
+       `review_time`,`review_status` FROM `psych_knowledge`
+JOIN `user` ON `psych_knowledge`.`teacher_publisher_username` = `user`.`username`
+JOIN `psych_knowledge_report` ON `psych_knowledge_report`.knowledge_id = `psych_knowledge`.`knowledge_id`;
+
+;
+
+SELECT * FROM `psych_knowledge` WHERE `teacher_publisher_username`='tea200601';
+
