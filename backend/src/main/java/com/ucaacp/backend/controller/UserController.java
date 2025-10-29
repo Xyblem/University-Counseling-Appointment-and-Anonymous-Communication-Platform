@@ -1,6 +1,5 @@
 package com.ucaacp.backend.controller;
 
-
 import com.ucaacp.backend.annotation.CheckCaptcha;
 import com.ucaacp.backend.annotation.CheckLogin;
 import com.ucaacp.backend.annotation.CheckUserRole;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import com.ucaacp.backend.service.UserService;
 import com.ucaacp.backend.entity.User;
-
 import java.util.*;
 
 @RestController
@@ -31,7 +29,6 @@ public class UserController {
 
     @Autowired
     private CaptchaService captchaService;
-
 
     /**
      * 用户登录
