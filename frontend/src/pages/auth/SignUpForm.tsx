@@ -75,7 +75,7 @@ export const SignUpForm: React.FC = () => {
         // 手动验证所有字段
         const isNameValid = nameInputRef.current?.validate();
         const isGenderValid = genderRadioRef.current?.validate();
-        const isSchoolProvinceValid = schoolProvinceSelectRef.current?.validate();
+        const isSchoolProvinceValid = schoolProvinceSelectRef.current?.validate()
         const isSchoolValid = schoolInputRef.current?.validate();
         const isSecondaryUnitValid = secondaryUnitInputRef.current?.validate();
         const isMajorValid = majorInputRef.current?.validate();
